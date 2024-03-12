@@ -36,7 +36,12 @@ module.exports = {
     ],
     "semi": [
       "error",
-      "never"
-    ]
+      "always"
+    ],
+    // unused imports
+    // "@typescript-eslint/no-unused-vars": "error",
+    // @next/next/no-page-custom-font
+    "@next/next/no-page-custom-font": "off",
+    "@next/next/google-font-display": "off",
   }
-}
+};
