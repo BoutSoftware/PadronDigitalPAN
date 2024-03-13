@@ -8,6 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Padron Digital | PAN",
   description: "Aplicación integral para las actividades diarias del Partido Acción Nacional",
+  icons: "/logoPan.png",
 };
 
 export default function RootLayout({
@@ -19,7 +20,6 @@ export default function RootLayout({
     <html lang="es" className="dark">
       <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-        {/* <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" /> */}
       </head>
       <body className={inter.className}>
         <GlobalProviders>

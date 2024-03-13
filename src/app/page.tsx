@@ -1,4 +1,5 @@
-import { Button } from "@nextui-org/react";
+import { Button, Link } from "@nextui-org/react";
+import NextLink from "next/link";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
         <span className="material-symbols-outlined filled small">key</span>
         <span className="material-symbols-outlined small">key</span>
         <Button>Click me</Button>
+        <Link as={NextLink} href="/dashboard">Go to dashboard</Link>
       </div>
     </main>
   );
