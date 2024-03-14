@@ -1,10 +1,10 @@
 import prisma from "@/configs/database";
 import { hasIncompleteFields, sleep } from "@/utils";
-import { ModulesRoles } from "@prisma/client";
+import { UserRoles } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  interface ReqBody { personId: string, username: string, password: string, roles: ModulesRoles; }
+  interface ReqBody { personId: string, username: string, password: string, roles: UserRoles; }
 
   const reqBody = await request.json() as ReqBody;
   const { personId, username, password, roles } = reqBody;
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       isSuperAdmin: false,
       username: username,
       password: password,
-      modules: roles
+      roles: roles
     }
   });
 
@@ -39,101 +39,101 @@ export async function GET(request: NextRequest) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getUsersDBRules() {
-  const users = await prisma.user.findMany({
-    include: {
-      Person: true,
-      Roles: {
-        include: {
-          Module: true
-        }
-      }
-    }
-  });
+// async function getUsersDBRules() {
+//   const users = await prisma.user.findMany({
+//     include: {
+//       Person: true,
+//       Roles: {
+//         include: {
+//           Module: true
+//         }
+//       }
+//     }
+//   });
 
-  const modules = await prisma.module.findMany();
+//   const modules = await prisma.module.findMany();
 
-  const data = users.map((user) => {
-    const userRoles = {} as { [key: string]: string; };
+//   const data = users.map((user) => {
+//     const userRoles = {} as { [key: string]: string; };
 
-    user.Roles.forEach((role) => {
-      userRoles[role.Module.key] = role.name;
-    });
+//     user.Roles.forEach((role) => {
+//       userRoles[role.Module.key] = role.name;
+//     });
 
-    if (user.isSuperAdmin) {
-      userRoles["sup"] = "SuperAdmin";
+//     if (user.isSuperAdmin) {
+//       userRoles["sup"] = "SuperAdmin";
 
-      modules.forEach((module) => {
-        userRoles[module.key] = "SuperAdmin";
-      });
-    }
+//       modules.forEach((module) => {
+//         userRoles[module.key] = "SuperAdmin";
+//       });
+//     }
 
-    // const userRoles = user.Roles.reduce((acc, role) => {
-    //   acc[role.Module.key] = role.name;
-    //   return acc;
-    // }, {} as { [key: string]: string });
-    return {
-      id: user.id,
-      isSuperAdmin: user.isSuperAdmin,
-      username: user.username,
-      name: user.Person.name,
-      roles: userRoles
-    };
-  });
+//     // const userRoles = user.Roles.reduce((acc, role) => {
+//     //   acc[role.Module.key] = role.name;
+//     //   return acc;
+//     // }, {} as { [key: string]: string });
+//     return {
+//       id: user.id,
+//       isSuperAdmin: user.isSuperAdmin,
+//       username: user.username,
+//       name: user.Person.name,
+//       roles: userRoles
+//     };
+//   });
 
-  return data;
-}
+//   return data;
+// }
 
-// Get users via "modules" field
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getUsersBothStatic() {
-  const users = await prisma.user.findMany({
-    include: {
-      Person: true,
-    }
-  });
+// // Get users via "modules" field
+// // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// async function getUsersBothStatic() {
+//   const users = await prisma.user.findMany({
+//     include: {
+//       Person: true,
+//     }
+//   });
 
-  return users.map((user) => {
-    return {
-      id: user.id,
-      isSuperAdmin: user.isSuperAdmin,
-      username: user.username,
-      name: user.Person.name,
-      roles: user.modules
-    };
-  });
-}
+//   return users.map((user) => {
+//     return {
+//       id: user.id,
+//       isSuperAdmin: user.isSuperAdmin,
+//       username: user.username,
+//       name: user.Person.name,
+//       roles: user.modules
+//     };
+//   });
+// }
 
-// Get users via "userRoles" field
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getUsersCatalogRules() {
-  const users = await prisma.user.findMany({
-    include: {
-      Person: true,
-    }
-  });
+// // Get users via "userRoles" field
+// // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// async function getUsersCatalogRules() {
+//   const users = await prisma.user.findMany({
+//     include: {
+//       Person: true,
+//     }
+//   });
 
-  return users.map((user) => {
-    // const roles = {} as { [key: string]: string; };
+//   return users.map((user) => {
+//     // const roles = {} as { [key: string]: string; };
 
-    // user.userRoles.forEach((role) => {
-    //   roles[role.moduleName] = role.roleName;
-    // });
+//     // user.userRoles.forEach((role) => {
+//     //   roles[role.moduleName] = role.roleName;
+//     // });
 
-    const userRoles = user.userRoles.reduce((acc, role) => {
-      acc[role.moduleName] = role.roleName;
-      return acc;
-    }, {} as { [key: string]: string });
+//     const userRoles = user.userRoles.reduce((acc, role) => {
+//       acc[role.moduleName] = role.roleName;
+//       return acc;
+//     }, {} as { [key: string]: string });
 
-    return {
-      id: user.id,
-      isSuperAdmin: user.isSuperAdmin,
-      username: user.username,
-      name: user.Person.name,
-      roles: userRoles
-    };
-  });
-}
+//     return {
+//       id: user.id,
+//       isSuperAdmin: user.isSuperAdmin,
+//       username: user.username,
+//       name: user.Person.name,
+//       roles: userRoles
+//     };
+//   });
+// }
 
 async function getUsers() {
   const users = await prisma.user.findMany({
@@ -143,12 +143,19 @@ async function getUsers() {
   });
 
   return users.map((user) => {
+
+    if (user.isSuperAdmin) {
+      Object.keys(user.roles).forEach((role) => {
+        user.roles[role as keyof UserRoles] = "Admin";
+      });
+    }
+
     return {
       id: user.id,
       isSuperAdmin: user.isSuperAdmin,
       username: user.username,
       name: user.Person.name,
-      roles: user.modules
+      roles: user.roles
     };
   });
 }

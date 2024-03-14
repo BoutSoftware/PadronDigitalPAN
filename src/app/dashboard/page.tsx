@@ -1,8 +1,8 @@
 "use client";
 
-import { UserRoles, VisRole } from "@/configs/roles";
 import { hasPermission } from "@/utils";
 import { Button, CircularProgress } from "@nextui-org/react";
+import { UserRoles, VisorRoles } from "@prisma/client";
 import { useEffect, useState } from "react";
 
 interface User {
@@ -10,8 +10,7 @@ interface User {
   isSuperAdmin: boolean;
   username: string;
   name: string;
-  // roles: { [key: string]: string };
-  roles: UserRoles; // { vis: "Admin", wha: "User" }
+  roles: UserRoles;
 }
 
 export default function DashboardPage() {
@@ -60,7 +59,7 @@ export default function DashboardPage() {
                 <h3>
                   Tiene Permiso Admin en Visor:
 
-                  {hasPermission<VisRole>(user.roles.vis, ["Admin"]) ?
+                  {hasPermission<VisorRoles>(user.roles.visor, ["Admin"]) ?
                     <span className="material-symbols-outlined text-green-300 small">check</span> :
                     <span className="material-symbols-outlined text-red-300 small">close</span>
                   }
@@ -69,7 +68,7 @@ export default function DashboardPage() {
                 <h3>
                   Tiene Permiso User en Visor:
 
-                  {hasPermission<VisRole>(user.roles.vis, ["User"]) ?
+                  {hasPermission<VisorRoles>(user.roles.visor, ["User",]) ?
                     <span className="material-symbols-outlined text-green-300 small">check</span> :
                     <span className="material-symbols-outlined text-red-300 small">close</span>
                   }
@@ -78,12 +77,13 @@ export default function DashboardPage() {
                 <h3>
                   Tiene Permiso Viewer en Visor:
 
-                  {hasPermission<VisRole>(user.roles.vis, ["Viewer"]) ?
+                  {hasPermission<VisorRoles>(user.roles.visor, ["Viewer"]) ?
                     <span className="material-symbols-outlined text-green-300 small">check</span> :
                     <span className="material-symbols-outlined text-red-300 small">close</span>
                   }
-                  <Button isDisabled={hasPermission<VisRole>(user.roles.vis, ["Viewer"])}>Boton</Button>
                 </h3>
+
+                <Button isDisabled={hasPermission<VisorRoles>(user.roles.visor, ["Viewer"])}>Boton</Button>
               </li>
             ))}
           </ul>

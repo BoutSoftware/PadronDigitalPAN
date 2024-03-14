@@ -13,6 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// MODEL DEFINITIONS
 model Person {
   id             String @id @default(auto()) @map("_id") @db.ObjectId
   name           String
@@ -25,50 +26,23 @@ model Person {
 }
 
 model User {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
   username     String
   password     String
   isSuperAdmin Boolean
-  userRoles    UserRoles[] // [{moduleName: "wpp", roleName: "Admin"}, {moduleName: "m2", roleName: "User"}] @map("roles")
-  modules      ModulesRoles // {vis: "Admin", wpp: "User"}
+  roles        UserRoles // {visor: "Admin", whats: "User"}
 
   personId String   @unique @db.ObjectId
   roleIDs  String[] @db.ObjectId
 
   Person Person @relation(fields: [personId], references: [id])
-  Roles  Role[] @relation(fields: [roleIDs], references: [id])
-  // TOKEN: Person.name, username, roles: {wpp: "Admin", vis: "User", cal: undefined}
+  // TOKEN: Person.name, username, roles: {visor: "Admin", whats: "User"}
 }
 
-// Controlled on the Database
-model Module {
-  id   String @id @default(auto()) @map("_id") @db.ObjectId
-  name String // Whatsapp, Maps, CallCenter, etc
-  key  String // wpp, maps, cc, etc
-
-  Roles Role[]
-}
-
-model Role {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  name     String // Admin, User, etc
-  moduleId String   @db.ObjectId
-  userIDs  String[] @db.ObjectId
-
-  Module Module @relation(fields: [moduleId], references: [id])
-  Users  User[] @relation(fields: [userIDs], references: [id])
-}
-
-// Fully controlled by the Frontend
+// TYPES AND ENUMS
 type UserRoles {
-  moduleName String
-  roleName   String
-}
-
-// Controlled by Backend and Frontend
-type ModulesRoles {
-  vis VisorRoles?
-  wha WhaRoles?
+  visor VisorRoles?
+  whats WhatsRoles?
 }
 
 enum VisorRoles {
@@ -77,7 +51,7 @@ enum VisorRoles {
   Viewer
 }
 
-enum WhaRoles {
+enum WhatsRoles {
   Admin
   User
   Sender

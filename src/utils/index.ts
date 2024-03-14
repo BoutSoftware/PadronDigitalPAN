@@ -3,8 +3,8 @@ export function hasIncompleteFields(object: object) {
   // return Object.entries(object).filter(([, value]) => value === undefined || value === null);
 }
 
-export function hasPermission<Role>(currentRole: Role, rolesAllowed: Role[]) {
-  return rolesAllowed.includes(currentRole) || currentRole === "SuperAdmin" || currentRole === "Admin";
+export function hasPermission<Role>(currentRole: Role | null, rolesAllowed: (Role | null)[]) {
+  return rolesAllowed.includes(currentRole) || currentRole === "Admin";
 }
 
 export function sleep(ms: number) {
