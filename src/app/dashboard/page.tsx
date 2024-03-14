@@ -52,7 +52,7 @@ export default function DashboardPage() {
                 <h3>Roles:</h3>
                 <ul className="ml-4">
                   {Object.entries(user.roles).map(([key, value]) => (
-                    <li key={key}>{key}: {value}</li>
+                    <li key={key}>{key}: {value || "Sin Permiso"}</li>
                   ))}
                 </ul>
 
@@ -83,7 +83,9 @@ export default function DashboardPage() {
                   }
                 </h3>
 
-                <Button isDisabled={hasPermission<VisorRoles>(user.roles.visor, ["Viewer"])}>Boton</Button>
+                <Button isDisabled={!hasPermission<VisorRoles>(user.roles.visor, ["Viewer"])} onPress={() => alert("Boton presionado")}>
+                  Boton para Viewer
+                </Button>
               </li>
             ))}
           </ul>

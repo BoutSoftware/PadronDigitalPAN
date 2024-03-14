@@ -33,8 +33,6 @@ export async function GET(request: NextRequest) {
 
   const data = await getUsers();
 
-  console.log(JSON.stringify(data, null, 2));
-
   return NextResponse.json({ code: "OK", message: "Users fetched successfully", data: data });
 }
 
@@ -143,7 +141,6 @@ async function getUsers() {
   });
 
   return users.map((user) => {
-
     if (user.isSuperAdmin) {
       Object.keys(user.roles).forEach((role) => {
         user.roles[role as keyof UserRoles] = "Admin";
