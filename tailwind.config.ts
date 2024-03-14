@@ -12,6 +12,12 @@ const config: Config = {
     extend: {},
   },
   darkMode: "class",
-  plugins: [nextui({})],
+  plugins: [nextui({
+    // themes: [
+    //   {
+    //     extend: 
+    //   }
+    // ]
+  })],
 };
 export default config;

@@ -1,17 +1,32 @@
-// import prisma from "@/configs/database";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   request.headers.has("Authorization");
 
-  // await prisma.user.create({
+  // const personaResult = await prisma.person.create({
   //   data: {
-  //     personId: "65f14e5e8e99bfd28b0e963c",
-  //     isSuperAdmin: false,
-  //     username: "juanPablo",
-  //     password: "juanPablo",
+  //     name: "Javier",
+  //     email: "javier@gmail.com",
+  //     phone: "1234567890",
+  //     fatherLastName: "Zamudio",
+  //     motherLastName: "García",
   //   }
   // });
+
+
+  // await prisma.user.create({
+  //   data: {
+  //     personId: personaResult.id,
+  //     isSuperAdmin: true,
+  //     username: "javier",
+  //     password: "javier",
+  //     modules: {
+  //       set: undefined
+  //     }
+  //   }
+  // });
+
+
 
   return NextResponse.json({ message: "Welcome to the Dashboard API" });
 }

@@ -1,24 +1,17 @@
 "use client";
 
+import { UserRoles, VisRole } from "@/configs/roles";
 import { hasPermission } from "@/utils";
-import { CircularProgress } from "@nextui-org/react";
+import { Button, CircularProgress } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-
-type VisRole = "Admin" | "User" | "Viewer" | undefined;
-type WhaRole = "Admin" | "User" | "Sender" | undefined;
-
-interface Roles {
-  vis: VisRole;
-  wha: WhaRole;
-  sup?: "SuperAdmin";
-}
 
 interface User {
   id: number;
   isSuperAdmin: boolean;
   username: string;
+  name: string;
   // roles: { [key: string]: string };
-  roles: Roles;
+  roles: UserRoles; // { vis: "Admin", wha: "User" }
 }
 
 export default function DashboardPage() {
@@ -27,6 +20,10 @@ export default function DashboardPage() {
   const fetchUsers = async () => {
     const response = await fetch("/dashboard/api/users");
     const resBody = await response.json();
+
+    if (resBody.code !== "OK")
+      return alert("Error al obtener los usuarios");
+
     console.log(resBody);
     setUsers(resBody.data);
   };
@@ -50,7 +47,7 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-start gap-1">
                   <span className="font-bold">{user.username}</span>
 
-                  {user.isSuperAdmin && <span className="material-symbols-outlined text-amber-300 small">star</span>}
+                  {user.isSuperAdmin && <span className="material-symbols-outlined text-amber-300 filled small">star</span>}
                 </div>
 
                 <h3>Roles:</h3>
@@ -85,6 +82,7 @@ export default function DashboardPage() {
                     <span className="material-symbols-outlined text-green-300 small">check</span> :
                     <span className="material-symbols-outlined text-red-300 small">close</span>
                   }
+                  <Button isDisabled={hasPermission<VisRole>(user.roles.vis, ["Viewer"])}>Boton</Button>
                 </h3>
               </li>
             ))}

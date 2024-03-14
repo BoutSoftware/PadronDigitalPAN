@@ -25,18 +25,22 @@ model Person {
 }
 
 model User {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
   username     String
   password     String
   isSuperAdmin Boolean
-  personId     String   @unique @db.ObjectId
-  roleIDs      String[] @db.ObjectId
+  userRoles    UserRoles[] // [{moduleName: "wpp", roleName: "Admin"}, {moduleName: "m2", roleName: "User"}] @map("roles")
+  modules      ModulesRoles // {vis: "Admin", wpp: "User"}
+
+  personId String   @unique @db.ObjectId
+  roleIDs  String[] @db.ObjectId
 
   Person Person @relation(fields: [personId], references: [id])
   Roles  Role[] @relation(fields: [roleIDs], references: [id])
-  // TOKEN: Person.name, username, roles: {wpp: "Admin", m2: "User, m3: null}
+  // TOKEN: Person.name, username, roles: {wpp: "Admin", vis: "User", cal: undefined}
 }
 
+// Controlled on the Database
 model Module {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
   name String // Whatsapp, Maps, CallCenter, etc
@@ -53,4 +57,28 @@ model Role {
 
   Module Module @relation(fields: [moduleId], references: [id])
   Users  User[] @relation(fields: [userIDs], references: [id])
+}
+
+// Fully controlled by the Frontend
+type UserRoles {
+  moduleName String
+  roleName   String
+}
+
+// Controlled by Backend and Frontend
+type ModulesRoles {
+  vis VisorRoles?
+  wha WhaRoles?
+}
+
+enum VisorRoles {
+  Admin
+  User
+  Viewer
+}
+
+enum WhaRoles {
+  Admin
+  User
+  Sender
 }

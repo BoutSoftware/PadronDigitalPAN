@@ -1,12 +1,15 @@
 import prisma from "@/configs/database";
 import { hasIncompleteFields, sleep } from "@/utils";
+import { ModulesRoles } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const reqBody = await request.json();
-  const { personId, username, password } = reqBody;
+  interface ReqBody { personId: string, username: string, password: string, roles: ModulesRoles; }
 
-  if (hasIncompleteFields({ personId, username, password })) {
+  const reqBody = await request.json() as ReqBody;
+  const { personId, username, password, roles } = reqBody;
+
+  if (hasIncompleteFields({ personId, username, password, roles })) {
     return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
   }
 
@@ -16,6 +19,7 @@ export async function POST(request: NextRequest) {
       isSuperAdmin: false,
       username: username,
       password: password,
+      modules: roles
     }
   });
 
@@ -23,12 +27,22 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  await sleep(1000);
-
   request.headers.has("Authorization");
 
+  await sleep(1000);
+
+  const data = await getUsers();
+
+  console.log(JSON.stringify(data, null, 2));
+
+  return NextResponse.json({ code: "OK", message: "Users fetched successfully", data: data });
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getUsersDBRules() {
   const users = await prisma.user.findMany({
     include: {
+      Person: true,
       Roles: {
         include: {
           Module: true
@@ -39,27 +53,102 @@ export async function GET(request: NextRequest) {
 
   const modules = await prisma.module.findMany();
 
-  const usersWithRoles = users.map((user) => {
-    const roles = {} as { [key: string]: string };
+  const data = users.map((user) => {
+    const userRoles = {} as { [key: string]: string; };
 
     user.Roles.forEach((role) => {
-      roles[role.Module.key] = role.name;
+      userRoles[role.Module.key] = role.name;
     });
 
     if (user.isSuperAdmin) {
-      roles["sup"] = "SuperAdmin";
+      userRoles["sup"] = "SuperAdmin";
 
       modules.forEach((module) => {
-        roles[module.key] = "SuperAdmin";
+        userRoles[module.key] = "SuperAdmin";
       });
     }
 
+    // const userRoles = user.Roles.reduce((acc, role) => {
+    //   acc[role.Module.key] = role.name;
+    //   return acc;
+    // }, {} as { [key: string]: string });
     return {
-      ...user,
-      Roles: undefined,
-      roles
+      id: user.id,
+      isSuperAdmin: user.isSuperAdmin,
+      username: user.username,
+      name: user.Person.name,
+      roles: userRoles
     };
   });
 
-  return NextResponse.json({ code: "OK", message: "Users fetched successfully", data: usersWithRoles });
+  return data;
+}
+
+// Get users via "modules" field
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getUsersBothStatic() {
+  const users = await prisma.user.findMany({
+    include: {
+      Person: true,
+    }
+  });
+
+  return users.map((user) => {
+    return {
+      id: user.id,
+      isSuperAdmin: user.isSuperAdmin,
+      username: user.username,
+      name: user.Person.name,
+      roles: user.modules
+    };
+  });
+}
+
+// Get users via "userRoles" field
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getUsersCatalogRules() {
+  const users = await prisma.user.findMany({
+    include: {
+      Person: true,
+    }
+  });
+
+  return users.map((user) => {
+    // const roles = {} as { [key: string]: string; };
+
+    // user.userRoles.forEach((role) => {
+    //   roles[role.moduleName] = role.roleName;
+    // });
+
+    const userRoles = user.userRoles.reduce((acc, role) => {
+      acc[role.moduleName] = role.roleName;
+      return acc;
+    }, {} as { [key: string]: string });
+
+    return {
+      id: user.id,
+      isSuperAdmin: user.isSuperAdmin,
+      username: user.username,
+      name: user.Person.name,
+      roles: userRoles
+    };
+  });
+}
+
+async function getUsers() {
+  const users = await prisma.user.findMany({
+    include: {
+      Person: true,
+    }
+  });
+
+  return users.map((user) => {
+    return {
+      id: user.id,
+      isSuperAdmin: user.isSuperAdmin,
+      username: user.username,
+      name: user.Person.name,
+      roles: user.modules
+    };
+  });
 }
