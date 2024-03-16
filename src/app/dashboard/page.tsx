@@ -1,9 +1,10 @@
 "use client";
 
+import { ThemeContext } from "@/contexts/ThemeProvider";
 import { hasPermission } from "@/utils";
-import { Button, CircularProgress } from "@nextui-org/react";
+import { Button, CircularProgress, Switch } from "@nextui-org/react";
 import { UserRoles, VisorRoles } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 interface User {
   id: number;
@@ -15,6 +16,7 @@ interface User {
 
 export default function DashboardPage() {
   const [users, setUsers] = useState<User[] | null>(null);
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   const fetchUsers = async () => {
     const response = await fetch("/dashboard/api/users");
@@ -90,6 +92,20 @@ export default function DashboardPage() {
             ))}
           </ul>
         }
+
+        <Switch
+          isSelected={theme === "dark"}
+          // size="lg"
+          onChange={toggleTheme}
+          endContent={<span>dark_mode</span>}
+          startContent={<span>light_mode</span>}
+          classNames={{
+            endContent: "flex items-center material-symbols-outlined icon-xs",
+            startContent: "flex items-center material-symbols-outlined icon-xs",
+            thumbIcon: "flex items-center material-symbols-outlined icon-xs",
+            base: "fixed top-4 right-4",
+          }}
+        />
 
         {!users && <CircularProgress aria-label="Cargando usuarios" />}
       </div>
