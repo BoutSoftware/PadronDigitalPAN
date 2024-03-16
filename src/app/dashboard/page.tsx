@@ -44,9 +44,9 @@ export default function DashboardPage() {
             {users.map((user) => (
               <li key={user.id} className="p-4">
                 <div className="flex items-center justify-start gap-1">
-                  <span className="font-bold">{user.username}</span>
+                  <span className="font-bold">{user.name} ({user.username})</span>
 
-                  {user.isSuperAdmin && <span className="material-symbols-outlined text-amber-300 filled small">star</span>}
+                  {user.isSuperAdmin && <span className="material-symbols-outlined text-amber-300 icon-filled icon-sm">star</span>}
                 </div>
 
                 <h3>Roles:</h3>
@@ -60,8 +60,8 @@ export default function DashboardPage() {
                   Tiene Permiso Admin en Visor:
 
                   {hasPermission<VisorRoles>(user.roles.visor, ["Admin"]) ?
-                    <span className="material-symbols-outlined text-green-300 small">check</span> :
-                    <span className="material-symbols-outlined text-red-300 small">close</span>
+                    <span className="material-symbols-outlined text-green-300 icon-sm">check</span> :
+                    <span className="material-symbols-outlined text-red-300 icon-sm h-full mt-1 ">close</span>
                   }
                 </h3>
 
@@ -69,8 +69,8 @@ export default function DashboardPage() {
                   Tiene Permiso User en Visor:
 
                   {hasPermission<VisorRoles>(user.roles.visor, ["User",]) ?
-                    <span className="material-symbols-outlined text-green-300 small">check</span> :
-                    <span className="material-symbols-outlined text-red-300 small">close</span>
+                    <span className="material-symbols-outlined text-green-300 icon-sm">check</span> :
+                    <span className="material-symbols-outlined text-red-300 icon-sm">close</span>
                   }
                 </h3>
 
@@ -78,12 +78,12 @@ export default function DashboardPage() {
                   Tiene Permiso Viewer en Visor:
 
                   {hasPermission<VisorRoles>(user.roles.visor, ["Viewer"]) ?
-                    <span className="material-symbols-outlined text-green-300 small">check</span> :
-                    <span className="material-symbols-outlined text-red-300 small">close</span>
+                    <span className="material-symbols-outlined text-green-300 icon-sm">check</span> :
+                    <span className="material-symbols-outlined text-red-300 icon-sm">close</span>
                   }
                 </h3>
 
-                <Button isDisabled={!hasPermission<VisorRoles>(user.roles.visor, ["Viewer"])} onPress={() => alert("Boton presionado")}>
+                <Button isDisabled={!hasPermission<VisorRoles>(user.roles.visor, ["Viewer"])} onPress={() => alert("Boton presionado")} className="bg-fuchsia-500">
                   Boton para Viewer
                 </Button>
               </li>

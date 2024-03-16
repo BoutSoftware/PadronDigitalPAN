@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-.filled {
+.icon-filled {
     font-variation-settings:
         "FILL" 1,
         'wght' 400,
@@ -10,7 +10,7 @@
         'opsz' 24
 }
 
-.outlined {
+.icon-outlined {
     font-variation-settings:
         "FILL" 0,
         'wght' 400,
@@ -18,12 +18,27 @@
         'opsz' 24
 }
 
-.large {
+.icon-xl {
+    /* 40px */
+    font-size: 2.5rem !important;
+}
+
+.icon-lg {
     font-size: 2rem !important;
     /* 32px */
 }
 
-.small {
+.icon-md {
+    /* 24px */
+    font-size: 1.5rem !important;
+}
+
+.icon-sm {
     /* 20px */
     font-size: 1.25rem !important;
+}
+
+.icon-xs {
+    /* 16px */
+    font-size: 1rem !important;
 }
