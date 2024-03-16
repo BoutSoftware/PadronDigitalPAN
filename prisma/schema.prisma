@@ -18,7 +18,6 @@ datasource db {
 model Tag {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  //TODO: la relación de tags con personas es de muchos a muchos?
   personIDs String[] @db.ObjectId
 
   Persons Person[] @relation(fields: [personIDs], references: [id])
@@ -100,14 +99,14 @@ model Address {
   streetId           String? @db.ObjectId
   electoralSectionId String  @db.ObjectId
   isEstablished      Boolean
-  pendindAddressId   String? @unique @db.ObjectId
   foreignAddress     String?
+  personId           String? @unique @db.ObjectId
 
+  PendingAddress   PendingAddress?  
   Complement       Complement       @relation(fields: [complementId], references: [id])
   Street           Street?          @relation(fields: [streetId], references: [id])
   ElectoralSection ElectoralSection @relation(fields: [electoralSectionId], references: [id])
-  PendingAddress   PendingAddress?  @relation(fields: [pendindAddressId], references: [id])
-  Person           Person?
+  Person           Person?          @relation(fields: [personId], references: [id])
 }
 
 model PendingAddress {
@@ -117,8 +116,9 @@ model PendingAddress {
   delgation String?
   municipio String
   status    StatusPendingAddress @default(NOT_VERIFIED)
+  addressId String               @unique @db.ObjectId
 
-  Address Address?
+  Address Address? @relation(fields: [addressId], references: [id])
 }
 
 model Person {
@@ -128,10 +128,10 @@ model Person {
   motherLastName  String?
   phone           Phone?
   email           String?
-  curp            String?  @unique
-  rfc             String?  @unique
+  curp            String?
+  rfc             String?
   birthPlace      String?
-  voterKey        String?  @unique
+  voterKey        String?
   gender          Int? // 0=MUJER 1=HOMBRE 3=OTRO
   scholarship     String?
   profession      String?
@@ -139,10 +139,9 @@ model Person {
   ineURL          String?
   proofAddressURL String?
   photoURL        String?
-  addressId       String?  @unique @db.ObjectId
 
   Tags    Tag[]    @relation(fields: [tagIDs], references: [id])
-  Address Address? @relation(fields: [addressId], references: [id])
+  Address Address?
   User    User?
 }
 
