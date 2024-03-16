@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 
 interface ThemeContext {
-  theme: "light" | "dark";
+  theme: "light" | "dark" | undefined;
   setTheme: (theme: "light" | "dark") => void;
   toggleTheme: () => void;
 }
@@ -25,9 +25,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const userPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const localTheme = localStorage.getItem("theme");
 
-    if (!localTheme)
-      localStorage.setItem("theme", userPrefersDark ? "dark" : "light");
-
     setTheme(localTheme as "light" | "dark" || (userPrefersDark ? "dark" : "light"));
   }, []);
 
@@ -41,7 +38,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme: theme || "light", setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
