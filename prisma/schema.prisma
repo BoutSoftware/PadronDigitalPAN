@@ -151,10 +151,7 @@ model User {
   password     String
   isSuperAdmin Boolean
   roles        UserRoles // {visor: "Admin", whats: "User"}
-
   personId String   @unique @db.ObjectId
-  //TODO: Se va a quitar la lista de roles?
-  roleIDs  String[] @db.ObjectId
 
   Person Person @relation(fields: [personId], references: [id])
   // TOKEN: Person.name, username, roles: {visor: "Admin", whats: "User"}
