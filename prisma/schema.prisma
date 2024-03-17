@@ -14,15 +14,135 @@ datasource db {
 }
 
 // MODEL DEFINITIONS
-model Person {
-  id             String @id @default(auto()) @map("_id") @db.ObjectId
-  name           String
-  fatherLastName String
-  motherLastName String
-  phone          String
-  email          String
 
-  User User?
+model Tag {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  personIDs String[] @db.ObjectId
+
+  Persons Person[] @relation(fields: [personIDs], references: [id])
+}
+
+model Complement {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
+  Addresses Address[]
+}
+
+model LocalDistric {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  number Int
+
+  ElectoralSections ElectoralSection[]
+}
+
+model FederalDistric {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  number Int
+
+  ElectoralSections ElectoralSection[]
+}
+
+model ElectoralSection {
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
+  number           Int
+  localDistricId   String @db.ObjectId
+  federalDistricId String @db.ObjectId
+
+  LocalDistric   LocalDistric   @relation(fields: [localDistricId], references: [id])
+  FederalDistric FederalDistric @relation(fields: [federalDistricId], references: [id])
+  Addresses      Address[]
+}
+
+model Municipio {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
+  Colonias Colonia[]
+}
+
+model Delegation {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
+  Colonias Colonia[]
+}
+
+model Colonia {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  postalCode   Int
+  municipioId  String  @db.ObjectId
+  delegationId String? @db.ObjectId
+
+  Streets    Street[]
+  Municipio  Municipio   @relation(fields: [municipioId], references: [id])
+  Delegation Delegation? @relation(fields: [delegationId], references: [id])
+}
+
+model Street {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  coloniaId String @db.ObjectId
+
+  Colonia   Colonia   @relation(fields: [coloniaId], references: [id])
+  Addresses Address[]
+}
+
+model Address {
+  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+  outdoorNum         String?
+  interiorNum        String?
+  complementId       String  @db.ObjectId
+  defComplement      String
+  streetId           String? @db.ObjectId
+  electoralSectionId String  @db.ObjectId
+  isEstablished      Boolean
+  foreignAddress     String?
+  personId           String? @unique @db.ObjectId
+
+  PendingAddress   PendingAddress?  
+  Complement       Complement       @relation(fields: [complementId], references: [id])
+  Street           Street?          @relation(fields: [streetId], references: [id])
+  ElectoralSection ElectoralSection @relation(fields: [electoralSectionId], references: [id])
+  Person           Person?          @relation(fields: [personId], references: [id])
+}
+
+model PendingAddress {
+  id        String               @id @default(auto()) @map("_id") @db.ObjectId
+  street    String
+  colonia   String
+  delgation String?
+  municipio String
+  status    StatusPendingAddress @default(NOT_VERIFIED)
+  addressId String               @unique @db.ObjectId
+
+  Address Address? @relation(fields: [addressId], references: [id])
+}
+
+model Person {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  fatherLastName  String
+  motherLastName  String?
+  phone           Phone?
+  email           String?
+  curp            String?
+  rfc             String?
+  birthPlace      String?
+  voterKey        String?
+  gender          Int? // 0=MUJER 1=HOMBRE 3=OTRO
+  scholarship     String?
+  profession      String?
+  tagIDs          String[] @db.ObjectId
+  ineURL          String?
+  proofAddressURL String?
+  photoURL        String?
+
+  Tags    Tag[]    @relation(fields: [tagIDs], references: [id])
+  Address Address?
+  User    User?
 }
 
 model User {
@@ -31,9 +151,7 @@ model User {
   password     String
   isSuperAdmin Boolean
   roles        UserRoles // {visor: "Admin", whats: "User"}
-
   personId String   @unique @db.ObjectId
-  roleIDs  String[] @db.ObjectId
 
   Person Person @relation(fields: [personId], references: [id])
   // TOKEN: Person.name, username, roles: {visor: "Admin", whats: "User"}
@@ -55,4 +173,16 @@ enum WhatsRoles {
   Admin
   User
   Sender
+}
+
+type Phone {
+  number   String
+  isActive Boolean @default(true)
+}
+
+enum StatusPendingAddress {
+  APPROVED
+  IN_REVIEW
+  NOT_VERIFIED
+  REJECTED
 }
