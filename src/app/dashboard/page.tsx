@@ -15,7 +15,7 @@ interface User {
 }
 
 export default function DashboardPage() {
-  const [users, setUsers] = useState<User[] | null>(null);
+  const [users, setUsers] = useState<User[]>();
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const fetchUsers = async () => {
@@ -95,7 +95,6 @@ export default function DashboardPage() {
 
         <Switch
           isSelected={theme === "dark"}
-          // size="lg"
           onChange={toggleTheme}
           endContent={<span>dark_mode</span>}
           startContent={<span>light_mode</span>}

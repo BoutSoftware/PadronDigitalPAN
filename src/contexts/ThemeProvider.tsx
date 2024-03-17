@@ -15,19 +15,21 @@ export const ThemeContext = createContext<ThemeContext>({
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<"light" | "dark">();
 
+  // Utility function to toggle theme
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
 
     setTheme(newTheme);
   };
 
+  // Set theme from local storage
   useEffect(() => {
-    const userPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const localTheme = localStorage.getItem("theme");
+    const localTheme = localStorage.getItem("theme") as "light" | "dark";
 
-    setTheme(localTheme as "light" | "dark" || (userPrefersDark ? "dark" : "light"));
+    setTheme(localTheme);
   }, []);
 
+  // Apply theme to HTML
   useEffect(() => {
     if (!theme) return;
 
@@ -39,7 +41,38 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+      <ThemeScript />
       {children}
     </ThemeContext.Provider>
   );
 }
+
+const ThemeScript = () => {
+  function script() {
+    const useSystemTheme = false;
+
+    // Window Variables
+    const userPrefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const localStorageTheme = localStorage.getItem("theme"); // "dark" | "light" | null
+
+    // Decide Theme
+    const defaultTheme = useSystemTheme ? (userPrefersDark ? "dark" : "light") : "light";
+    const theme = localStorageTheme || defaultTheme;
+
+    // Save Theme
+    if (!localStorageTheme) {
+      localStorage.setItem("theme", theme);
+    }
+
+    // Apply Theme to HTML
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(theme);
+  }
+
+  return (
+    <script
+      suppressHydrationWarning
+      dangerouslySetInnerHTML={{ __html: `(${script.toString()})()` }}
+    />
+  );
+};

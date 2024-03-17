@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   request.headers.has("Authorization");
 
-  await sleep(1000);
+  await sleep(0);
 
   const data = await getUsers();
 
