@@ -23,6 +23,7 @@ model Tag {
   Persons Person[] @relation(fields: [personIDs], references: [id])
 }
 
+// TODO: Turn into enum?
 model Complement {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
   name String
@@ -92,17 +93,17 @@ model Street {
 
 model Address {
   id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+  isEstablished      Boolean
+  defComplement      String
   outdoorNum         String?
   interiorNum        String?
-  complementId       String  @db.ObjectId
-  defComplement      String
+  foreignAddress     String?
   streetId           String? @db.ObjectId
   electoralSectionId String  @db.ObjectId
-  isEstablished      Boolean
-  foreignAddress     String?
-  personId           String? @unique @db.ObjectId
+  complementId       String  @db.ObjectId
+  personId           String  @unique @db.ObjectId
 
-  PendingAddress   PendingAddress?  
+  PendingAddress   PendingAddress?
   Complement       Complement       @relation(fields: [complementId], references: [id])
   Street           Street?          @relation(fields: [streetId], references: [id])
   ElectoralSection ElectoralSection @relation(fields: [electoralSectionId], references: [id])
@@ -135,10 +136,10 @@ model Person {
   gender          Int? // 0=MUJER 1=HOMBRE 3=OTRO
   scholarship     String?
   profession      String?
-  tagIDs          String[] @db.ObjectId
   ineURL          String?
   proofAddressURL String?
   photoURL        String?
+  tagIDs          String[] @db.ObjectId
 
   Tags    Tag[]    @relation(fields: [tagIDs], references: [id])
   Address Address?
@@ -151,7 +152,7 @@ model User {
   password     String
   isSuperAdmin Boolean
   roles        UserRoles // {visor: "Admin", whats: "User"}
-  personId String   @unique @db.ObjectId
+  personId     String    @unique @db.ObjectId
 
   Person Person @relation(fields: [personId], references: [id])
   // TOKEN: Person.name, username, roles: {visor: "Admin", whats: "User"}
