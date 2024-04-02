@@ -54,6 +54,8 @@ export default function Marker({ children, position, title, image }: MarkerProps
   useEffect(() => {
     if (!marker) return;
 
+    console.log(`Updating Marker "${marker.title}"`);
+
     marker.position = position;
     marker.title = title || "";
     marker.content = getMarkerImage();

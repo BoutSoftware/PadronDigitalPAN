@@ -43,5 +43,7 @@ module.exports = {
     // @next/next/no-page-custom-font
     "@next/next/no-page-custom-font": "off",
     "@next/next/google-font-display": "off",
+    // disable exhaustive-deps
+    "react-hooks/exhaustive-deps": "off",
   }
 };

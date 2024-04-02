@@ -36,6 +36,9 @@ export default function Map({ children, center = defaultMapCenter, zoom = defaul
         center: center,
         zoom: zoom,
         mapId: "mainMap",
+        clickableIcons: false,
+        mapTypeControl: false,
+        streetViewControl: false,
       });
 
       setLoader(loader);
