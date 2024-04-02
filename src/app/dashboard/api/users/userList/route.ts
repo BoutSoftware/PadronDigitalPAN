@@ -1,6 +1,6 @@
 import prisma from "@/configs/database";
 import { NextRequest, NextResponse } from "next/server";
-import { nAccesses } from "."; 
+import { nAccesses } from ".."; 
 
 export async function GET(request: NextRequest) {
   request.headers.has("Authorization");
