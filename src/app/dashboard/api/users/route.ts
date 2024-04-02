@@ -204,5 +204,29 @@ export async function getUsers(request: NextRequest) {
 //   });
 // }
 
+// async function getUsers() {
+//   const users = await prisma.user.findMany({
+//     include: {
+//       Person: true,
+//     }
+//   });
+
+//   return users.map((user) => {
+//     if (user.isSuperAdmin) {
+//       Object.keys(user.roles).forEach((role) => {
+//         user.roles[role as keyof UserRoles] = "Admin";
+//       });
+//     }
+
+//     return {
+//       id: user.id,
+//       isSuperAdmin: user.isSuperAdmin,
+//       username: user.username,
+//       name: user.Person.name,
+//       roles: user.roles
+//     };
+//   });
+// }
+
 
 
