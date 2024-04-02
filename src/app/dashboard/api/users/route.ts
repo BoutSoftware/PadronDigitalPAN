@@ -2,6 +2,7 @@ import prisma from "@/configs/database";
 import { hasIncompleteFields } from "@/utils";
 import { UserRoles } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcrypt";
 import { nAccesses } from ".";
 
 export async function POST(request: NextRequest) {
@@ -10,17 +11,35 @@ export async function POST(request: NextRequest) {
   const reqBody = await request.json() as ReqBody;
   const { personId, username, password, roles } = reqBody;
 
+  // Check if some fields are missing
   if (hasIncompleteFields({ personId, username, password, roles })) {
     return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
   }
 
+  // Check if theres a user with the same username
+  const userExists = await prisma.user.findUnique({ where: { username: username } });
+  if (userExists) {
+    return NextResponse.json({ code: "USER_EXISTS", message: "A user with the same username already exists" });
+  }
+
+  // Check if person already has a user
+  const personHasUser = await prisma.user.findFirst({ where: { personId: personId } });
+  if (personHasUser) {
+    return NextResponse.json({ code: "PERSON_HAS_USER", message: "The person already has a user" });
+  }
+
+  // Create user
+  const hashedPassword = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
     data: {
       personId: personId,
-      isSuperAdmin: false,
       username: username,
-      password: password,
-      roles: roles
+      password: hashedPassword,
+      roles: {
+        visor: roles.visor,
+        whats: roles.whats,
+      },
+      roles_: Object.keys(roles).map((key) => ({ module: key, role: roles[key as keyof UserRoles] }))
     }
   });
 
@@ -37,17 +56,17 @@ export async function GET(request: NextRequest) {
     const data = await getUsers(page, elements);
 
     return NextResponse.json({ code: "OK", message: "Users fetched successfully", data: data });
-    
+
   } catch (error) {
     console.log(error);
     return NextResponse.json({ code: "ERROR", message: "An error occurred" });
-    
-  }  
+
+  }
 }
 
 
-async function getUsers( page: number | undefined, elements: number | undefined) {
-  try {    
+async function getUsers(page: number | undefined, elements: number | undefined) {
+  try {
 
     const data = await prisma.user.findMany({
       skip: page && elements ? (page - 1) * elements : undefined,

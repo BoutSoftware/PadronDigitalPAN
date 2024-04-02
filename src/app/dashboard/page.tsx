@@ -4,6 +4,7 @@ import { ThemeContext } from "@/contexts/ThemeProvider";
 import { hasPermission } from "@/utils";
 import { Button, CircularProgress, Switch } from "@nextui-org/react";
 import { UserRoles, VisorRoles } from "@prisma/client";
+import { redirect } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 
 interface User {
@@ -15,6 +16,8 @@ interface User {
 }
 
 export default function DashboardPage() {
+  redirect("/dashboard/base");
+
   const [users, setUsers] = useState<User[]>();
   const { theme, toggleTheme } = useContext(ThemeContext);
 
@@ -43,7 +46,7 @@ export default function DashboardPage() {
         <h2 className="text-xl font-bold">Usuarios</h2>
         {users &&
           <ul>
-            {users.map((user) => (
+            {users!.map((user) => (
               <li key={user.id} className="p-4">
                 <div className="flex items-center justify-start gap-1">
                   <span className="font-bold">{user.name} ({user.username})</span>

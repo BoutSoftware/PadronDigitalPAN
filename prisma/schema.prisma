@@ -148,11 +148,11 @@ model Person {
 
 model User {
   id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  username     String
+  username     String    @unique
   password     String
-  isSuperAdmin Boolean
-  active       Boolean   @default(true)
+  isSuperAdmin Boolean   @default(false)
   roles        UserRoles // {visor: "Admin", whats: "User"}
+  roles_       Role_[] // [{module: "visor", role: "Admin"}, {module: "whats", role: "User"}]
   personId     String    @unique @db.ObjectId
 
   Person Person @relation(fields: [personId], references: [id])
@@ -187,4 +187,9 @@ enum StatusPendingAddress {
   IN_REVIEW
   NOT_VERIFIED
   REJECTED
+}
+
+type Role_ {
+  module String
+  role   String?
 }
