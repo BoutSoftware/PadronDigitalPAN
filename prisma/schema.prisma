@@ -11,6 +11,7 @@ generator client {
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
+  // url = "mongodb://localhost:27017/padronLocal"
 }
 
 // MODEL DEFINITIONS
@@ -102,7 +103,7 @@ model Address {
   foreignAddress     String?
   personId           String? @unique @db.ObjectId
 
-  PendingAddress   PendingAddress?  
+  PendingAddress   PendingAddress?
   Complement       Complement       @relation(fields: [complementId], references: [id])
   Street           Street?          @relation(fields: [streetId], references: [id])
   ElectoralSection ElectoralSection @relation(fields: [electoralSectionId], references: [id])
@@ -150,8 +151,9 @@ model User {
   username     String
   password     String
   isSuperAdmin Boolean
+  active       Boolean   @default(true)
   roles        UserRoles // {visor: "Admin", whats: "User"}
-  personId String   @unique @db.ObjectId
+  personId     String    @unique @db.ObjectId
 
   Person Person @relation(fields: [personId], references: [id])
   // TOKEN: Person.name, username, roles: {visor: "Admin", whats: "User"}
