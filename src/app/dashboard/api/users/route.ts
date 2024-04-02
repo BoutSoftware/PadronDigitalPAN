@@ -1,8 +1,9 @@
 import prisma from "@/configs/database";
-import { hasIncompleteFields, sleep } from "@/utils";
+import { hasIncompleteFields } from "@/utils";
 import { UserRoles } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+import { nAccesses } from ".";
 
 export async function POST(request: NextRequest) {
   interface ReqBody { personId: string, username: string, password: string, roles: UserRoles; }
@@ -45,16 +46,61 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ code: "OK", message: "User created successfully", data: user });
 }
 
+
 export async function GET(request: NextRequest) {
   request.headers.has("Authorization");
+  try {
+    const page: number | undefined = parseInt(request.nextUrl.searchParams.get("page") || "") || undefined;
+    const elements: number | undefined = parseInt(request.nextUrl.searchParams.get("elements") || "") || undefined;
 
-  await sleep(0);
+    const data = await getUsers(page, elements);
 
-  const data = await getUsers();
+    return NextResponse.json({ code: "OK", message: "Users fetched successfully", data: data });
 
-  return NextResponse.json({ code: "OK", message: "Users fetched successfully", data: data });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ code: "ERROR", message: "An error occurred" });
+
+  }
 }
 
+
+async function getUsers(page: number | undefined, elements: number | undefined) {
+  try {
+
+    const data = await prisma.user.findMany({
+      skip: page && elements ? (page - 1) * elements : undefined,
+      take: elements,
+      select: {
+        id: true,
+        roles: true,
+        active: true,
+        username: true,
+        Person: {
+          select: {
+            name: true,
+            fatherLastName: true,
+            motherLastName: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    const users = data.map(element => {
+      const { roles, ...rest } = element;
+      return { ...rest, activemodules: nAccesses(roles) };
+    });
+
+    return users;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}
+
+
+// TODO: Remove or fix these comments
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // async function getUsersDBRules() {
 //   const users = await prisma.user.findMany({
@@ -152,26 +198,29 @@ export async function GET(request: NextRequest) {
 //   });
 // }
 
-async function getUsers() {
-  const users = await prisma.user.findMany({
-    include: {
-      Person: true,
-    }
-  });
+// async function getUsers() {
+//   const users = await prisma.user.findMany({
+//     include: {
+//       Person: true,
+//     }
+//   });
 
-  return users.map((user) => {
-    if (user.isSuperAdmin) {
-      Object.keys(user.roles).forEach((role) => {
-        user.roles[role as keyof UserRoles] = "Admin";
-      });
-    }
+//   return users.map((user) => {
+//     if (user.isSuperAdmin) {
+//       Object.keys(user.roles).forEach((role) => {
+//         user.roles[role as keyof UserRoles] = "Admin";
+//       });
+//     }
 
-    return {
-      id: user.id,
-      isSuperAdmin: user.isSuperAdmin,
-      username: user.username,
-      name: user.Person.name,
-      roles: user.roles
-    };
-  });
-}
+//     return {
+//       id: user.id,
+//       isSuperAdmin: user.isSuperAdmin,
+//       username: user.username,
+//       name: user.Person.name,
+//       roles: user.roles
+//     };
+//   });
+// }
+
+
+
