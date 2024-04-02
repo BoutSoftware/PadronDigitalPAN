@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
   // verify if name contains spaces
   if (name.includes(" ")) {
     // separate name by spaces
-    console.log("name", name);
     const nameParts = name.split(" ");
 
     // Search for persons if name contains spaces
@@ -28,13 +27,6 @@ export async function GET(request: NextRequest) {
             { name: { contains: namePart, mode: "insensitive" } },
             { fatherLastName: { contains: namePart, mode: "insensitive" } },
             { motherLastName: { contains: namePart, mode: "insensitive" } },
-            {
-              AND: [
-                { name: { contains: namePart, mode: "insensitive" } },
-                { fatherLastName: { contains: namePart, mode: "insensitive" } },
-                { motherLastName: { contains: namePart, mode: "insensitive" } }
-              ]
-            }
           ]
         }
       });
