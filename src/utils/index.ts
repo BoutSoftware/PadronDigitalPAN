@@ -11,11 +11,6 @@ export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function nAccesses(object: {
-  visor: string | null;
-  whats: string | null;
-}) {
-  return Object.values(object).filter((role) => role !== null).length;
-}
+
 
 

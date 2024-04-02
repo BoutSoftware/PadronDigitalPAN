@@ -1,6 +1,7 @@
 import prisma from "@/configs/database";
-import { hasIncompleteFields, nAccesses } from "@/utils";
+import { hasIncompleteFields } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
+import { nAccesses } from "..";
 
 export async function GET(request: NextRequest, { params }: {params: { id: string }}) {
   try {
