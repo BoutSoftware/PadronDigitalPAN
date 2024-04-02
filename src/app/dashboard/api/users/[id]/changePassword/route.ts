@@ -3,17 +3,19 @@ import { hasIncompleteFields } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest, { params } : { params: { id: string } }) {
   try {
-    interface ReqBody { username: string, password: string; }
 
-    const { username, password } = await request.json() as ReqBody;
+    interface ReqBody { password: string; }
 
-    if (hasIncompleteFields({ username, password })) {
+    const id = params.id;
+    const { password } = await request.json() as ReqBody;
+
+    if (hasIncompleteFields({ password })) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Password is missing" });
     }
 
-    const userExists = await prisma.user.findUnique({ where: { username: username } });
+    const userExists = await prisma.user.findUnique({ where: { id: id } });
     if (!userExists) {
       return NextResponse.json({ code: "NOT_FOUND", message: "User doesn't exists" });
     }
@@ -21,10 +23,15 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.update({
       where: {
-        username: username,
+        id: id,
       },
       data: {
         password: hashedPassword
+      },
+      select: {
+        id: true,
+        username: true,
+        password: true
       }
     });
 
