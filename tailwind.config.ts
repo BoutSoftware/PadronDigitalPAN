@@ -17,15 +17,27 @@ const config: Config = {
     themes: {
       dark: {
         colors: {
-          primary: "#3F72AF",
-          secondary: "#112D4E",
+          primary: {
+            DEFAULT: "#3F72AF",
+            foreground: "#F8F8F8",
+          },
+          secondary: {
+            DEFAULT: "#112D4E",
+            foreground: "#F8F8F8",
+          },
           accent: "#F7418F"
         } as Partial<ThemeColors & { accent: string }>,
       },
       light: {
         colors: {
-          primary: "#3F72AF",
-          secondary: "#112D4E",
+          primary: {
+            DEFAULT: "#3F72AF",
+            foreground: "#F8F8F8",
+          },
+          secondary: {
+            DEFAULT: "#112D4E",
+            foreground: "#F8F8F8",
+          },
           accent: "#F7418F"
         } as Partial<ThemeColors & { accent: string }>,
       }
