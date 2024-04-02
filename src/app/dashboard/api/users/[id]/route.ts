@@ -14,6 +14,9 @@ export async function GET(request: NextRequest, { params }: {params: { id: strin
       where: {
         id
       },
+      include: {
+        Person: true,
+      }
     });
 
     if (!user) {
