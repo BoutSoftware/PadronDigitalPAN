@@ -146,16 +146,22 @@ model Person {
 }
 
 model User {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  username     String    @unique
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  username     String      @unique
   password     String
-  isSuperAdmin Boolean   @default(false)
+  isSuperAdmin Boolean     @default(false)
+  active       Boolean     @default(true)
   roles        UserRoles // {visor: "Admin", whats: "User"}
-  roles_       Role_[] // [{module: "visor", role: "Admin"}, {module: "whats", role: "User"}]
-  personId     String    @unique @db.ObjectId
+  rolesFront   RoleFront[] // [{module: "visor", role: "Admin"}, {module: "whats", role: "User"}]
+  personId     String      @unique @db.ObjectId
 
   Person Person @relation(fields: [personId], references: [id])
   // TOKEN: Person.name, username, roles: {visor: "Admin", whats: "User"}
+}
+
+type RoleFront {
+  module String
+  role   String?
 }
 
 // TYPES AND ENUMS
@@ -186,9 +192,4 @@ enum StatusPendingAddress {
   IN_REVIEW
   NOT_VERIFIED
   REJECTED
-}
-
-type Role_ {
-  module String
-  role   String?
 }

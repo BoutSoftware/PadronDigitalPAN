@@ -1,9 +1,9 @@
 import prisma from "@/configs/database";
 import { hasIncompleteFields } from "@/utils";
-import { UserRoles } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { nAccesses } from ".";
+import { nAccesses, parseUserRoles } from ".";
+import { UserRoles } from "@/configs/roles";
 
 export async function POST(request: NextRequest) {
   interface ReqBody { personId: string, username: string, password: string, roles: UserRoles; }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
         visor: roles.visor,
         whats: roles.whats,
       },
-      roles_: Object.keys(roles).map((key) => ({ module: key, role: roles[key as keyof UserRoles] }))
+      rolesFront: Object.keys(roles).map((key) => ({ module: key, role: roles[key as keyof UserRoles] }))
     }
   });
 
@@ -49,9 +49,10 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   request.headers.has("Authorization");
+
   try {
-    const page: number | undefined = parseInt(request.nextUrl.searchParams.get("page") || "") || undefined;
-    const elements: number | undefined = parseInt(request.nextUrl.searchParams.get("elements") || "") || undefined;
+    const page = parseInt(request.nextUrl.searchParams.get("page") || "") || undefined;
+    const elements = parseInt(request.nextUrl.searchParams.get("elements") || "") || undefined;
 
     const data = await getUsers(page, elements);
 
@@ -60,43 +61,39 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.log(error);
     return NextResponse.json({ code: "ERROR", message: "An error occurred" });
-
   }
 }
 
 
 async function getUsers(page: number | undefined, elements: number | undefined) {
-  try {
-
-    const data = await prisma.user.findMany({
-      skip: page && elements ? (page - 1) * elements : undefined,
-      take: elements,
-      select: {
-        id: true,
-        roles: true,
-        active: true,
-        username: true,
-        Person: {
-          select: {
-            name: true,
-            fatherLastName: true,
-            motherLastName: true,
-            email: true,
-          },
+  const data = await prisma.user.findMany({
+    skip: page && elements ? (page - 1) * elements : undefined,
+    take: elements,
+    select: {
+      id: true,
+      roles: true,
+      rolesFront: true,
+      active: true,
+      username: true,
+      Person: {
+        select: {
+          name: true,
+          fatherLastName: true,
+          motherLastName: true,
+          email: true,
         },
       },
-    });
+    },
+  });
 
-    const users = data.map(element => {
-      const { roles, ...rest } = element;
-      return { ...rest, activemodules: nAccesses(roles) };
-    });
+  const users = data.map(user => ({
+    ...user,
+    activeModules: nAccesses(user.roles),
+    rolesFront: parseUserRoles(user.rolesFront, user.active),
+  }));
 
-    return users;
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
+  return users;
+
 }
 
 
