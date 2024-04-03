@@ -39,7 +39,6 @@ export async function POST(request: NextRequest) {
         visor: roles.visor,
         whats: roles.whats,
       },
-      roles_: Object.keys(roles).map((key) => ({ module: key, role: roles[key as keyof UserRoles] }))
     }
   });
 
@@ -66,37 +65,31 @@ export async function GET(request: NextRequest) {
 
 
 async function getUsers(page: number | undefined, elements: number | undefined) {
-  try {
-
-    const data = await prisma.user.findMany({
-      skip: page && elements ? (page - 1) * elements : undefined,
-      take: elements,
-      select: {
-        id: true,
-        roles: true,
-        active: true,
-        username: true,
-        Person: {
-          select: {
-            name: true,
-            fatherLastName: true,
-            motherLastName: true,
-            email: true,
-          },
+  const data = await prisma.user.findMany({
+    skip: page && elements ? (page - 1) * elements : undefined,
+    take: elements,
+    select: {
+      id: true,
+      roles: true,
+      active: true,
+      username: true,
+      Person: {
+        select: {
+          name: true,
+          fatherLastName: true,
+          motherLastName: true,
+          email: true,
         },
       },
-    });
+    },
+  });
 
-    const users = data.map(element => {
-      const { roles, ...rest } = element;
-      return { ...rest, activemodules: nAccesses(roles) };
-    });
+  const users = data.map(element => ({
+    ...element,
+    activeModules: nAccesses(element.roles),
+  }));
 
-    return users;
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
+  return users;
 }
 
 
