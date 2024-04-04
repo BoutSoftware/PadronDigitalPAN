@@ -17,7 +17,7 @@ interface User {
   userName: string
 }
 
-const fakeData = [
+const fakeData: User[] = [
   {
     "id": 1,
     "fullName": "John Doe",
@@ -99,6 +99,7 @@ const columns = [
 const renderCell = (columnKey: React.Key, user: User) => {
   if (columnKey == "name") return (
     <User
+      className="gap-3"
       name={user.fullName}
       description={user.userName}
     />
@@ -108,9 +109,9 @@ const renderCell = (columnKey: React.Key, user: User) => {
     <Chip variant="solid" color={user.status ? "success" : "danger"}>{user.status ? "Activo" : "Inactivo"}</Chip>
   );
   if (columnKey == "actions") return (
-    <div className="flex gap-2">
-      <Button className="bg-transparent" isIconOnly>{<span className="material-symbols-outlined icon-sm">edit</span>}</Button>
-      <Button color="danger" isIconOnly>{<span className="material-symbols-outlined icon-sm">delete</span>}</Button>
+    <div className="flex gap-1">
+      <Button size="sm" variant="light" color="default" isIconOnly>{<span className="material-symbols-outlined icon-sm">edit</span>}</Button>
+      <Button size="sm" variant="flat" color="danger" isIconOnly>{<span className="material-symbols-outlined icon-sm">delete</span>}</Button>
     </div>
   );
 };
@@ -119,7 +120,7 @@ export default function AllUsersPage() {
 
   const [userSearched, setUserSearched] = useState("");
   const [usersFiltered, setUsersFiltered] = useState<User[]>(fakeData);
-  const [users, setUsers] = useState<User[]>(fakeData);
+  const [users,] = useState<User[]>(fakeData);
 
   useEffect(() => {
     const userUpperCase = userSearched.toUpperCase();
@@ -129,7 +130,7 @@ export default function AllUsersPage() {
   }, [userSearched, users]);
 
   return (
-    <div className="">
+    <>
       <Header title="Lista de Usuarios" />
       <div className="flex gap-4 my-4">
         <Input
@@ -139,8 +140,10 @@ export default function AllUsersPage() {
           onValueChange={setUserSearched}
           startContent={<span className="material-symbols-outlined icon-sm">search</span>}
         />
-        <ModalAddUser currentUsers={users} setCurrentUsers={setUsers} />
+
+        <ModalAddUser />
       </div>
+
       <Table aria-label="Example table with custom cells">
         <TableHeader columns={columns}>
           {columns.map(column => (
@@ -159,6 +162,6 @@ export default function AllUsersPage() {
           )}
         </TableBody>
       </Table>
-    </div>
+    </>
   );
 }
