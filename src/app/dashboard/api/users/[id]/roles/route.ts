@@ -24,6 +24,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     // Get allowed roles
     const allowedRoles = Object.keys(user.roles) as (keyof UserRoles)[];
+    
     // Check if roles are valid
     const invalidRoles = Object.keys(roles).filter(role => !allowedRoles.includes(role as keyof UserRoles));
     if (invalidRoles.length) {
@@ -32,9 +33,9 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     // Get allowed roles values
     const allowedRolesValues = allowedRoles.map(role => user.roles[role]);
+
     // Check if roles are valid
     const invalidRolesValues = Object.entries(roles).filter(([, value]) => !allowedRolesValues.includes(value));
-
     if (invalidRolesValues.length) {
       return NextResponse.json({ code: "INVALID_ROLES_VALUES", message: "Invalid roles values", data: invalidRolesValues });
     }
