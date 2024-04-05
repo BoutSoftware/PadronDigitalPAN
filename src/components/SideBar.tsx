@@ -4,10 +4,10 @@ import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownM
 
 export default function SideBar() {
   return (
-    <div className="flex flex-col p-4 gap-4 w-full max-w-60 bg-secondary text-secondary-foreground">
+    <div className="flex flex-col p-4 gap-4 w-full max-w-60 bg-white text-black shadow-lg">
       <h2 className="text-2xl font-medium text-center">Sidebar</h2>
       <Listbox
-        color="primary"
+        color="secondary"
         className='flex items-center h-full'
         classNames={{
           list: "h-full",
@@ -44,38 +44,32 @@ export default function SideBar() {
           </>
         }
       >
-        <ListboxSection title={"Administrador"} classNames={{ heading: "text-primary-foreground opacity-70" }}>
-          <ListboxItem key={"/dashboard/base/usuarios"} className="flex items-center gap-2" startContent={<span className="material-symbols-outlined">group</span>}>
+        <ListboxSection title={"Administrador"} classNames={{ heading: "text-black opacity-70" }}>
+          <ListboxItem key={"/dashboard/base/usuarios"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">group</span>}>
             Usuarios
           </ListboxItem>
-          <ListboxItem key={"/dashboard/base/usuarios"} className="flex items-center gap-2" startContent={<span className="material-symbols-outlined">lists</span>}>
+          <ListboxItem key={"/dashboard/base/usuarios"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">lists</span>}>
             Directorio
           </ListboxItem>
         </ListboxSection>
-        <ListboxSection title={"Modulos"} classNames={{ heading: "text-primary-foreground opacity-70" }}>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2" startContent={<span className="material-symbols-outlined">map</span>}>
+        <ListboxSection title={"Modulos"} classNames={{ heading: "text-text-black opacity-70" }}>
+          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">map</span>}>
             Modulo Visor
           </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2" startContent={<span className="material-symbols-outlined">chat</span>}>
+          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">chat</span>}>
             Modulo WhatsApp
           </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2" startContent={<span className="material-symbols-outlined">report</span>}>
+          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">report</span>}>
             Modulo Atención Ciudadana
           </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2" startContent={<span className="material-symbols-outlined">emoji_events</span>}>
+          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">emoji_events</span>}>
             Modulo Eventos y actividades
           </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2" startContent={<span className="material-symbols-outlined">sort_by_alpha</span>}>
+          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">sort_by_alpha</span>}>
             Modulo Organigrama
           </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2" startContent={<span className="material-symbols-outlined">contact_phone</span>}>
+          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">contact_phone</span>}>
             Modulo Call Center
-          </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2" startContent={<span className="material-symbols-outlined">chat</span>}>
-            Modulo WhatsApp
-          </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2" startContent={<span className="material-symbols-outlined">chat</span>}>
-            Modulo WhatsApp
           </ListboxItem>
         </ListboxSection>
       </Listbox>
