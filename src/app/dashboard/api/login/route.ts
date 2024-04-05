@@ -2,7 +2,7 @@ import prisma from "@/configs/database";
 import { hasIncompleteFields } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { sign } from "jsonwebtoken";
+import jtw, { sign } from "jsonwebtoken";
 import { JWT_SECRET } from "@/configs";
 
 export async function POST(request: NextRequest) {
@@ -40,4 +40,34 @@ export async function POST(request: NextRequest) {
     console.error(error);
     return NextResponse.json({ code: "INTERNAL_SERVER_ERROR", message: "An error occurred" });
   }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+
+    const token: string = request.nextUrl.searchParams.get("token") || "";
+
+    if (hasIncompleteFields({ token })) {
+      return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Password is missing" });
+    }
+
+    const valid = jtw.verify(token, JWT_SECRET, (err) => {
+      if (err) {
+        return false;
+      }
+      return true;
+    });
+
+    if (!valid) {
+      return NextResponse.json({ code: "ERROR", message: "Invalid token"});
+    }
+
+    return NextResponse.json({ code: "OK", message: "Token is valid", valid: valid});
+    
+    
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ code: "OK", message: "An error ocurred."});
+  }
+  
 }
