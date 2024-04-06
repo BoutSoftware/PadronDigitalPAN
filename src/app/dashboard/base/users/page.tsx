@@ -122,6 +122,7 @@ export default function AllUsersPage() {
   const [usersFiltered, setUsersFiltered] = useState<User[]>(fakeData);
   const [users,] = useState<User[]>(fakeData);
 
+  // TODO: Change usersFiltered to a useMemo
   useEffect(() => {
     const userUpperCase = userSearched.toUpperCase();
     const currentUsersFiltered = users.filter(item => item.fullName.toUpperCase().includes(userUpperCase));
@@ -130,7 +131,7 @@ export default function AllUsersPage() {
   }, [userSearched, users]);
 
   return (
-    <>
+    <div className="flex flex-grow flex-col p-8">
       <Header title="Lista de Usuarios" />
       <div className="flex gap-4 my-4">
         <Input
@@ -162,6 +163,6 @@ export default function AllUsersPage() {
           )}
         </TableBody>
       </Table>
-    </>
+    </div>
   );
 }
