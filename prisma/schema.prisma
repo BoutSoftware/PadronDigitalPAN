@@ -151,8 +151,7 @@ model User {
   password     String
   isSuperAdmin Boolean     @default(false)
   active       Boolean     @default(true)
-  roles        UserRoles // {visor: "Admin", whats: "User"}
-  rolesFront   RoleFront[] // [{module: "visor", role: "Admin"}, {module: "whats", role: "User"}]
+  roles        RoleFront[] // [{module: "visor", role: "Admin"}, {module: "whats", role: "User"}]
   personId     String      @unique @db.ObjectId
 
   Person Person @relation(fields: [personId], references: [id])

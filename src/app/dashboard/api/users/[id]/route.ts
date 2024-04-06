@@ -28,7 +28,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       ...user,
       password: undefined,
       activeModules: nAccesses(user.roles),
-      rolesFront: parseUserRoles(user.rolesFront, user.isSuperAdmin),
+      roles: parseUserRoles(user.roles, user.isSuperAdmin),
     };
 
     return NextResponse.json({ code: "OK", message: "User retrived succesfully", data: data });

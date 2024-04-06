@@ -35,11 +35,7 @@ export async function POST(request: NextRequest) {
       personId: personId,
       username: username,
       password: hashedPassword,
-      roles: {
-        visor: roles.visor,
-        whats: roles.whats,
-      },
-      rolesFront: Object.keys(roles).map((key) => ({ module: key, role: roles[key as keyof UserRoles] }))
+      roles: Object.keys(roles).map((key) => ({ module: key, role: roles[key as keyof UserRoles] })),
     }
   });
 
@@ -72,9 +68,9 @@ async function getUsers(page: number | undefined, elements: number | undefined) 
     select: {
       id: true,
       roles: true,
-      rolesFront: true,
       active: true,
       username: true,
+      isSuperAdmin: true,
       Person: {
         select: {
           name: true,
@@ -89,7 +85,7 @@ async function getUsers(page: number | undefined, elements: number | undefined) 
   const users = data.map(user => ({
     ...user,
     activeModules: nAccesses(user.roles),
-    rolesFront: parseUserRoles(user.rolesFront, user.active),
+    roles: parseUserRoles(user.roles, user.active),
   }));
 
   return users;
