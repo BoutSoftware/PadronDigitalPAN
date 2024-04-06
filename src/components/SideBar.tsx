@@ -2,6 +2,10 @@
 
 import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, Button, Divider } from "@nextui-org/react";
 
+//TODO Cambiar el bg al primary 
+//TODO Conectar la navegacion
+//TODO Implementar la escala de colores del primary
+
 export default function SideBar() {
   return (
     <div className="flex flex-col p-4 gap-4 w-full max-w-60 bg-white text-black shadow-lg">
