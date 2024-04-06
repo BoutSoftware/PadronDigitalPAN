@@ -152,7 +152,6 @@ model User {
   username     String      @unique
   password     String
   isSuperAdmin Boolean     @default(false)
-  active       Boolean     @default(true)
   roles        RoleFront[] // [{module: "visor", role: "Admin"}, {module: "whats", role: "User"}]
   personId     String      @unique @db.ObjectId
 
