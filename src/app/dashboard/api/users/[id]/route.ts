@@ -1,7 +1,7 @@
 import prisma from "@/configs/database";
 import { hasIncompleteFields } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
-import { nAccesses } from "..";
+import { parseUserRoles, nAccesses } from "..";
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -24,7 +24,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ code: "NOT_FOUND", message: "User not found" });
     }
 
-    const data = { ...user, activeModules: nAccesses(user.roles) };
+    const data = {
+      ...user,
+      password: undefined,
+      activeModules: nAccesses(user.roles),
+      roles: parseUserRoles(user.roles, user.isSuperAdmin),
+    };
 
     return NextResponse.json({ code: "OK", message: "User retrived succesfully", data: data });
 

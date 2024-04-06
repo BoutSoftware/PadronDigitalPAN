@@ -1,9 +1,9 @@
 import prisma from "@/configs/database";
 import { hasIncompleteFields } from "@/utils";
-import { UserRoles } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { nAccesses } from ".";
+import { nAccesses, parseUserRoles } from ".";
+import { UserRoles } from "@/configs/roles";
 
 export async function POST(request: NextRequest) {
   interface ReqBody { personId: string, username: string, password: string, roles: UserRoles; }
@@ -35,10 +35,7 @@ export async function POST(request: NextRequest) {
       personId: personId,
       username: username,
       password: hashedPassword,
-      roles: {
-        visor: roles.visor,
-        whats: roles.whats,
-      },
+      roles: Object.keys(roles).map((key) => ({ module: key, role: roles[key as keyof UserRoles] })),
     }
   });
 
@@ -48,9 +45,10 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   request.headers.has("Authorization");
+
   try {
-    const page: number | undefined = parseInt(request.nextUrl.searchParams.get("page") || "") || undefined;
-    const elements: number | undefined = parseInt(request.nextUrl.searchParams.get("elements") || "") || undefined;
+    const page = parseInt(request.nextUrl.searchParams.get("page") || "") || undefined;
+    const elements = parseInt(request.nextUrl.searchParams.get("elements") || "") || undefined;
 
     const data = await getUsers(page, elements);
 
@@ -59,7 +57,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.log(error);
     return NextResponse.json({ code: "ERROR", message: "An error occurred" });
-
   }
 }
 
@@ -73,6 +70,7 @@ async function getUsers(page: number | undefined, elements: number | undefined) 
       roles: true,
       active: true,
       username: true,
+      isSuperAdmin: true,
       Person: {
         select: {
           name: true,
@@ -84,11 +82,12 @@ async function getUsers(page: number | undefined, elements: number | undefined) 
     },
   });
 
-  const users = data.map(element => ({
-    ...element,
-    activeModules: nAccesses(element.roles),
+  const users = data.map(user => ({
+    ...user,
+    activeModules: nAccesses(user.roles),
+    roles: parseUserRoles(user.roles, user.active),
   }));
-
+  
   return users;
 }
 
