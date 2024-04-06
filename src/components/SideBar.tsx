@@ -1,46 +1,48 @@
 "use client";
 
-import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, Button, Divider } from "@nextui-org/react";
-
-//TODO Cambiar el bg al primary 
-//TODO Conectar la navegacion
-//TODO Implementar la escala de colores del primary
+import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, Divider } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 export default function SideBar() {
+  const router = useRouter();
+
   return (
-    <div className="flex flex-col p-4 gap-4 w-full max-w-60 bg-white text-black shadow-lg">
+    <div className="flex flex-col px-2 py-4 gap-4 w-full max-w-60 bg-primary text-primary-foreground shadow-lg">
       <h2 className="text-2xl font-medium text-center">Sidebar</h2>
       <Listbox
-        color="secondary"
+        color="primary"
+        aria-label="Main Navigation"
+        onAction={(key) => {
+          router.push(String(key));
+        }}
         className='flex items-center h-full'
         classNames={{
           list: "h-full",
         }}
         bottomContent={
           <>
-            <Divider className='my-1' />
+            <Divider className='my-2 bg-primary-100' />
             <Dropdown>
               <DropdownTrigger>
                 <User
                   as="button"
                   avatarProps={{
-                    isBordered: true,
                     src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
                   }}
-                  className="transition-transform w-full"
+                  className="w-full py-2 px-4 bg-primary-700 justify-start"
                   description="@tonyreichert"
                   name="Tony Reichert"
                 />
               </DropdownTrigger>
               <DropdownMenu aria-label="User Actions" variant="flat">
-                <DropdownItem key="profile" className="h-14">
-                  <p className="font-bold">Signed in as</p>
-                  <p className="font-bold">@tonyreichert</p>
-                </DropdownItem>
-                <DropdownItem key="settings">
+                <DropdownItem key="settings" startContent={
+                  <span className="material-symbols-outlined">settings</span>
+                }>
                   Configuración
                 </DropdownItem>
-                <DropdownItem key="logout" color="danger">
+                <DropdownItem key="logout" color="danger" startContent={
+                  <span className="material-symbols-outlined">logout</span>
+                }>
                   Cerrar Sesión
                 </DropdownItem>
               </DropdownMenu>
@@ -48,32 +50,33 @@ export default function SideBar() {
           </>
         }
       >
-        <ListboxSection title={"Administrador"} classNames={{ heading: "text-black opacity-70" }}>
-          <ListboxItem key={"/dashboard/base/usuarios"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">group</span>}>
+        <ListboxSection title={"Administrador"} classNames={{ heading: "text-primary-foreground opacity-70" }}>
+          <ListboxItem key={"/dashboard/base/users"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700 text-primary-foreground" startContent={<span className="material-symbols-outlined">group</span>}>
             Usuarios
           </ListboxItem>
-          <ListboxItem key={"/dashboard/base/usuarios"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">lists</span>}>
+          <ListboxItem key={"/dashboard/base/directory"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700" startContent={<span className="material-symbols-outlined">lists</span>}>
             Directorio
           </ListboxItem>
         </ListboxSection>
-        <ListboxSection title={"Modulos"} classNames={{ heading: "text-text-black opacity-70" }}>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">map</span>}>
-            Modulo Visor
+
+        <ListboxSection title={"Modulos"} classNames={{ heading: "text-primary-foreground opacity-70" }}>
+          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700" startContent={<span className="material-symbols-outlined">map</span>}>
+            Visor
           </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">chat</span>}>
-            Modulo WhatsApp
+          <ListboxItem key={"/dashboard/whats"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700" startContent={<span className="material-symbols-outlined">chat</span>}>
+            WhatsApp
           </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">report</span>}>
-            Modulo Atención Ciudadana
+          <ListboxItem key={"/dashboard/"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700" startContent={<span className="material-symbols-outlined">report</span>}>
+            Atención Ciudadana
           </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">emoji_events</span>}>
-            Modulo Eventos y actividades
+          <ListboxItem key={"/dashboard/events"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700" startContent={<span className="material-symbols-outlined">emoji_events</span>}>
+            Eventos y actividades
           </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">sort_by_alpha</span>}>
-            Modulo Organigrama
+          <ListboxItem key={"/dashboard/organigram"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700" startContent={<span className="material-symbols-outlined">sort_by_alpha</span>}>
+            Organigrama
           </ListboxItem>
-          <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">contact_phone</span>}>
-            Modulo Call Center
+          <ListboxItem key={"/dashboard/callcenter"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700" startContent={<span className="material-symbols-outlined">contact_phone</span>}>
+            Call Center
           </ListboxItem>
         </ListboxSection>
       </Listbox>
