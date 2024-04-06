@@ -147,6 +147,8 @@ model Person {
 
 model User {
   id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt    DateTime    @default(now())
+  active       Boolean     @default(true)
   username     String      @unique
   password     String
   isSuperAdmin Boolean     @default(false)
