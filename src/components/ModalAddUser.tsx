@@ -94,9 +94,9 @@ export default function ModalAddUser() {
   };
 
   const handlePersonSelection = (value: Key) => {
-    console.log("Selected person:", value);
+    const person = fakeData.find((item) => item.id === value);
+    if (!person) return;
 
-    const person = fakeData.find((item) => item.id === value)!;
     const newUserName = `${person.name.toLowerCase()}${person.lastname.toLowerCase().slice(0, 3)}${person.id.slice(0, 2)}`;
 
     setForm({
@@ -135,6 +135,7 @@ export default function ModalAddUser() {
                 value={form.personName}
                 inputValue={form.personName}
                 isRequired
+                shouldCloseOnBlur
               >
                 {fakeData.map((person) =>
                   <AutocompleteItem key={person.id}>{`${person.name} ${person.lastname}`}</AutocompleteItem>
