@@ -1,37 +1,42 @@
 import React from "react";
 import { Select, SelectItem } from "@nextui-org/react";
 import { UserRoles, modulesList } from "@/configs/roles";
-// import { parseUserRoles } from "@/app/dashboard/api/users";
+import { parseUserRoles } from "@/app/dashboard/api/users";
 
-export default function Roles({ userRoles }: { userRoles: UserRoles }) {
+export default function Roles({ userRoles, userId }: { userRoles: UserRoles, userId: string }) {
   const [currentUserRoles, setCurrentUserRoles] = React.useState<UserRoles>(userRoles);
-    
+
   const modules = modulesList;
 
-  const handleRoleSelectionChange = async (moduleId: string, role: string) => {
+  const handleRoleSelectionChange = async (moduleId: string, role: string | null) => {
     setCurrentUserRoles({
       ...currentUserRoles,
       [moduleId]: role,
     });
 
-    // Send the new roles to the server
-    // const resBody = await fetch(`/dashboard/api/users/${userId}/roles`, {
-    //   method: "PATCH",
-    //   body: JSON.stringify({
-    //     module: moduleId,
-    //     role,
-    //   }),
-    // }).then((res) => res.json());
+    // if roles is "-", send null to the server
+    if (role === "-") {
+      role = null;
+    }
 
-    // if (resBody.code !== "OK") {
-    //   alert("Error al modificar los roles");
-    //   // Revert the changes in case of error
-    //   setCurrentUserRoles(userRoles);
-    //   return;
-    // }
-    // alert("Roles modificados correctamente");
-    // // Update the user roles
-    // setCurrentUserRoles(parseUserRoles(resBody.data) as UserRoles);
+    // Send the new roles to the server
+    const resBody = await fetch(`/dashboard/api/users/${userId}/roles`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        module: moduleId,
+        role,
+      }),
+    }).then((res) => res.json());
+
+    if (resBody.code !== "OK") {
+      alert("Error al modificar los roles");
+      // Revert the changes in case of error
+      setCurrentUserRoles(userRoles);
+      return;
+    }
+    alert("Roles modificados correctamente");
+    // Update the user roles
+    setCurrentUserRoles(parseUserRoles(resBody.data) as UserRoles);
   };
 
   return (
@@ -49,7 +54,6 @@ export default function Roles({ userRoles }: { userRoles: UserRoles }) {
               (e) => handleRoleSelectionChange(module.id, e.target.value)
             }
             className="max-w-28"
-            disabledKeys={"-"}
           >
             {module.roles.map((role) => (
               <SelectItem key={role || "-"} value={role?.toString()}>

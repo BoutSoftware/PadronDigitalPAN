@@ -85,7 +85,7 @@ export default function IndividualUserPage({ params }: { params: { id: string } 
             <div id="roles" className="flex flex-col p-8 rounded-xl max-w-4xl border border-divider shadow-lg">
               <h1 className="text-4xl">Roles</h1>
               <div className="flex flex-col gap-6 mt-4">
-                <Roles userRoles={user.roles} />
+                <Roles userRoles={user.roles} userId= {id}/>
               </div>
             </div>
           </main>
