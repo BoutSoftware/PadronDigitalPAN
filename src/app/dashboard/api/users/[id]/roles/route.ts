@@ -1,17 +1,17 @@
 import prisma from "@/configs/database";
+import { ModuleName, VisorRole, WhatsRole, modulesList } from "@/configs/roles";
 import { hasIncompleteFields } from "@/utils";
-import { UserRoles } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
-  interface ReqBody { roles: UserRoles; }
+  interface ReqBody { module: string, role: string }
 
   const reqBody = await request.json() as ReqBody;
-  const { roles } = reqBody;
+  const { module, role } = reqBody;
   const id = params.id;
 
   // Check if some fields are missing
-  if (hasIncompleteFields({ roles })) {
+  if (hasIncompleteFields({ module, role })) {
     return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
   }
 
@@ -22,22 +22,16 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       return NextResponse.json({ code: "USER_NOT_FOUND", message: "User not found" });
     }
 
-    // Get allowed roles
-    const allowedRoles = Object.keys(user.roles) as (keyof UserRoles)[];
-    
-    // Check if roles are valid
-    const invalidRoles = Object.keys(roles).filter(role => !allowedRoles.includes(role as keyof UserRoles));
-    if (invalidRoles.length) {
-      return NextResponse.json({ code: "INVALID_ROLES", message: "Invalid roles", data: invalidRoles });
+    // check if the module exists in ModuleList
+    const allowedModules = modulesList.map(m => m.id);
+    if (!allowedModules.includes(module as ModuleName)) {
+      return NextResponse.json({ code: "INVALID_MODULE", message: "Invalid module" });
     }
 
-    // Get allowed roles values
-    const allowedRolesValues = allowedRoles.map(role => user.roles[role]);
-
-    // Check if roles are valid
-    const invalidRolesValues = Object.entries(roles).filter(([, value]) => !allowedRolesValues.includes(value));
-    if (invalidRolesValues.length) {
-      return NextResponse.json({ code: "INVALID_ROLES_VALUES", message: "Invalid roles values", data: invalidRolesValues });
+    // check if the role exists in the module
+    const allowedRoles = modulesList.find(m => m.id === module)?.roles;
+    if (!allowedRoles?.includes(role as VisorRole | WhatsRole)) {
+      return NextResponse.json({ code: "INVALID_ROLE", message: "Invalid role" });
     }
 
     // Update user roles
@@ -45,8 +39,11 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       where: { id },
       data: {
         roles: {
-          visor: roles.visor,
-          whats: roles.whats,
+          // if the module already exists, update the role
+          // otherwise, add the module and role
+          set: user.roles.find(r => r.module === module) ?
+            user.roles.map(r => r.module === module ? { module, role } : r) :
+            [...user.roles, { module, role }]
         }
       }
     });
