@@ -2,7 +2,7 @@ import { useDisclosure, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter
 import { useState } from "react";
 
 
-export default function ChangePasswordModal({ id }: { id: string }) {
+export default function ChangePasswordModal({ userId }: { userId: string }) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmationPassword, setConfirmationPassword] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -15,7 +15,7 @@ export default function ChangePasswordModal({ id }: { id: string }) {
       return;
     }
 
-    const resBody = await fetch(`/dashboard/api/users/${id}/changePassword`, {
+    const resBody = await fetch(`/dashboard/api/users/${userId}/changePassword`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

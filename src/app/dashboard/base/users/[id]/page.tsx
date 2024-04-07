@@ -61,7 +61,7 @@ export default function IndividualUserPage({ params }: { params: { id: string } 
                   <p><strong>Número telefónico:</strong> {formatPhone(user.Person.phone?.number || "")}</p>
                   <p><strong>CURP:</strong> {user.Person.curp}</p>
                   <div className="mt-8">
-                    <ChangePasswordModal id={id} />
+                    <ChangePasswordModal userId={id} />
                   </div>
                 </div>
                 <div className="flex flex-col gap-4">
