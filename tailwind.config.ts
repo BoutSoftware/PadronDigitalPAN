@@ -31,7 +31,17 @@ const config: Config = {
       light: {
         colors: {
           primary: {
-            DEFAULT: "#3F72AF",
+            50: "#e6f3ff",
+            100: "#c0d7f1",
+            200: "#98bce5",
+            300: "#71a1db",
+            400: "#4b86d1",
+            500: "#336db7",
+            600: "#27558f",
+            700: "#1b3c67",
+            800: "#0e243f",
+            900: "#020c19",
+            DEFAULT: "#112D4E",
             foreground: "#F8F8F8",
           },
           secondary: {
