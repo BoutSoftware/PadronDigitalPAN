@@ -1,57 +1,68 @@
-import React, { useEffect } from "react";
-import { Button, ButtonGroup, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Selection } from "@nextui-org/react";
+import React from "react";
+import { Select, SelectItem } from "@nextui-org/react";
+import { UserRoles, modulesList } from "@/configs/roles";
+import { parseUserRoles } from "@/app/dashboard/api/users";
 
-export default function Roles({ numero }: { children?: React.ReactNode; numero?: number }) {
-  const [selectedOption, setSelectedOption] = React.useState<Selection>(new Set(["admin"]));
+export default function Roles({ userRoles, userId }: { userRoles: UserRoles, userId: string }) {
+  const [currentUserRoles, setCurrentUserRoles] = React.useState<UserRoles>(userRoles);
 
-  useEffect(() => {
-    console.log(selectedOption);
+  const modules = modulesList;
 
-  }, [selectedOption]);
+  const handleRoleSelectionChange = async (moduleId: string, role: string | null) => {
+    setCurrentUserRoles({
+      ...currentUserRoles,
+      [moduleId]: role,
+    });
 
+    // if roles is "-", send null to the server
+    if (role === "-") {
+      role = null;
+    }
 
-  const labelsMap = {
-    admin: "Admin",
-    viewer: "Viewer",
-    user: "User",
+    // Send the new roles to the server
+    const resBody = await fetch(`/dashboard/api/users/${userId}/roles`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        module: moduleId,
+        role,
+      }),
+    }).then((res) => res.json());
+
+    if (resBody.code !== "OK") {
+      alert("Error al modificar los roles");
+      // Revert the changes in case of error
+      setCurrentUserRoles(userRoles);
+      return;
+    }
+    alert("Roles modificados correctamente");
+    // Update the user roles
+    setCurrentUserRoles(parseUserRoles(resBody.data) as UserRoles);
   };
 
-  // Convert the Set to an Array and get the first value.
-  const selectedOptionValue = Array.from(selectedOption)[0] as keyof typeof labelsMap;
-
   return (
-    <div className="flex flex-row justify-between items-center px-4">
-      <h1>Modulo {numero}</h1>
-      <ButtonGroup variant="flat">
-        <Button>{labelsMap[selectedOptionValue]}</Button>
-        <Dropdown placement="bottom-end">
-          <DropdownTrigger>
-            <Button isIconOnly>
-              <span className="material-symbols-outlined">
-                expand_more
-              </span>
-            </Button>
-          </DropdownTrigger>
-          <DropdownMenu
-            disallowEmptySelection
-            aria-label="Merge options"
-            selectedKeys={selectedOption}
-            selectionMode="single"
-            onSelectionChange={setSelectedOption}
-            className="max-w-[300px]"
+    <>
+      {modules.map((module) => (
+        <div key={module.id} className="flex flex-row justify-between items-center px-4">
+          {/* Name of the module */}
+          <h1>{`Modulo: ${module.name}`}</h1>
+          {/* Select options for this specific module */}
+          <Select
+            key={module.id}
+            aria-label="Select role"
+            selectedKeys={[currentUserRoles[module.id] || "-"]}
+            onChange={
+              (e) => handleRoleSelectionChange(module.id, e.target.value)
+            }
+            className="max-w-28"
           >
-            <DropdownItem key="admin">
-              {labelsMap["admin"]}
-            </DropdownItem>
-            <DropdownItem key="viewer">
-              {labelsMap["viewer"]}
-            </DropdownItem>
-            <DropdownItem key="user">
-              {labelsMap["user"]}
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-      </ButtonGroup>
-    </div>
+            {module.roles.map((role) => (
+              <SelectItem key={role || "-"} value={role?.toString()}>
+                {`${role || "-"}`}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+      ))}
+    </>
   );
 }
