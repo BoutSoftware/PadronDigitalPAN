@@ -1,17 +1,37 @@
 import React from "react";
 import { Select, SelectItem } from "@nextui-org/react";
 import { UserRoles, modulesList } from "@/configs/roles";
+// import { parseUserRoles } from "@/app/dashboard/api/users";
 
 export default function Roles({ userRoles }: { userRoles: UserRoles }) {
   const [currentUserRoles, setCurrentUserRoles] = React.useState<UserRoles>(userRoles);
     
   const modules = modulesList;
 
-  const handleRoleSelectionChange = (moduleId: string, role: string) => {
+  const handleRoleSelectionChange = async (moduleId: string, role: string) => {
     setCurrentUserRoles({
       ...currentUserRoles,
       [moduleId]: role,
     });
+
+    // Send the new roles to the server
+    // const resBody = await fetch(`/dashboard/api/users/${userId}/roles`, {
+    //   method: "PATCH",
+    //   body: JSON.stringify({
+    //     module: moduleId,
+    //     role,
+    //   }),
+    // }).then((res) => res.json());
+
+    // if (resBody.code !== "OK") {
+    //   alert("Error al modificar los roles");
+    //   // Revert the changes in case of error
+    //   setCurrentUserRoles(userRoles);
+    //   return;
+    // }
+    // alert("Roles modificados correctamente");
+    // // Update the user roles
+    // setCurrentUserRoles(parseUserRoles(resBody.data) as UserRoles);
   };
 
   return (
