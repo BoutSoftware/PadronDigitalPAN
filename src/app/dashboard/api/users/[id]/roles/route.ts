@@ -11,7 +11,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   const id = params.id;
 
   // Check if some fields are missing
-  if (hasIncompleteFields({ module, role })) {
+  if (hasIncompleteFields({ module })) {
     return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
   }
 
