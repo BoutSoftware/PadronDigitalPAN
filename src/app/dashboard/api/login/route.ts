@@ -51,23 +51,36 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Password is missing" });
     }
 
-    const valid = jtw.verify(token, JWT_SECRET, (err) => {
-      if (err) {
-        return false;
+    const decodedToken = jtw.verify(token, JWT_SECRET) as { username: string; id: string} || Boolean;
+
+    console.log(decodedToken);
+    
+
+    
+    const data = await prisma.user.findFirst({
+      where: {
+        id: decodedToken.id,
+      },
+      select: {
+        id: true,
+        username: true,
+        roles: true,
+        Person: {
+          select: {
+            name: true,
+          }
+        }
       }
-      return true;
     });
+    
+    
 
-    if (!valid) {
-      return NextResponse.json({ code: "ERROR", message: "Invalid token"});
-    }
-
-    return NextResponse.json({ code: "OK", message: "Token is valid", valid: valid});
+    return NextResponse.json({ code: "OK", message: "Token is valid", data: data});
     
     
   } catch (error) {
     console.log(error);
-    return NextResponse.json({ code: "OK", message: "An error ocurred."});
+    return NextResponse.json({ code: "ERROR", message: "An error ocurred."});
   }
   
 }
