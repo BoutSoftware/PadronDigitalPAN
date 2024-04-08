@@ -48,14 +48,10 @@ export async function GET(request: NextRequest) {
     const token: string = request.nextUrl.searchParams.get("token") || "";
 
     if (hasIncompleteFields({ token })) {
-      return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Password is missing" });
+      return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Token is missing" });
     }
 
     const decodedToken = jtw.verify(token, JWT_SECRET) as { username: string; id: string} || Boolean;
-
-    console.log(decodedToken);
-    
-
     
     const data = await prisma.user.findFirst({
       where: {
@@ -72,11 +68,8 @@ export async function GET(request: NextRequest) {
         }
       }
     });
-    
-    
 
     return NextResponse.json({ code: "OK", message: "Token is valid", data: data});
-    
     
   } catch (error) {
     console.log(error);
