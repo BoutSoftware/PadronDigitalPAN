@@ -1,6 +1,7 @@
 "use client";
 import { generatePassword } from "@/utils";
 import { Modal, ModalContent, ModalBody, Button, Autocomplete, AutocompleteItem, ModalHeader, Input, ModalFooter } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 import { Key, useEffect, useState } from "react";
 interface Phone {
   number: string
@@ -28,6 +29,7 @@ interface Person {
 }
 
 export default function ModalAddUser() {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [people, setPeople] = useState<Person[]>([]);
   const [form, setForm] = useState({
@@ -43,27 +45,45 @@ export default function ModalAddUser() {
   });
 
   async function getPerson() {
-    const res = await fetch("/dashboard/api/users?name=" + form.personName, { method: "GET" }).then(res => res.json());
-    console.log(res.data);
-    setPeople(res.data);
+    let query = "?user=false";
+    if (form.personName.length > 0) {
+      query += "&name=" + form.personName;
+    }
+    const res = await fetch("/dashboard/api/persons" + query, { method: "GET" }).then(res => res.json());
+    console.log(res);
+    if (res.data) setPeople(res.data);
   }
-  useEffect(() => {
-    getPerson();
-  }, []);
 
   useEffect(() => {
-    console.log(people[0]);
-  }, [people]);
+    if (!form.personName) return;
+
+    const timeout = setTimeout(() => {
+      console.log("Searching person:", form.personName);
+      getPerson();
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [form.personName]);
+
 
   const createUser = async () => {
-    const { personName, selectedPersonId, username, password, roles } = form;
-    console.log(JSON.stringify({ personName, selectedPersonId, username, password, roles }));
+    const { personName, selectedPersonId: personId, username, password, roles } = form;
+
     const res = (await fetch("/dashboard/api/users", {
       method: "POST",
-      body: JSON.stringify({ personName, selectedPersonId, username, password })
+      body: JSON.stringify({ personName, personId, username, password, roles })
     }).then(res => res.json()));
-    // const resBody = res.json
+
     console.log(res);
+
+    if (res.code !== "OK") {
+      return alert("Algo salió mal");
+    }
+
+    alert("Usuario creado correctamente");
+    router.push("/dashboard/base/users/" + res.data.id);
   };
   const handleSubmit = (event?: React.FormEvent) => {
     event?.preventDefault();
@@ -72,9 +92,6 @@ export default function ModalAddUser() {
 
     // TODO: Connect to the backend
     setIsModalOpen(false);
-
-    // Alert the user
-    alert("Usuario agregado correctamente");
 
     // Clear the form
     setForm({
@@ -103,8 +120,12 @@ export default function ModalAddUser() {
   const handlePersonSelection = (value: Key) => {
     console.log("Selected person:", value);
 
-    const person = people.find((item) => item.id === value)!;
-    const newUserName = `${person.name.toLowerCase()}${person.fatherLastName.toLowerCase().slice(0, 3)}${person.id.slice(0, 2)}`;
+    const person = people.find((item) => item.id === value);
+    if (!person) {
+      return;
+    }
+
+    const newUserName = `${person.name.toLowerCase().split(" ")[0]}${person.fatherLastName.toLowerCase().slice(0, 3)}_${person.id.slice(-3)}`;
 
     setForm({
       ...form,
@@ -115,7 +136,6 @@ export default function ModalAddUser() {
   };
 
   const handlePersonSearch = (value: string) => {
-    console.log("Searching person:", value);
     setForm({ ...form, personName: value });
   };
 
@@ -144,7 +164,7 @@ export default function ModalAddUser() {
                 isRequired
               >
                 {people.map((person) =>
-                  <AutocompleteItem key={person.id}>{`${person.name} ${person.fatherLastName}`}</AutocompleteItem>
+                  <AutocompleteItem key={person.id}>{`${person.name} ${person.fatherLastName} ${person.motherLastName}`}</AutocompleteItem>
                 )}
               </Autocomplete>
 

@@ -2,6 +2,7 @@
 import Header from "@/components/Header";
 import ModalAddUser from "@/components/ModalAddUser";
 import { Input, Table, TableBody, TableCell, TableRow, TableColumn, TableHeader, Button, Chip, User } from "@nextui-org/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 // TODO: Paginación (¿Cuántos elementos por página?)
@@ -45,7 +46,7 @@ const renderCell = (columnKey: React.Key, user: User) => {
   );
   if (columnKey == "actions") return (
     <div className="flex gap-1">
-      <Button size="sm" variant="light" color="default" isIconOnly>{<span className="material-symbols-outlined icon-sm">edit</span>}</Button>
+      <Button as={Link} href={`/dashboard/base/users/${user.id}`} size="sm" variant="light" color="default" isIconOnly>{<span className="material-symbols-outlined icon-sm">edit</span>}</Button>
       <Button size="sm" variant="flat" color="danger" isIconOnly>{<span className="material-symbols-outlined icon-sm">delete</span>}</Button>
     </div>
   );
