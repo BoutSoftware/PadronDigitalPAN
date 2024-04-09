@@ -118,9 +118,6 @@ export default function ModalAddUser() {
   };
 
   const handlePersonSelection = (value: Key) => {
-    const person = fakeData.find((item) => item.id === value);
-    if (!person) return;
-
     const person = people.find((item) => item.id === value);
     if (!person) {
       return;
