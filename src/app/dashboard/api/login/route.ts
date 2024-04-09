@@ -2,8 +2,9 @@ import prisma from "@/configs/database";
 import { hasIncompleteFields } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { sign } from "jsonwebtoken";
+import jtw, { sign } from "jsonwebtoken";
 import { JWT_SECRET } from "@/configs";
+import { parseUserRoles } from "../users";
 
 export async function POST(request: NextRequest) {
   interface ReqBody { username: string, password: string }
@@ -40,4 +41,45 @@ export async function POST(request: NextRequest) {
     console.error(error);
     return NextResponse.json({ code: "INTERNAL_SERVER_ERROR", message: "An error occurred" });
   }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+
+    const token: string = request.nextUrl.searchParams.get("token") || "";
+
+    if (hasIncompleteFields({ token })) {
+      return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Token is missing" });
+    }
+
+    const decodedToken = jtw.verify(token, JWT_SECRET) as { username: string; id: string} || Boolean;
+    
+    const data = await prisma.user.findFirst({
+      where: {
+        id: decodedToken.id,
+      },
+      select: {
+        id: true,
+        username: true,
+        roles: true,
+        isSuperAdmin: true,
+        Person: {
+          select: {
+            name: true,
+          }
+        }
+      }
+    });
+
+    if (!data) {
+      return NextResponse.json({ code: "USER_NOT_FOUND", message: "User missing"});
+    }
+
+    return NextResponse.json({ code: "OK", message: "Token is valid", data: { ...data, roles: parseUserRoles(data?.roles, data?.isSuperAdmin) }});
+    
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ code: "ERROR", message: "An error ocurred."});
+  }
+  
 }
