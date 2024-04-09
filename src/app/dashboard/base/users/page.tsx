@@ -2,6 +2,7 @@
 import Header from "@/components/Header";
 import ModalAddUser from "@/components/ModalAddUser";
 import { Input, Table, TableBody, TableCell, TableRow, TableColumn, TableHeader, Button, Chip, User } from "@nextui-org/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 // TODO: Paginación (¿Cuántos elementos por página?)
@@ -9,86 +10,21 @@ import { useEffect, useState } from "react";
 // TODO: Centrar los elementos
 // TODO: Navegar a la pantalla de usuario individual (No la tengo en mi rama aún)
 
+interface Person {
+  name: string
+  fatherLastName: string
+  motherLastName: string
+  email: string
+}
 interface User {
-  id: number
-  fullName: string
-  activeModules: string[]
-  status: boolean
-  userName: string
+  id: string
+  active: boolean
+  username: string
+  isSuperAdmin: boolean
+  Person: Person
+  activeModules: number
 }
 
-const fakeData: User[] = [
-  {
-    "id": 1,
-    "fullName": "John Doe",
-    "activeModules": ["module1", "module2"],
-    "status": true,
-    "userName": "johndoe"
-  },
-  {
-    "id": 2,
-    "fullName": "Jane Smith",
-    "activeModules": ["module3"],
-    "status": false,
-    "userName": "janesmith"
-  },
-  {
-    "id": 3,
-    "fullName": "Alice Johnson",
-    "activeModules": ["module1", "module4"],
-    "status": true,
-    "userName": "alicejohnson"
-  },
-  {
-    "id": 4,
-    "fullName": "Bob Brown",
-    "activeModules": ["module2", "module5"],
-    "status": true,
-    "userName": "bobbrown"
-  },
-  {
-    "id": 5,
-    "fullName": "Emma Davis",
-    "activeModules": ["module3", "module6"],
-    "status": false,
-    "userName": "emmadavis"
-  },
-  {
-    "id": 6,
-    "fullName": "Michael Wilson",
-    "activeModules": ["module4", "module7"],
-    "status": true,
-    "userName": "michaelwilson"
-  },
-  {
-    "id": 7,
-    "fullName": "Sarah Lee",
-    "activeModules": ["module5", "module8"],
-    "status": true,
-    "userName": "sarahlee"
-  },
-  {
-    "id": 8,
-    "fullName": "David Rodriguez",
-    "activeModules": ["module6", "module9"],
-    "status": false,
-    "userName": "davidrodriguez"
-  },
-  {
-    "id": 9,
-    "fullName": "Olivia Martinez",
-    "activeModules": ["module7"],
-    "status": true,
-    "userName": "oliviamartinez"
-  },
-  {
-    "id": 10,
-    "fullName": "James Garcia",
-    "activeModules": ["module8", "module9", "module10"],
-    "status": false,
-    "userName": "jamesgarcia"
-  }
-];
 const columns = [
   { name: "Nombre", id: "name" },
   { name: "Módulos activos", id: "activeModules" },
@@ -100,17 +36,17 @@ const renderCell = (columnKey: React.Key, user: User) => {
   if (columnKey == "name") return (
     <User
       className="gap-3"
-      name={user.fullName}
-      description={user.userName}
+      name={user.Person.name}
+      description={user.username}
     />
   );
-  if (columnKey == "activeModules") return user.activeModules.length.toString();
+  if (columnKey == "activeModules") return user.activeModules.toString();
   if (columnKey == "status") return (
-    <Chip variant="solid" color={user.status ? "success" : "danger"}>{user.status ? "Activo" : "Inactivo"}</Chip>
+    <Chip variant="solid" color={user.active ? "success" : "danger"}>{user.active ? "Activo" : "Inactivo"}</Chip>
   );
   if (columnKey == "actions") return (
     <div className="flex gap-1">
-      <Button size="sm" variant="light" color="default" isIconOnly>{<span className="material-symbols-outlined icon-sm">edit</span>}</Button>
+      <Button as={Link} href={`/dashboard/base/users/${user.id}`} size="sm" variant="light" color="default" isIconOnly>{<span className="material-symbols-outlined icon-sm">edit</span>}</Button>
       <Button size="sm" variant="flat" color="danger" isIconOnly>{<span className="material-symbols-outlined icon-sm">delete</span>}</Button>
     </div>
   );
@@ -119,15 +55,26 @@ const renderCell = (columnKey: React.Key, user: User) => {
 export default function AllUsersPage() {
 
   const [userSearched, setUserSearched] = useState("");
-  const [usersFiltered, setUsersFiltered] = useState<User[]>(fakeData);
-  const [users,] = useState<User[]>(fakeData);
+  const [usersFiltered, setUsersFiltered] = useState<User[]>();
+  const [users, setUsers] = useState<User[]>();
 
+  async function getUsers() {
+    const res = await fetch("/dashboard/api/users", { method: "GET" });
+    const resData = await res.json();
+    await setUsers(resData.data);
+    await setUsersFiltered(resData.data);
+  }
+  useEffect(() => {
+    getUsers();
+  }, []);
   // TODO: Change usersFiltered to a useMemo
   useEffect(() => {
-    const userUpperCase = userSearched.toUpperCase();
-    const currentUsersFiltered = users.filter(item => item.fullName.toUpperCase().includes(userUpperCase));
-    if (currentUsersFiltered.length > 0 && userSearched.length > 0) setUsersFiltered(currentUsersFiltered);
-    if (currentUsersFiltered.length > 0 && userSearched.length == 0) setUsersFiltered(users);
+    if (users) {
+      const userUpperCase = userSearched.toUpperCase();
+      const currentUsersFiltered = users.filter(item => item.Person.name.toUpperCase().includes(userUpperCase));
+      if (currentUsersFiltered.length > 0 && userSearched.length > 0) setUsersFiltered(currentUsersFiltered);
+      if (currentUsersFiltered.length > 0 && userSearched.length == 0) setUsersFiltered(users);
+    }
   }, [userSearched, users]);
 
   return (
@@ -145,7 +92,7 @@ export default function AllUsersPage() {
         <ModalAddUser />
       </div>
 
-      <Table aria-label="Example table with custom cells">
+      {usersFiltered && <Table aria-label="Usuarios">
         <TableHeader columns={columns}>
           {columns.map(column => (
             <TableColumn key={column.id} align="center">
@@ -162,7 +109,7 @@ export default function AllUsersPage() {
             </TableRow>
           )}
         </TableBody>
-      </Table>
+      </Table>}
     </div>
   );
 }

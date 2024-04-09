@@ -1,85 +1,109 @@
 "use client";
 import { generatePassword } from "@/utils";
 import { Modal, ModalContent, ModalBody, Button, Autocomplete, AutocompleteItem, ModalHeader, Input, ModalFooter } from "@nextui-org/react";
-import { Key, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Key, useEffect, useState } from "react";
+interface Phone {
+  number: string
+  isActive: boolean
+}
 
-const fakeData: { id: string, name: string, lastname: string }[] = [
-  {
-    id: "1",
-    name: "Sophia",
-    lastname: "Taylor",
-  },
-  {
-    id: "2",
-    name: "Ethan",
-    lastname: "Anderson"
-  },
-  {
-    id: "3",
-    name: "Ava",
-    lastname: "Wilson"
-  },
-  {
-    id: "4",
-    name: "Noah",
-    lastname: "Thomas"
-  },
-  {
-    id: "5",
-    name: "Isabella",
-    lastname: "White"
-  },
-  {
-    id: "6",
-    name: "William",
-    lastname: "Martinez"
-  },
-  {
-    id: "7",
-    name: "Mia",
-    lastname: "Brown"
-  },
-  {
-    id: "8",
-    name: "Liam",
-    lastname: "Lee"
-  },
-  {
-    id: "9",
-    name: "Amelia",
-    lastname: "Rodriguez"
-  },
-  {
-    id: "10",
-    name: "Benjamin",
-    lastname: "Garcia"
-  }
-];
+interface Person {
+  phone: null | Phone
+  id: string
+  name: string
+  fatherLastName: string
+  motherLastName: string
+  email: string | null
+  curp: string | null
+  rfc: string | null
+  birthPlace: string | null
+  voterKey: string | null
+  gender: string | null
+  scholarship: string | null
+  profession: string | null
+  tagIDs: string[]
+  ineURL: string | null
+  proofAddressURL: string | null
+  photoURL: string | null
+}
 
 export default function ModalAddUser() {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [people, setPeople] = useState<Person[]>([]);
   const [form, setForm] = useState({
     personName: "",
     selectedPersonId: "",
     username: "",
-    password: generatePassword(12, true, true, true)
+    password: generatePassword(12, true, true, true),
+    roles: {
+      "visor": "User",
+      "whats": "Admin",
+      "abc": "123"
+    }
   });
 
+  async function getPerson() {
+    let query = "?user=false";
+    if (form.personName.length > 0) {
+      query += "&name=" + form.personName;
+    }
+    const res = await fetch("/dashboard/api/persons" + query, { method: "GET" }).then(res => res.json());
+    console.log(res);
+    if (res.data) setPeople(res.data);
+  }
+
+  useEffect(() => {
+    if (!form.personName) return;
+
+    const timeout = setTimeout(() => {
+      console.log("Searching person:", form.personName);
+      getPerson();
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [form.personName]);
+
+
+  const createUser = async () => {
+    const { personName, selectedPersonId: personId, username, password, roles } = form;
+
+    const res = (await fetch("/dashboard/api/users", {
+      method: "POST",
+      body: JSON.stringify({ personName, personId, username, password, roles })
+    }).then(res => res.json()));
+
+    console.log(res);
+
+    if (res.code !== "OK") {
+      return alert("Algo salió mal");
+    }
+
+    alert("Usuario creado correctamente");
+    router.push("/dashboard/base/users/" + res.data.id);
+  };
   const handleSubmit = (event?: React.FormEvent) => {
     event?.preventDefault();
 
+    createUser();
+
     // TODO: Connect to the backend
     setIsModalOpen(false);
-
-    // Alert the user
-    alert("Usuario agregado correctamente");
 
     // Clear the form
     setForm({
       personName: "",
       selectedPersonId: "",
       username: "",
-      password: generatePassword(12, true, true, true)
+      password: generatePassword(12, true, true, true),
+      roles: {
+        "visor": "User",
+        "whats": "Admin",
+        "abc": "123"
+      }
     });
   };
 
@@ -97,18 +121,22 @@ export default function ModalAddUser() {
     const person = fakeData.find((item) => item.id === value);
     if (!person) return;
 
-    const newUserName = `${person.name.toLowerCase()}${person.lastname.toLowerCase().slice(0, 3)}${person.id.slice(0, 2)}`;
+    const person = people.find((item) => item.id === value);
+    if (!person) {
+      return;
+    }
+
+    const newUserName = `${person.name.toLowerCase().split(" ")[0]}${person.fatherLastName.toLowerCase().slice(0, 3)}_${person.id.slice(-3)}`;
 
     setForm({
       ...form,
-      personName: `${person.name} ${person.lastname}`,
+      personName: `${person.name} ${person.fatherLastName}`,
       selectedPersonId: String(person.id),
       username: newUserName
     });
   };
 
   const handlePersonSearch = (value: string) => {
-    console.log("Searching person:", value);
     setForm({ ...form, personName: value });
   };
 
@@ -137,8 +165,8 @@ export default function ModalAddUser() {
                 isRequired
                 shouldCloseOnBlur
               >
-                {fakeData.map((person) =>
-                  <AutocompleteItem key={person.id}>{`${person.name} ${person.lastname}`}</AutocompleteItem>
+                {people.map((person) =>
+                  <AutocompleteItem key={person.id}>{`${person.name} ${person.fatherLastName} ${person.motherLastName}`}</AutocompleteItem>
                 )}
               </Autocomplete>
 
