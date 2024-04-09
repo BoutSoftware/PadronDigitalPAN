@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import jtw, { sign } from "jsonwebtoken";
 import { JWT_SECRET } from "@/configs";
+import { parseUserRoles } from "../users";
 
 export async function POST(request: NextRequest) {
   interface ReqBody { username: string, password: string }
@@ -61,6 +62,7 @@ export async function GET(request: NextRequest) {
         id: true,
         username: true,
         roles: true,
+        isSuperAdmin: true,
         Person: {
           select: {
             name: true,
@@ -69,7 +71,11 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    return NextResponse.json({ code: "OK", message: "Token is valid", data: data});
+    if (!data) {
+      return NextResponse.json({ code: "USER_NOT_FOUND", message: "User missing"});
+    }
+
+    return NextResponse.json({ code: "OK", message: "Token is valid", data: { ...data, roles: parseUserRoles(data?.roles, data?.isSuperAdmin) }});
     
   } catch (error) {
     console.log(error);
