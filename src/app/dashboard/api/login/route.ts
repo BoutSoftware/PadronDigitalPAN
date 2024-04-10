@@ -51,9 +51,9 @@ export async function GET(request: NextRequest) {
     if ((token === "")) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Token is missing" });
     }
-    
-    const decodedToken = jtw.verify(token, JWT_SECRET) as { username: string; id: string} || Boolean;
-    
+
+    const decodedToken = jtw.verify(token, JWT_SECRET) as { username: string; id: string } || Boolean;
+
     const data = await prisma.user.findFirst({
       where: {
         id: decodedToken.id,
@@ -72,17 +72,13 @@ export async function GET(request: NextRequest) {
     });
 
     if (!data) {
-      return NextResponse.json({ code: "USER_NOT_FOUND", message: "User missing"});
+      return NextResponse.json({ code: "USER_NOT_FOUND", message: "User missing" });
     }
 
-    return NextResponse.json({ code: "OK", message: "Token is valid", data: { ...data, roles: parseUserRoles(data?.roles, data?.isSuperAdmin) }});
-    
+    return NextResponse.json({ code: "OK", message: "Token is valid", data: { ...data, roles: parseUserRoles(data?.roles, data?.isSuperAdmin) } });
+
   } catch (error) {
-    console.log(error);
-    if (error.name == "JsonWebTokenError") {
-      return NextResponse.json({ code: "TOKEN_ERROR", message: "Wrong or incorrect token" });
-    }
-    return NextResponse.json({ code: "ERROR", message: "An error ocurred."});
+    return NextResponse.json({ code: "ERROR", message: "An error ocurred." });
   }
-  
+
 }

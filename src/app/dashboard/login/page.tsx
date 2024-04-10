@@ -7,7 +7,7 @@ import Wave from "../../../../public/Ola-3.svg";
 import { authContext } from "@/contexts/AuthContext";
 
 export default function Login() {
-  const { login } = useContext( authContext );
+  const { login } = useContext(authContext);
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
@@ -34,7 +34,7 @@ export default function Login() {
         throw new Error(resBody.message);
       }
 
-      login( resBody.data.token );
+      login(resBody.data.token);
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);
@@ -81,7 +81,6 @@ export default function Login() {
               label="Usuario"
               placeholder="Usuario"
               labelPlacement="outside"
-              size="sm"
               value={userName}
               onValueChange={setUserName}
               autoComplete="username"
@@ -93,7 +92,6 @@ export default function Login() {
               label="Contraseña"
               placeholder="Contraseña"
               labelPlacement="outside"
-              size="sm"
               value={password}
               onValueChange={setPassword}
               autoComplete="current-password"
@@ -115,7 +113,7 @@ export default function Login() {
           width={10}
           height={10}
           alt="Decoración"
-          className="w-screen"
+          className="w-screen h-20"
         />
 
         <div className="flex flex-row justify-between bg-[#163172] p-8 -mt-1">

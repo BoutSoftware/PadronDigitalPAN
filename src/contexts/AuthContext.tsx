@@ -9,6 +9,7 @@ interface UserInfo {
   username: string;
   name: string;
   token: string;
+  profilePic?: string;
   userRoles: UserRoles;
 }
 
@@ -16,14 +17,14 @@ interface AuthContext {
   currentUser?: UserInfo;
   login: (token: string) => void;
   logout: () => void;
-  isLoggedIn: () => boolean;
+  isLoggedIn: boolean;
 }
 
 export const authContext = createContext<AuthContext>({
   currentUser: undefined,
   login: () => { },
   logout: () => { },
-  isLoggedIn: () => false,
+  isLoggedIn: false,
 });
 
 export const useAuth = () => useContext(authContext);
@@ -35,11 +36,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    console.log(pathname);
 
     if (storedToken) {
-      console.log("what");
-      
       if (currentUser) {
         // Routes Protection
         if (pathname === "/dashboard/login") router.push("/dashboard/base");
@@ -55,17 +53,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   const login = async (token: string) => {
-    const res = await fetch(`api/login?token=${token}`, { method: "GET" });
+    const res = await fetch(`/dashboard/api/login?token=${token}`, { method: "GET" });
     const resBody = await res.json();
 
-    console.log( resBody );
-    
+    console.log(resBody);
 
     if (resBody.code !== "OK") {
       return logout();
     }
 
     const { id, username, roles, Person } = resBody.data;
+    localStorage.setItem("token", token);
     setUser({
       id: id,
       username: username,
@@ -81,9 +79,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.push("/dashboard/login");
   };
 
-  const isLoggedIn = () => {
-    return !!currentUser;
-  };
+  const isLoggedIn = !!currentUser;
 
   return (
     <authContext.Provider value={{ currentUser, login, logout, isLoggedIn }}>
