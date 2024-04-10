@@ -20,7 +20,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Update a person by id
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const id = params.id;
   const { name, fatherLastName, motherLastName, birthPlace, email, curp, gender, phone, profession,
     rfc, scholarship, tagIDs, voterKey } = (await request.json()) as Person;
