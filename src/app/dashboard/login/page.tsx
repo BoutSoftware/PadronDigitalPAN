@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useContext, useState } from "react";
 import { Link, Input, Button, Skeleton } from "@nextui-org/react";
 import Image from "next/image";
 import Wave from "../../../../public/Ola-3.svg";
+import { authContext } from "@/contexts/AuthContext";
 
 export default function Login() {
+  const { login } = useContext( authContext );
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,8 +34,7 @@ export default function Login() {
         throw new Error(resBody.message);
       }
 
-      localStorage.setItem("token", resBody.data.token);
-      router.push("/dashboard/base");
+      login( resBody.data.token );
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);

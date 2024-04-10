@@ -19,7 +19,7 @@ interface AuthContext {
   isLoggedIn: () => boolean;
 }
 
-const authContext = createContext<AuthContext>({
+export const authContext = createContext<AuthContext>({
   currentUser: undefined,
   login: () => { },
   logout: () => { },
@@ -57,6 +57,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (token: string) => {
     const res = await fetch(`api/login?token=${token}`, { method: "GET" });
     const resBody = await res.json();
+
+    console.log( resBody );
+    
 
     if (resBody.code !== "OK") {
       return logout();
