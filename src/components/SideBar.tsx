@@ -1,8 +1,10 @@
 "use client";
 
+import { authContext } from "@/contexts/AuthContext";
 import { ThemeSwitch } from "@/contexts/ThemeProvider";
 import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, Divider } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+import { useContext } from "react";
 
 export default function SideBar() {
   const router = useRouter();
@@ -63,6 +65,8 @@ function SideBarTopContent() {
 }
 
 function SideBarBottomContent() {
+  const { currentUser } = useContext(authContext);
+
   return (
     <>
       <Divider className='my-3 bg-primary-100' />
@@ -72,10 +76,9 @@ function SideBarBottomContent() {
           <User
             as="button"
             avatarProps={{
-              // TODO: Change the src to the currentUser profilePic
-              src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
+              src: currentUser?.profilePicture,
             }}
-            className="w-full py-2 px-4 bg-primary-700 justify-start"
+            className="w-full py-2 px-4 bg-primary-700 justify-start gap-2"
             description="@tonyreichert"
             name="Tony Reichert"
           />

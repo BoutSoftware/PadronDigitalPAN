@@ -9,8 +9,9 @@ interface UserInfo {
   username: string;
   name: string;
   token: string;
-  // TODO: Add "profilePicture: string;" to the UserInfo interface, and implement it
+  profilePicture: string;
   userRoles: UserRoles;
+  isSuperAdmin: boolean;
 }
 
 interface AuthContext {
@@ -18,6 +19,7 @@ interface AuthContext {
   login: (token: string) => void;
   logout: () => void;
   isLoggedIn: boolean;
+  isSuperAdmin?: boolean;
 }
 
 export const authContext = createContext<AuthContext>({
@@ -25,6 +27,7 @@ export const authContext = createContext<AuthContext>({
   login: () => { },
   logout: () => { },
   isLoggedIn: false,
+  isSuperAdmin: false,
 });
 
 export const useAuth = () => useContext(authContext);
@@ -62,13 +65,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return logout();
     }
 
-    const { id, username, roles, Person } = resBody.data;
+    const { id, username, roles, Person, isSuperAdmin, profilePicture } = resBody.data;
     localStorage.setItem("token", token);
     setUser({
       id: id,
       username: username,
       userRoles: roles,
       name: Person.name,
+      profilePicture: profilePicture,
+      isSuperAdmin: isSuperAdmin,
       token,
     });
   };
@@ -81,8 +86,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const isLoggedIn = !!currentUser;
 
+  const isSuperAdmin = currentUser?.isSuperAdmin;
+
   return (
-    <authContext.Provider value={{ currentUser, login, logout, isLoggedIn }}>
+    <authContext.Provider value={{ currentUser, login, logout, isLoggedIn, isSuperAdmin }}>
       {children}
     </authContext.Provider>
   );

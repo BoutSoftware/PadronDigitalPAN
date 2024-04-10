@@ -66,6 +66,7 @@ export async function GET(request: NextRequest) {
         Person: {
           select: {
             name: true,
+            photoURL: true,
           }
         }
       }
@@ -75,7 +76,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ code: "USER_NOT_FOUND", message: "User missing" });
     }
 
-    return NextResponse.json({ code: "OK", message: "Token is valid", data: { ...data, roles: parseUserRoles(data?.roles, data?.isSuperAdmin) } });
+    // Profile picture or dicebear avatar
+    const profilePicture = data.Person.photoURL || `https://api.dicebear.com/8.x/shapes/svg?seed=${data.id}`;
+
+    return NextResponse.json({ code: "OK", message: "Token is valid", data: { ...data, roles: parseUserRoles(data?.roles, data?.isSuperAdmin), profilePicture } });
 
   } catch (error) {
     return NextResponse.json({ code: "ERROR", message: "An error ocurred." });
