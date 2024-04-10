@@ -37,11 +37,7 @@ export default function ModalAddUser() {
     selectedPersonId: "",
     username: "",
     password: generatePassword(12, true, true, true),
-    roles: {
-      "visor": "User",
-      "whats": "Admin",
-      "abc": "123"
-    }
+    roles: {}
   });
 
   async function getPerson() {
@@ -99,11 +95,7 @@ export default function ModalAddUser() {
       selectedPersonId: "",
       username: "",
       password: generatePassword(12, true, true, true),
-      roles: {
-        "visor": "User",
-        "whats": "Admin",
-        "abc": "123"
-      }
+      roles: {}
     });
   };
 
