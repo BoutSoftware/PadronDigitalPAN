@@ -18,8 +18,8 @@ export default function SideBar() {
         topContent={<SideBarTopContent />}
         bottomContent={<SideBarBottomContent />}
       >
-        {/* TODO: Only Show if Current user is SuperAdmin */}
         {/* Admin Routes */}
+        {/* TODO: Only Show if Current user is SuperAdmin */}
         <ListboxSection title={"Administrador"} classNames={{ heading: "text-primary-foreground opacity-70" }}>
           <ListboxItem key={"/dashboard/base/users"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700 text-primary-foreground" startContent={<span className="material-symbols-outlined">group</span>}>
             Usuarios
@@ -30,6 +30,7 @@ export default function SideBar() {
         </ListboxSection>
 
         {/* Normal User Routes */}
+        {/* TODO: Comment all non-existent modules */}
         <ListboxSection title={"Modulos"} classNames={{ heading: "text-primary-foreground opacity-70" }}>
           <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700" startContent={<span className="material-symbols-outlined">map</span>}>
             Visor
@@ -65,11 +66,13 @@ function SideBarBottomContent() {
   return (
     <>
       <Divider className='my-3 bg-primary-100' />
+      {/* TODO: Take the user data from the currentUser */}
       <Dropdown placement="right-end" showArrow>
         <DropdownTrigger>
           <User
             as="button"
             avatarProps={{
+              // TODO: Change the src to the currentUser profilePic
               src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
             }}
             className="w-full py-2 px-4 bg-primary-700 justify-start"
@@ -91,6 +94,7 @@ function SideBarBottomContent() {
           }>
             Configuración
           </DropdownItem>
+          {/* TODO: Add the logout function */}
           <DropdownItem key="logout" color="danger" startContent={
             <span className="material-symbols-outlined">logout</span>
           }>

@@ -9,7 +9,7 @@ interface UserInfo {
   username: string;
   name: string;
   token: string;
-  profilePic?: string;
+  // TODO: Add "profilePicture: string;" to the UserInfo interface, and implement it
   userRoles: UserRoles;
 }
 
