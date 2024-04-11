@@ -87,7 +87,7 @@ async function getUsers(page: number | undefined, elements: number | undefined) 
     activeModules: nAccesses(user.roles),
     roles: parseUserRoles(user.roles, user.active),
   }));
-  
+
   return users;
 }
 

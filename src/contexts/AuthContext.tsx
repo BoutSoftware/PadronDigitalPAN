@@ -9,21 +9,25 @@ interface UserInfo {
   username: string;
   name: string;
   token: string;
+  profilePicture: string;
   userRoles: UserRoles;
+  isSuperAdmin: boolean;
 }
 
 interface AuthContext {
   currentUser?: UserInfo;
   login: (token: string) => void;
   logout: () => void;
-  isLoggedIn: () => boolean;
+  isLoggedIn: boolean;
+  isSuperAdmin?: boolean;
 }
 
-const authContext = createContext<AuthContext>({
+export const authContext = createContext<AuthContext>({
   currentUser: undefined,
   login: () => { },
   logout: () => { },
-  isLoggedIn: () => false,
+  isLoggedIn: false,
+  isSuperAdmin: false,
 });
 
 export const useAuth = () => useContext(authContext);
@@ -37,7 +41,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const storedToken = localStorage.getItem("token");
 
     if (storedToken) {
-
       if (currentUser) {
         // Routes Protection
         if (pathname === "/dashboard/login") router.push("/dashboard/base");
@@ -53,19 +56,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   const login = async (token: string) => {
-    const res = await fetch(`api/login?token=${token}`, { method: "GET" });
+    const res = await fetch(`/dashboard/api/login?token=${token}`, { method: "GET" });
     const resBody = await res.json();
+
+    console.log(resBody);
 
     if (resBody.code !== "OK") {
       return logout();
     }
 
-    const { id, username, roles, Person } = resBody.data;
+    const { id, username, roles, Person, isSuperAdmin, profilePicture } = resBody.data;
+    localStorage.setItem("token", token);
     setUser({
       id: id,
       username: username,
       userRoles: roles,
       name: Person.name,
+      profilePicture: profilePicture,
+      isSuperAdmin: isSuperAdmin,
       token,
     });
   };
@@ -76,12 +84,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.push("/dashboard/login");
   };
 
-  const isLoggedIn = () => {
-    return !!currentUser;
-  };
+  const isLoggedIn = !!currentUser;
+
+  const isSuperAdmin = currentUser?.isSuperAdmin;
 
   return (
-    <authContext.Provider value={{ currentUser, login, logout, isLoggedIn }}>
+    <authContext.Provider value={{ currentUser, login, logout, isLoggedIn, isSuperAdmin }}>
       {children}
     </authContext.Provider>
   );
