@@ -35,11 +35,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    console.log(pathname);
 
     if (storedToken) {
-      console.log("what");
-      
+
       if (currentUser) {
         // Routes Protection
         if (pathname === "/dashboard/login") router.push("/dashboard/base");

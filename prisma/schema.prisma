@@ -17,7 +17,7 @@ datasource db {
 
 model Tag {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
+  name      String   @unique
   personIDs String[] @db.ObjectId
 
   Persons Person[] @relation(fields: [personIDs], references: [id])
@@ -155,7 +155,7 @@ model User {
   roles        RoleFront[] // [{module: "visor", role: "Admin"}, {module: "whats", role: "User"}]
   personId     String      @unique @db.ObjectId
 
-  Person Person @relation(fields: [personId], references: [id], onDelete: Cascade) 
+  Person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
   // TOKEN: Person.name, username, roles: {visor: "Admin", whats: "User"}
 }
 
