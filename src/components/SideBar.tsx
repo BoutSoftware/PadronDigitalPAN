@@ -1,13 +1,20 @@
 "use client";
 
+import { useContext, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { authContext } from "@/contexts/AuthContext";
 import { ThemeSwitch } from "@/contexts/ThemeProvider";
 import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, Divider } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-import { useContext } from "react";
 
 export default function SideBar() {
   const router = useRouter();
+  const { isSuperAdmin, isLoggedIn } = useContext(authContext);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push("/dashboard/login");
+    }
+  }, [isLoggedIn, router]);
 
   return (
     <div className="flex flex-col px-2 py-4 gap-4 w-full max-w-60 bg-primary text-primary-foreground shadow-lg">
@@ -21,8 +28,7 @@ export default function SideBar() {
         bottomContent={<SideBarBottomContent />}
       >
         {/* Admin Routes */}
-        {/* TODO: Only Show if Current user is SuperAdmin */}
-        <ListboxSection title={"Administrador"} classNames={{ heading: "text-primary-foreground opacity-70" }}>
+        <ListboxSection title={"Administrador"} classNames={{ heading: "text-primary-foreground opacity-70" }} className={!isSuperAdmin ? "hidden" : ""}>
           <ListboxItem key={"/dashboard/base/users"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700 text-primary-foreground" startContent={<span className="material-symbols-outlined">group</span>}>
             Usuarios
           </ListboxItem>
@@ -32,7 +38,6 @@ export default function SideBar() {
         </ListboxSection>
 
         {/* Normal User Routes */}
-        {/* TODO: Comment all non-existent modules */}
         <ListboxSection title={"Modulos"} classNames={{ heading: "text-primary-foreground opacity-70" }}>
           <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4 hover:!bg-primary-700" startContent={<span className="material-symbols-outlined">map</span>}>
             Visor
@@ -65,26 +70,24 @@ function SideBarTopContent() {
 }
 
 function SideBarBottomContent() {
-  const { currentUser } = useContext(authContext);
+  const { currentUser, logout } = useContext(authContext);
 
   return (
     <>
       <Divider className='my-3 bg-primary-100' />
-      {/* TODO: Take the user data from the currentUser */}
       <Dropdown placement="right-end" showArrow>
         <DropdownTrigger>
           <User
             as="button"
             avatarProps={{
-              src: currentUser?.profilePicture,
+              src: currentUser?.profilePicture || "/default-profile-picture.jpg", // Replace with default image path
             }}
             className="w-full py-2 px-4 bg-primary-700 justify-start gap-2"
-            description="@tonyreichert"
-            name="Tony Reichert"
+            description={currentUser?.username}
+            name={currentUser?.name}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" variant="flat">
-          {/* Change theme with switch */}
           <DropdownItem key="theme"
             closeOnSelect={false}
             startContent={<span className="material-symbols-outlined">brightness_4</span>}
@@ -97,8 +100,7 @@ function SideBarBottomContent() {
           }>
             Configuración
           </DropdownItem>
-          {/* TODO: Add the logout function */}
-          <DropdownItem key="logout" color="danger" startContent={
+          <DropdownItem key="logout" color="danger" onClick={logout} startContent={
             <span className="material-symbols-outlined">logout</span>
           }>
             Cerrar Sesión
@@ -108,3 +110,4 @@ function SideBarBottomContent() {
     </>
   );
 }
+
