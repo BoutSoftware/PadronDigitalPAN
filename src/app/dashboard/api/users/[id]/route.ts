@@ -35,7 +35,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   } catch (error) {
     console.log(error);
-    return NextResponse.json({ code: "OK", message: "An error occurred" });
+    return NextResponse.json({ code: "ERROR", message: "An error occurred" });
   }
 }
 
