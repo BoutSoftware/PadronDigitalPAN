@@ -63,6 +63,9 @@ export async function GET(request: NextRequest) {
 
 async function getUsers(page: number | undefined, elements: number | undefined) {
   const data = await prisma.user.findMany({
+    where: {
+      active: true,
+    },
     skip: page && elements ? (page - 1) * elements : undefined,
     take: elements,
     select: {
