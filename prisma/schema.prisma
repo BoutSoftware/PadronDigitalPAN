@@ -17,7 +17,7 @@ datasource db {
 
 model Tag {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
+  name      String   @unique
   personIDs String[] @db.ObjectId
 
   Persons Person[] @relation(fields: [personIDs], references: [id])
@@ -103,10 +103,10 @@ model Address {
   personId           String? @unique @db.ObjectId
 
   PendingAddress   PendingAddress?
-  Complement       Complement       @relation(fields: [complementId], references: [id])
-  Street           Street?          @relation(fields: [streetId], references: [id])
-  ElectoralSection ElectoralSection @relation(fields: [electoralSectionId], references: [id])
-  Person           Person?          @relation(fields: [personId], references: [id])
+  Complement       Complement       @relation(fields: [complementId], references: [id], onDelete: Cascade)
+  Street           Street?          @relation(fields: [streetId], references: [id], onDelete: Cascade)
+  ElectoralSection ElectoralSection @relation(fields: [electoralSectionId], references: [id], onDelete: Cascade)
+  Person           Person?          @relation(fields: [personId], references: [id], onDelete: Cascade)
 }
 
 model PendingAddress {
@@ -118,7 +118,7 @@ model PendingAddress {
   status    StatusPendingAddress @default(NOT_VERIFIED)
   addressId String               @unique @db.ObjectId
 
-  Address Address? @relation(fields: [addressId], references: [id])
+  Address Address? @relation(fields: [addressId], references: [id], onDelete: Cascade)
 }
 
 model Person {
@@ -155,7 +155,7 @@ model User {
   roles        RoleFront[] // [{module: "visor", role: "Admin"}, {module: "whats", role: "User"}]
   personId     String      @unique @db.ObjectId
 
-  Person Person @relation(fields: [personId], references: [id])
+  Person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
   // TOKEN: Person.name, username, roles: {visor: "Admin", whats: "User"}
 }
 

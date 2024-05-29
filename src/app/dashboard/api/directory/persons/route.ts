@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/configs/database";
-import { removeAccents } from "@/utils";
-import { Person } from "@prisma/client";
+import { hasIncompleteFields, removeAccents } from "@/utils";
+import { Address, PendingAddress, Person } from "@prisma/client";
 
-// Ejemplo de como acceder a la ruta GET de la API: http://localhost:3000/api/persons?name=[name]
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const name = removeAccents(searchParams.get("name") || "") || null;
@@ -48,15 +47,61 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, fatherLastName, email } = (await request.json()) as Person;
+    const { name, fatherLastName, motherLastName, birthPlace, email, curp, gender, phone, profession,
+      rfc, scholarship, tagIDs, voterKey, address } = (await request.json()) as (Person & { address: (Address & { pendingAddress?: PendingAddress }) });
+
+    // check for missing fields
+    if (hasIncompleteFields({ name, fatherLastName })) {
+      return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
+    }
 
     const person = await prisma.person.create({
       data: {
         name,
         fatherLastName,
-        email
-      },
+        motherLastName,
+        email,
+        birthPlace,
+        curp,
+        rfc,
+        phone,
+        profession,
+        scholarship,
+        gender,
+        voterKey,
+        tagIDs
+      }
     });
+
+    // create user Address
+    const personAddress = await prisma.address.create({
+      data: {
+        complementId: address.complementId,
+        defComplement: address.defComplement,
+        electoralSectionId: address.electoralSectionId,
+        interiorNum: address.interiorNum,
+        isEstablished: address.isEstablished,
+        outdoorNum: address.outdoorNum,
+        streetId: address.streetId,
+        foreignAddress: address.foreignAddress,
+        personId: person.id,
+      }
+    });
+
+    // if address in not established create a pendingAddress
+    if (!address.isEstablished) {
+      if (address.pendingAddress) {
+        await prisma.pendingAddress.create({
+          data: {
+            addressId: personAddress.id,
+            colonia: address.pendingAddress.colonia,
+            delgation: address.pendingAddress.delgation,
+            municipio: address.pendingAddress.municipio,
+            street: address.pendingAddress.street
+          }
+        });
+      }
+    }
 
     return NextResponse.json({ code: "OK", message: "Person created successfully", data: person });
   } catch (error) {
