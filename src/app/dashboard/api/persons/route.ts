@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/configs/database";
 import { removeAccents } from "@/utils";
-import { Person } from "@prisma/client";
 
 // Ejemplo de como acceder a la ruta GET de la API: http://localhost:3000/api/persons?name=[name]
 export async function GET(request: NextRequest) {
@@ -10,7 +9,6 @@ export async function GET(request: NextRequest) {
   const user = searchParams.get("user");
 
   try {
-
     // Validate params
     // if (!name || typeof name !== "string") {
     //   return new Response("Bad Request", { status: 400 });
@@ -40,25 +38,6 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({ code: "OK", message: "Persons retrieved successfully", data: persons });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({ code: "ERROR", message: "An error occurred" });
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const { name, fatherLastName, email } = (await request.json()) as Person;
-
-    const person = await prisma.person.create({
-      data: {
-        name,
-        fatherLastName,
-        email
-      },
-    });
-
-    return NextResponse.json({ code: "OK", message: "Person created successfully", data: person });
   } catch (error) {
     console.log(error);
     return NextResponse.json({ code: "ERROR", message: "An error occurred" });
