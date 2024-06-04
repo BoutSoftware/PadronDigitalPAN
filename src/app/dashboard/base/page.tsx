@@ -56,7 +56,7 @@ export default function BasePlatformWelcome() {
               </Skeleton>
             </div>
             <div className="w-full text-right">
-              <Button size="sm" variant="flat" color="secondary" onPress={toggleLoad} className="w-2/3">
+              <Button size="sm" variant="solid" color="secondary" onPress={toggleLoad} className="w-2/3">
                 {isLoaded ? "Show" : "Hide"} Skeleton
               </Button>
             </div>
@@ -77,7 +77,7 @@ export default function BasePlatformWelcome() {
               </Skeleton>
             </div>
             <div className="w-full text-right">
-              <Button size="sm" variant="flat" color="secondary" onPress={toggleLoad} className="w-2/3">
+              <Button size="sm" variant="solid" color="secondary" onPress={toggleLoad} className="w-2/3">
                 {isLoaded ? "Show" : "Hide"} Skeleton
               </Button>
             </div>
@@ -98,7 +98,7 @@ export default function BasePlatformWelcome() {
               </Skeleton>
             </div>
             <div className="w-full text-right">
-              <Button size="sm" variant="flat" color="secondary" onPress={toggleLoad} className="w-2/3">
+              <Button size="sm" variant="solid" color="secondary" onPress={toggleLoad} className="w-2/3">
                 {isLoaded ? "Show" : "Hide"} Skeleton
               </Button>
             </div>

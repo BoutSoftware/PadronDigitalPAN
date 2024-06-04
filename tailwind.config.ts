@@ -32,7 +32,7 @@ const config: Config = {
             foreground: "#F8F8F8",
           },
           secondary: {
-            DEFAULT: "#112D4E",
+            DEFAULT: "#1b3c67",
             foreground: "#F8F8F8",
           },
           accent: "#F7418F"
@@ -55,7 +55,7 @@ const config: Config = {
             foreground: "#F8F8F8",
           },
           secondary: {
-            DEFAULT: "#112D4E",
+            DEFAULT: "#1b3c67",
             foreground: "#F8F8F8",
           },
           accent: "#F7418F"
