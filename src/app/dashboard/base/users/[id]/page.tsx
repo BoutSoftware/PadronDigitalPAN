@@ -40,7 +40,19 @@ export default function IndividualUserPage({ params }: { params: { id: string } 
     <div className="flex flex-grow flex-col p-8">
       {user &&
         <>
-          <Header title={fullName} />
+          <Header
+            title={
+              <>
+                {fullName}
+                {user && user.isSuperAdmin && (
+                  <span className="material-symbols-outlined icon-filled text-warning-500 px-2 icon-lg">
+                    star
+                  </span>
+                )}
+              </>
+            }
+          />
+
 
           <main id="main" className="mt-4">
             <div id="userInfoContainer" className="flex flex-row mt-8 gap-8">
@@ -85,7 +97,7 @@ export default function IndividualUserPage({ params }: { params: { id: string } 
             <div id="roles" className="flex flex-col p-8 rounded-xl max-w-4xl border border-divider shadow-lg">
               <h1 className="text-4xl">Roles</h1>
               <div className="flex flex-col gap-6 mt-4">
-                <Roles userRoles={user.roles} userId= {id}/>
+                <Roles userRoles={user.roles} userId={id} />
               </div>
             </div>
           </main>
