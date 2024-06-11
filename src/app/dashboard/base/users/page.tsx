@@ -11,18 +11,19 @@ import { useEffect, useState } from "react";
 // TODO: Navegar a la pantalla de usuario individual (No la tengo en mi rama aún)
 
 interface Person {
-  name: string
-  fatherLastName: string
-  motherLastName: string
-  email: string
+  name: string;
+  fatherLastName: string;
+  motherLastName: string;
+  email: string;
 }
+
 interface User {
-  id: string
-  active: boolean
-  username: string
-  isSuperAdmin: boolean
-  Person: Person
-  activeModules: number
+  id: string;
+  active: boolean;
+  username: string;
+  isSuperAdmin: boolean;
+  Person: Person;
+  activeModules: number;
 }
 
 const columns = [
@@ -36,7 +37,14 @@ const renderCell = (columnKey: React.Key, user: User) => {
   if (columnKey == "name") return (
     <User
       className="gap-3"
-      name={user.Person.name}
+      name={
+        <div className="flex items-center gap-2">
+          {user.Person.name}
+          {user.isSuperAdmin && (
+            <span className="material-symbols-outlined icon-filled text-warning-500 icon-sm">star</span>
+          )}
+        </div>
+      }
       description={user.username}
     />
   );
@@ -64,10 +72,11 @@ export default function AllUsersPage() {
     await setUsers(resData.data);
     await setUsersFiltered(resData.data);
   }
+
   useEffect(() => {
     getUsers();
   }, []);
-  // TODO: Change usersFiltered to a useMemo
+
   useEffect(() => {
     if (users) {
       const userUpperCase = userSearched.toUpperCase();
@@ -88,7 +97,6 @@ export default function AllUsersPage() {
           onValueChange={setUserSearched}
           startContent={<span className="material-symbols-outlined icon-sm">search</span>}
         />
-
         <ModalAddUser />
       </div>
 
