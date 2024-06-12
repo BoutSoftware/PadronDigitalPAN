@@ -3,6 +3,31 @@
 import React, { useState } from "react";
 import Header from "@/components/Header";
 import { Card, Skeleton, Button } from "@nextui-org/react";
+import TeamCard from "@/components/TeamCard";
+
+const teams = [
+  {
+    id: 1,
+    teamName: "Equipo A",
+    enlaceName: "Andrea Martínez",
+    puntos: "Necesidades, Cruceros",
+    territorio: "Querétaro ",
+  },
+  {
+    id: 2,
+    teamName: "Equipo B",
+    enlaceName: "Juan Carlos Rodríguez",
+    puntos: "Encuestas",
+    territorio: "San Juan del Río",
+  },
+  {
+    id: 3,
+    teamName: "Equipo B",
+    enlaceName: "Valentina Herrera",
+    puntos: "Toques, Publicidad",
+    territorio: "Corregidora",
+  },
+];
 
 export default function BasePlatformWelcome() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -56,7 +81,13 @@ export default function BasePlatformWelcome() {
               </Skeleton>
             </div>
             <div className="w-full text-right">
-              <Button size="sm" variant="flat" color="secondary" onPress={toggleLoad} className="w-2/3">
+              <Button
+                size="sm"
+                variant="flat"
+                color="secondary"
+                onPress={toggleLoad}
+                className="w-2/3"
+              >
                 {isLoaded ? "Show" : "Hide"} Skeleton
               </Button>
             </div>
@@ -77,7 +108,13 @@ export default function BasePlatformWelcome() {
               </Skeleton>
             </div>
             <div className="w-full text-right">
-              <Button size="sm" variant="flat" color="secondary" onPress={toggleLoad} className="w-2/3">
+              <Button
+                size="sm"
+                variant="flat"
+                color="secondary"
+                onPress={toggleLoad}
+                className="w-2/3"
+              >
                 {isLoaded ? "Show" : "Hide"} Skeleton
               </Button>
             </div>
@@ -98,11 +135,32 @@ export default function BasePlatformWelcome() {
               </Skeleton>
             </div>
             <div className="w-full text-right">
-              <Button size="sm" variant="flat" color="secondary" onPress={toggleLoad} className="w-2/3">
+              <Button
+                size="sm"
+                variant="flat"
+                color="secondary"
+                onPress={toggleLoad}
+                className="w-2/3"
+              >
                 {isLoaded ? "Show" : "Hide"} Skeleton
               </Button>
             </div>
           </Card>
+        </div>
+      </section>
+
+      <section className="mt-24">
+        <div className="grid grid-cols-4 gap-4">
+          {teams.map((team) => (
+            <TeamCard
+              key={team.id}
+              id={team.id}
+              teamName={team.teamName}
+              enlaceName={team.enlaceName}
+              puntos={team.puntos}
+              territorio={team.territorio}
+            />
+          ))}
         </div>
       </section>
     </div>
