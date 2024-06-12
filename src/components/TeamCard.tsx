@@ -1,21 +1,26 @@
 import React from "react";
-import { Card, CardHeader, CardBody, CardFooter, Button, } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, CardFooter, Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+
+interface GeoConfig {
+  level: string;
+  values: string[];
+}
 
 interface CardProps {
   id: number;
   teamName: string;
   enlaceName: string;
   puntos: string;
-  territorio: string;
+  geoConfig: GeoConfig;
 }
 
-export default function TeamCard({ id, teamName, enlaceName, puntos, territorio }: CardProps) {
+export default function TeamCard({ id, teamName, enlaceName, puntos, geoConfig }: CardProps) {
   const router = useRouter();
 
-  //Función para manejar la navegación a las rutas de mapa o tabla
+  // Función para manejar la navegación a las rutas de mapa o tabla
   const handleNavigation = (path: string) => {
-    router.push(`/team/${id}/${path}`); //Redirige a la ruta correspondiente con el id del equipo y el path proporcionado
+    router.push(`/team/${id}/${path}`); // Redirige a la ruta correspondiente con el id del equipo y el path proporcionado
   };
 
   return (
@@ -26,7 +31,10 @@ export default function TeamCard({ id, teamName, enlaceName, puntos, territorio 
       <CardBody className="px-4 gap-2">
         <p className="text-sm font-light">{enlaceName}</p>
         <p className="text-sm font-light">{puntos}</p>
-        <p className="text-sm font-light">{territorio}</p>
+        <div className="text-sm font-light flex items-center">
+          <p>{geoConfig.level}:</p>
+          <p className="text-xs font-bold ml-2">{geoConfig.values.join(", ")}</p>
+        </div>
       </CardBody>
       <CardFooter className="flex flex-row justify-end gap-2">
         <Button

@@ -11,7 +11,8 @@ const teams = [
     teamName: "Equipo A",
     enlaceName: "Andrea Martínez",
     puntos: "Necesidades, Cruceros",
-    territorio: "Querétaro ",
+    territorio: "Querétaro",
+    geoConfig: { level: "Municipios", values: ["m1", "m2", "m3", "m4"] }
   },
   {
     id: 2,
@@ -19,6 +20,7 @@ const teams = [
     enlaceName: "Juan Carlos Rodríguez",
     puntos: "Encuestas",
     territorio: "San Juan del Río",
+    geoConfig: { level: "Colonias", values: ["C1", "C2"] }
   },
   {
     id: 3,
@@ -26,7 +28,8 @@ const teams = [
     enlaceName: "Valentina Herrera",
     puntos: "Toques, Publicidad",
     territorio: "Corregidora",
-  },
+    geoConfig: { level: "Secciones Electorales", values: ["S1", "S2"] }
+  }
 ];
 
 export default function BasePlatformWelcome() {
@@ -150,7 +153,7 @@ export default function BasePlatformWelcome() {
       </section>
 
       <section className="mt-24">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-3">
           {teams.map((team) => (
             <TeamCard
               key={team.id}
@@ -158,7 +161,7 @@ export default function BasePlatformWelcome() {
               teamName={team.teamName}
               enlaceName={team.enlaceName}
               puntos={team.puntos}
-              territorio={team.territorio}
+              geoConfig={team.geoConfig}
             />
           ))}
         </div>
