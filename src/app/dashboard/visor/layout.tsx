@@ -7,17 +7,18 @@ export default function LayoutVisor({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar topContent={<DropdownChangeModule currentModuleKey="visor" />} />
+      <Sidebar />
       {children}
     </div>
   );
 }
 
-function Sidebar({ topContent }: { topContent: ReactNode }) {
+function Sidebar() {
   return (
     <div className="bg-primary flex flex-col w-full max-w-60 text-primary-foreground">
       <Listbox
-        topContent={topContent}
+        topContent={<DropdownChangeModule currentModuleKey="visor" />}
+        color="secondary"
       >
         <ListboxItem
           startContent={<span className="material-symbols-outlined">groups</span>}
