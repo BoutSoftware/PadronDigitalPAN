@@ -4,7 +4,7 @@ import { useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authContext } from "@/contexts/AuthContext";
 import { ThemeSwitch } from "@/contexts/ThemeProvider";
-import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, Divider } from "@nextui-org/react";
+import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, Divider, } from "@nextui-org/react";
 
 export default function SideBar() {
   const router = useRouter();
@@ -64,45 +64,62 @@ export default function SideBar() {
 }
 
 function SideBarTopContent() {
-  return (
-    <h2 className="text-2xl font-medium text-center my-2">Sidebar</h2>
-  );
+  return <h2 className="text-2xl font-medium text-center my-2">Sidebar</h2>;
 }
 
 function SideBarBottomContent() {
-  const { currentUser, logout } = useContext(authContext);
+  const { currentUser, logout, isSuperAdmin } = useContext(authContext);
 
   return (
     <>
-      <Divider className='my-3 bg-primary-100' />
+      <Divider className="my-3 bg-primary-100" />
       <Dropdown placement="right-end" showArrow>
         <DropdownTrigger>
           <User
             as="button"
             avatarProps={{
-              src: currentUser?.profilePicture || "/default-profile-picture.jpg", // Replace with default image path
+              src:
+                currentUser?.profilePicture || "/default-profile-picture.jpg", // Replace with default image path
             }}
             className="w-full py-2 px-4 bg-secondary justify-start gap-2"
             description={currentUser?.username}
-            name={currentUser?.name}
+            name={
+              <div className="flex items-center gap-2">
+                {currentUser?.name}
+                {isSuperAdmin && (
+                  <span className="material-symbols-outlined large icon-filled text-warning-500 icon-sm">star</span>
+                )}
+              </div>
+            }
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" variant="flat">
-          <DropdownItem key="theme"
+          <DropdownItem
+            key="theme"
             closeOnSelect={false}
-            startContent={<span className="material-symbols-outlined">brightness_4</span>}
+            startContent={
+              <span className="material-symbols-outlined">brightness_4</span>
+            }
             endContent={<ThemeSwitch />}
           >
             Cambiar tema
           </DropdownItem>
-          <DropdownItem key="settings" startContent={
-            <span className="material-symbols-outlined">settings</span>
-          }>
+          <DropdownItem
+            key="settings"
+            startContent={
+              <span className="material-symbols-outlined">settings</span>
+            }
+          >
             Configuración
           </DropdownItem>
-          <DropdownItem key="logout" color="danger" onClick={logout} startContent={
-            <span className="material-symbols-outlined">logout</span>
-          }>
+          <DropdownItem
+            key="logout"
+            color="danger"
+            onClick={logout}
+            startContent={
+              <span className="material-symbols-outlined">logout</span>
+            }
+          >
             Cerrar Sesión
           </DropdownItem>
         </DropdownMenu>
@@ -110,4 +127,3 @@ function SideBarBottomContent() {
     </>
   );
 }
-

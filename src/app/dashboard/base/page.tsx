@@ -3,6 +3,34 @@
 import React, { useState } from "react";
 import Header from "@/components/Header";
 import { Card, Skeleton, Button } from "@nextui-org/react";
+import TeamCard from "@/components/TeamCard";
+
+const teams = [
+  {
+    id: 1,
+    teamName: "Equipo A",
+    enlaceName: "Andrea Martínez",
+    puntos: "Necesidades, Cruceros",
+    territorio: "Querétaro",
+    geoConfig: { level: "Municipios", values: ["m1", "m2", "m3", "m4"] }
+  },
+  {
+    id: 2,
+    teamName: "Equipo B",
+    enlaceName: "Juan Carlos Rodríguez",
+    puntos: "Encuestas",
+    territorio: "San Juan del Río",
+    geoConfig: { level: "Colonias", values: ["C1", "C2"] }
+  },
+  {
+    id: 3,
+    teamName: "Equipo B",
+    enlaceName: "Valentina Herrera",
+    puntos: "Toques, Publicidad",
+    territorio: "Corregidora",
+    geoConfig: { level: "Secciones Electorales", values: ["S1", "S2"] }
+  }
+];
 
 export default function BasePlatformWelcome() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -103,6 +131,21 @@ export default function BasePlatformWelcome() {
               </Button>
             </div>
           </Card>
+        </div>
+      </section>
+
+      <section className="mt-24">
+        <div className="grid grid-cols-4 gap-3">
+          {teams.map((team) => (
+            <TeamCard
+              key={team.id}
+              id={team.id}
+              teamName={team.teamName}
+              enlaceName={team.enlaceName}
+              puntos={team.puntos}
+              geoConfig={team.geoConfig}
+            />
+          ))}
         </div>
       </section>
     </div>
