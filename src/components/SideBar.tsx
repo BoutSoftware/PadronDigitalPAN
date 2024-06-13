@@ -4,7 +4,7 @@ import { useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authContext } from "@/contexts/AuthContext";
 import { ThemeSwitch } from "@/contexts/ThemeProvider";
-import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, Divider,} from "@nextui-org/react";
+import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, Divider, } from "@nextui-org/react";
 
 export default function SideBar() {
   const router = useRouter();

@@ -2,7 +2,7 @@
 "use client";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 const moduleList = [
   {
@@ -46,7 +46,6 @@ const moduleList = [
 export default function DropdownChangeModule({ currentModuleKey }: { currentModuleKey: string }) {
   const router = useRouter();
 
-  // TODO: Change to useMemo
   const currentModule = useMemo(() => {
     return moduleList.find((module) => {
       return module.key === currentModuleKey;
