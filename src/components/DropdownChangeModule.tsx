@@ -1,45 +1,57 @@
-/* eslint-disable indent */
+
 "use client";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
-import { ReactNode, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
-export default function DropdownChangeModule({ currentModule }: { currentModule: string }) {
+const moduleList = [
+  {
+    key: "visor",
+    icon: "map",
+    name: "Visor de Mapa",
+    href: "/dashboard/visor"
+  },
+  {
+    key: "whatsapp",
+    icon: "chat",
+    name: "WhatsApp",
+    href: "/dashboard/whatsapp"
+  },
+  {
+    key: "atencionCiudadana",
+    icon: "report",
+    name: "Atencion Ciudadana",
+    href: "/dashboard/atention"
+  },
+  {
+    key: "eventosYActividades",
+    icon: "i_events",
+    name: "Eventos y actividades",
+    href: "/dashboard/events"
+  },
+  {
+    key: "organigrama",
+    icon: "sort_by_alpha",
+    name: "WhatsApp",
+    href: "/dashboard/whatsapp"
+  },
+  {
+    key: "callCenter",
+    icon: "contact_phone",
+    name: "Call center",
+    href: "/dashboard/callCenter"
+  }
+];
 
-  const [buttonTriggerStartContent, setButtonTriggerStartContent] = useState<ReactNode>();
-  const [currentModuleName, setCurrentModuleName] = useState("");
+export default function DropdownChangeModule({ currentModuleKey }: { currentModuleKey: string }) {
+  const router = useRouter();
 
-  const handleChangeModule = (module: string) => {
-    switch (module) {
-      case "visor":
-        setButtonTriggerStartContent(<span className="material-symbols-outlined">map</span>);
-        setCurrentModuleName("Visor de mapa");
-        break;
-      case "whatsapp":
-        setButtonTriggerStartContent(<span className="material-symbols-outlined">chat</span>);
-        setCurrentModuleName("WhatsApp");
-        break;
-      case "atencionCiudadana":
-        setButtonTriggerStartContent(<span className="material-symbols-outlined">report</span>);
-        setCurrentModuleName("Atencion ciudadana");
-        break;
-      case "eventosYActividades":
-        setButtonTriggerStartContent(<span className="material-symbols-outlined">emoji_events</span>);
-        setCurrentModuleName("Eventos y actividades");
-        break;
-      case "organigrama":
-        setButtonTriggerStartContent(<span className="material-symbols-outlined">sort_by_alpha</span>);
-        setCurrentModuleName("Organigrama");
-        break;
-      case "callCenter":
-        setButtonTriggerStartContent(<span className="material-symbols-outlined">contact_phone</span>);
-        setCurrentModuleName("Call center");
-        break;
-    }
-  };
-
-  useEffect(() => {
-    handleChangeModule(currentModule);
-  }, []);
+  // TODO: Change to useMemo
+  const currentModule = useMemo(() => {
+    return moduleList.find((module) => {
+      return module.key === currentModuleKey;
+    })!;
+  }, [currentModuleKey]);
 
   return (
     <Dropdown>
@@ -49,21 +61,22 @@ export default function DropdownChangeModule({ currentModule }: { currentModule:
           size="lg"
           radius="none"
           className="text-primary-foreground"
-          startContent={buttonTriggerStartContent}
+          startContent={
+            <span className="material-symbols-outlined">{currentModule.icon}</span>
+          }
           endContent={<span className="material-symbols-outlined">unfold_more</span>}
           fullWidth>
-          {currentModuleName}
+          {currentModule.name}
         </Button>
       </DropdownTrigger>
       <DropdownMenu
         aria-label="Módulos Padrón Digital"
-        onAction={(key) => handleChangeModule(key as string)}>
-        <DropdownItem key="visor">Visor de mapa</DropdownItem>
-        <DropdownItem key="whatsapp">WhatsApp</DropdownItem>
-        <DropdownItem key="atencionCiudadana">Atención ciudadana</DropdownItem>
-        <DropdownItem key="eventosYActividades">Eventos y actividades</DropdownItem>
-        <DropdownItem key="organigrama">Organigrama</DropdownItem>
-        <DropdownItem key="callCenter">Call center</DropdownItem>
+        onAction={(key) => router.push(moduleList.find((module) => {
+          return module.key === key;
+        })!.href)}>
+        {
+          moduleList.map((module) => (<DropdownItem key={module.key}>{module.name}</DropdownItem>))
+        }
       </DropdownMenu>
     </Dropdown>
   );

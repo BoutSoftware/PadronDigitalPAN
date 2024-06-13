@@ -8,7 +8,7 @@ export default function LayoutVisor({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen">
       <div className="bg-primary flex flex-col w-full max-w-60 text-primary-foreground">
 
-        <DropdownChangeModule currentModule="visor" />
+        <DropdownChangeModule currentModuleKey="visor" />
 
         <Listbox>
           <ListboxItem
