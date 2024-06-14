@@ -46,8 +46,8 @@ export default function Login() {
     <div className="h-screen overflow-hidden flex flex-col justify-between items-center">
       <header className="flex justify-between items-center p-8 w-full">
         <div className="flex flex-row gap-4 items-center">
-          <div id="image" className="w-16 h-16 bg-blue-200"></div>
-          <h1 className="text-3xl font-normal text-[#113A5D]">Caminantes</h1>
+          <div id="image" className="w-16 h-16 bg-content3"></div>
+          <h1 className="text-3xl font-normal text-foreground">Caminantes</h1>
         </div>
 
         {/* Development Credits */}
@@ -63,14 +63,11 @@ export default function Login() {
             Bout
           </Link>
         </span>
-      </header>
+      </header >
 
-      <div
-        id="main"
-        className="flex flex-row justify-between max-w-5xl w-full px-16"
-      >
-        <div id="form" className="flex flex-col gap-4 w-2/6">
-          <h2 className="text-2xl text-[#113A5D]">Inicia sesión</h2>
+      <div className="flex flex-row justify-between max-w-5xl w-full px-16">
+        <div className="flex flex-col gap-4 w-2/6">
+          <h2 className="text-2xl text-foreground">Inicia sesión</h2>
 
           <form
             className="flex flex-col items-start gap-8"
@@ -97,14 +94,14 @@ export default function Login() {
               autoComplete="current-password"
               isRequired
             />
-            <Button className="py-2 px-3 bg-[#FF3EA5] text-white" type="submit">
+            <Button className="py-2 px-3 bg-accent text-white" type="submit">
               Iniciar Sesión
             </Button>
           </form>
         </div>
 
         {/* TODO: Add image */}
-        <div id="image" className="w-3/6 bg-blue-200"></div>
+        <div id="image" className="w-3/6 bg-content3"></div>
       </div>
 
       <footer>
@@ -116,22 +113,22 @@ export default function Login() {
           className="w-screen h-20"
         />
 
-        <div className="flex flex-row justify-between bg-[#163172] p-8 -mt-1">
+        <div className="flex flex-row justify-between bg-secondary p-8 -mt-1">
           <div className="flex flex-col gap-2">
-            <Skeleton className="h-3 w-36 rounded-lg bg-slate-50" />
-            <Skeleton className="h-3 w-32 rounded-lg bg-slate-50" />
+            <Skeleton className="h-3 w-36 rounded-lg" />
+            <Skeleton className="h-3 w-32 rounded-lg" />
           </div>
           <div className="flex flex-col gap-2 text-center items-center">
-            <p className="text-xl text-slate-50">Caminantes</p>
-            <Skeleton className="h-3 w-36 rounded-lg bg-slate-50" />
-            <Skeleton className="h-3 w-32 rounded-lg bg-slate-50" />
+            <p className="text-xl text-primary-foreground">Caminantes</p>
+            <Skeleton className="h-3 w-36 rounded-lg" />
+            <Skeleton className="h-3 w-32 rounded-lg" />
           </div>
           <div className="flex flex-col gap-2 items-end">
-            <Skeleton className="h-3 w-36 rounded-lg bg-slate-50" />
-            <Skeleton className="h-3 w-32 rounded-lg bg-slate-50" />
+            <Skeleton className="h-3 w-36 rounded-lg" />
+            <Skeleton className="h-3 w-32 rounded-lg" />
           </div>
         </div>
       </footer>
-    </div>
+    </div >
   );
 }
