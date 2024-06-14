@@ -3,6 +3,7 @@ import { fakeModuleAdmins, fakeModuleStructCoor, fakeModuleSubCoor, fakeModuleAu
 import { Button, Divider, Avatar, Input } from "@nextui-org/react";
 import Header from "@/components/Header";
 import { useState } from "react";
+import ModalStructCoor from "@/components/ModalStructCoor";
 
 interface fakeData {
   name: string
@@ -52,7 +53,7 @@ export default function Page() {
           <div className="flex flex-col">
             <div className="flex justify-between">
               <h2 className="text-xl mb-2">Coordinador de estructura</h2>
-              <Button color="primary">Agregar</Button>
+              <ModalStructCoor action="Agregar" />
             </div>
             {
               users?.coors.map((coor, index, array) => (
@@ -65,7 +66,7 @@ export default function Page() {
                         <span className="font-light text-zinc-400 text-sm">Estructura a cargo</span>
                       </div>
                     </div>
-                    <Button variant="light">Modificar</Button>
+                    <ModalStructCoor action="Modificar" coordinatorName={coor.name} />
                   </div>
                   {index !== (array.length - 1) && <Divider />}
                 </>
