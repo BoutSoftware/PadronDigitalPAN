@@ -8,16 +8,9 @@ import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownM
 
 export default function SideBar() {
   const router = useRouter();
-  const { isSuperAdmin, isLoggedIn } = useContext(authContext);
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      router.push("/dashboard/login");
-    }
-  }, [isLoggedIn, router]);
+  const { isSuperAdmin } = useContext(authContext);
 
   return (
-    // <div className="flex flex-col px-2 py-4 gap-4 w-full max-w-60 bg-primary text-primary-foreground shadow-lg">
     <Listbox
       color="secondary"
       aria-label="Main Navigation"
@@ -59,7 +52,6 @@ export default function SideBar() {
         </ListboxItem>
       </ListboxSection>
     </Listbox>
-    // </div>
   );
 }
 
