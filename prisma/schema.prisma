@@ -114,13 +114,13 @@ model Address {
 }
 
 model PendingAddress {
-  id        String               @id @default(auto()) @map("_id") @db.ObjectId
-  street    String
-  colonia   String
-  delgation String?
-  municipio String
-  status    StatusPendingAddress @default(NOT_VERIFIED)
-  addressId String               @unique @db.ObjectId
+  id         String               @id @default(auto()) @map("_id") @db.ObjectId
+  street     String
+  colonia    String
+  delegation String?
+  municipio  String
+  status     StatusPendingAddress @default(NOT_VERIFIED)
+  addressId  String               @unique @db.ObjectId
 
   Address Address? @relation(fields: [addressId], references: [id], onDelete: Cascade)
 }
@@ -193,27 +193,14 @@ model Visor_User {
   NeedCreators    Visor_Need[]
 }
 
-model Visor_PointTypes {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  name              String
-  structureId       String   @db.ObjectId
-  subCoordinatorIDs String[] @db.ObjectId
-  teamIDs           String[] @db.ObjectId
-  roundIds          String[] @db.ObjectId
-
-  Structure       Visor_Structure        @relation(fields: [structureId], references: [id])
-  SubCoordinators Visor_SubCoordinator[] @relation(fields: [subCoordinatorIDs], references: [id])
-  Teams           Visor_Team[]           @relation(fields: [teamIDs], references: [id])
-  VisorRound      Visor_Round[]          @relation(fields: [roundIds], references: [id])
-}
-
 model Visor_Structure {
-  id            String            @id @default(auto()) @map("_id") @db.ObjectId
-  structureType VisStructureTypes
-  coordinatorId String            @db.ObjectId
-  technicalId   String            @db.ObjectId
-  attachId      String            @db.ObjectId
-  auditorId     String            @db.ObjectId
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  structureType String
+  coordinatorId String   @db.ObjectId
+  technicalId   String   @db.ObjectId
+  attachId      String   @db.ObjectId
+  auditorId     String   @db.ObjectId
+  pointTypesIDs String[]
 
   Coordinator Visor_User @relation("CoordinatorRelation", fields: [coordinatorId], references: [id])
   Technical   Visor_User @relation("TechnicalRelation", fields: [technicalId], references: [id])
@@ -221,7 +208,6 @@ model Visor_Structure {
   Auditor     Visor_User @relation("AuditorRelation", fields: [auditorId], references: [id])
 
   VisorSubCoordinators Visor_SubCoordinator[]
-  VisorPointTypes      Visor_PointTypes[]
 }
 
 model Visor_SubCoordinator {
@@ -231,13 +217,12 @@ model Visor_SubCoordinator {
   category      String
   userId        String   @db.ObjectId
   technicalId   String   @db.ObjectId
-  pointTypesIDs String[] @db.ObjectId
+  pointTypesIDs String[]
   structureId   String   @db.ObjectId
 
-  User       Visor_User         @relation("SubCoordinatorRelation", fields: [userId], references: [id])
-  Technical  Visor_User         @relation("SubTechnicalRelation", fields: [technicalId], references: [id])
-  PointTypes Visor_PointTypes[] @relation(fields: [pointTypesIDs], references: [id])
-  Structure  Visor_Structure    @relation(fields: [structureId], references: [id])
+  User      Visor_User      @relation("SubCoordinatorRelation", fields: [userId], references: [id])
+  Technical Visor_User      @relation("SubTechnicalRelation", fields: [technicalId], references: [id])
+  Structure Visor_Structure @relation(fields: [structureId], references: [id])
 
   Auxiliaries Visor_Auxiliaries[]
 }
@@ -267,11 +252,10 @@ model Visor_Team {
   geographicConf VisGeoConf
   linkId         String     @db.ObjectId
   auxiliaryId    String     @db.ObjectId
-  pointTypesIDs  String[]   @db.ObjectId
+  pointTypesIDs  String[]
 
-  Link       Visor_User         @relation(fields: [linkId], references: [id])
-  Auxiliary  Visor_Auxiliaries  @relation(fields: [auxiliaryId], references: [id])
-  PointTypes Visor_PointTypes[] @relation(fields: [pointTypesIDs], references: [id])
+  Link      Visor_User        @relation(fields: [linkId], references: [id])
+  Auxiliary Visor_Auxiliaries @relation(fields: [auxiliaryId], references: [id])
 
   Caminantes Visor_Caminantes[]
   Rounds     Visor_Round[]
@@ -291,18 +275,17 @@ model Visor_Caminantes {
 }
 
 model Visor_Round {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt   DateTime       @default(now())
-  name        String
-  startedAt   DateTime
-  status      VisRoundStatus @default(NotStarted)
-  pointTypes  String[]       @db.ObjectId
-  createdById String         @db.ObjectId
-  teamId      String         @db.ObjectId
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime @default(now())
+  name          String
+  startedAt     DateTime
+  status        String
+  pointTypesIDs String[]
+  createdById   String   @db.ObjectId
+  teamId        String   @db.ObjectId
 
-  CreatedBy  Visor_User         @relation(fields: [createdById], references: [id])
-  Team       Visor_Team         @relation(fields: [teamId], references: [id])
-  PointTypes Visor_PointTypes[] @relation(fields: [pointTypes], references: [id])
+  CreatedBy Visor_User @relation(fields: [createdById], references: [id])
+  Team      Visor_Team @relation(fields: [teamId], references: [id])
 
   CheckPoints Visor_CheckPoint[]
 }
@@ -332,12 +315,12 @@ model Visor_Survey {
 }
 
 model Visor_Form {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt DateTime    @default(now())
+  id        String              @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime            @default(now())
   name      String
-  schema    VisSchema[]
+  schema    VisQuestionSchema[]
 
-  VisorBatch Visor_Batch[]
+  Batchs Visor_Batch[]
 }
 
 model Visor_Batch {
@@ -413,30 +396,9 @@ enum VisRoles {
   User
 }
 
-enum VisStructureTypes {
-  Politico
-  Territorial
-  Gobierno
-}
-
 type VisGeoConf {
-  geographicLevel VisGeoLevel
+  geographicLevel String
   values          String[]
-}
-
-enum VisGeoLevel {
-  Municipios
-  Delegaciones
-  DistritosLocales
-  Secciones
-  Colonias
-}
-
-enum VisRoundStatus {
-  Active
-  NotStarted
-  Finished
-  Paused
 }
 
 enum VisBatchStatus {
@@ -446,7 +408,7 @@ enum VisBatchStatus {
   Paused
 }
 
-type VisSchema {
+type VisQuestionSchema {
   id           String
   title        String
   type         VisQuestionsType
