@@ -77,6 +77,11 @@ export const STATUS_RONDAS = [
     nombre: "TERMINADA",
     color: "roja",
   },
+  {
+    id: "noiniciada",
+    nombre: "NO INICIADA",
+    color: "blanco",
+  },
 ];
 
 
