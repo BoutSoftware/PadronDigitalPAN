@@ -1,28 +1,25 @@
-// export type VisRole = "Admin" | "User" | "Viewer" | undefined;
-// export type WhaRole = "Admin" | "User" | "Sender" | undefined;
-// export type SuperRole = "SuperAdmin" | undefined;
+export type VisorRole = "Admin" | "User" | "Viewer" | null;
+export type WhatsRole = "Admin" | "User" | "Sender" | null;
 
-// export interface UserRoles {
-//   // module: roleType
-//   vis: VisRole;
-//   wha: WhaRole;
-//   xd: "Admin" | "User" | "Viewer" | "Sender" | "SuperAdmin" | undefined;
-//   usu: "Admin" | "User" | undefined;
-//   sup?: SuperRole;
-// }
+export type ModuleName = "visor" | "whats";
 
-// export type Modules = keyof UserRoles;
+// What the server will send
+export type UserRoles = {
+  // [key in ModuleName]: VisorRole | WhatsRole;
+  visor: VisorRole;
+  whats: WhatsRole;
+}
 
-// export const modulesList: { [key in keyof UserRoles]: string } = {
-//   vis: "Visor",
-//   wha: "Whatsapp",
-//   xd: "Xtreme Dashboard",
-//   usu: "Usuarios",
-// } as const;
-
-// export const rolesList: { [key in keyof UserRoles]: (UserRoles[key])[] } = {
-//   vis: ["Admin", "User", "Viewer", undefined],
-//   wha: ["Admin", "User", "Sender", undefined],
-//   xd: ["Admin", "User", "Viewer", "Sender", "SuperAdmin", undefined],
-//   usu: ["Admin", "User", undefined],
-// };
+// List of modules and roles
+export const modulesList: { id: ModuleName, name: string, roles: (UserRoles[ModuleName])[] }[] = [
+  {
+    id: "visor",
+    name: "Visor",
+    roles: ["Admin", "User", "Viewer", null] as VisorRole[]
+  },
+  {
+    id: "whats",
+    name: "Whatsapp",
+    roles: ["Admin", "User", "Sender", null] as WhatsRole[]
+  },
+];

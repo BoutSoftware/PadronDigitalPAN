@@ -17,15 +17,47 @@ const config: Config = {
     themes: {
       dark: {
         colors: {
-          primary: "#3F72AF",
-          secondary: "#112D4E",
+          primary: {
+            50: "#e6f3ff",
+            100: "#c0d7f1",
+            200: "#98bce5",
+            300: "#71a1db",
+            400: "#4b86d1",
+            500: "#336db7",
+            600: "#27558f",
+            700: "#1b3c67",
+            800: "#0e243f",
+            900: "#020c19",
+            DEFAULT: "#112D4E",
+            foreground: "#F8F8F8",
+          },
+          secondary: {
+            DEFAULT: "#112D4E",
+            foreground: "#F8F8F8",
+          },
           accent: "#F7418F"
         } as Partial<ThemeColors & { accent: string }>,
       },
       light: {
         colors: {
-          primary: "#3F72AF",
-          secondary: "#112D4E",
+          primary: {
+            50: "#e6f3ff",
+            100: "#c0d7f1",
+            200: "#98bce5",
+            300: "#71a1db",
+            400: "#4b86d1",
+            500: "#336db7",
+            600: "#27558f",
+            700: "#1b3c67",
+            800: "#0e243f",
+            900: "#020c19",
+            DEFAULT: "#112D4E",
+            foreground: "#F8F8F8",
+          },
+          secondary: {
+            DEFAULT: "#112D4E",
+            foreground: "#F8F8F8",
+          },
           accent: "#F7418F"
         } as Partial<ThemeColors & { accent: string }>,
       }

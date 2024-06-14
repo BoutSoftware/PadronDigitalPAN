@@ -1,4 +1,5 @@
-import { createContext, useEffect, useState } from "react";
+import { Switch } from "@nextui-org/react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface ThemeContext {
   theme: "light" | "dark" | undefined;
@@ -76,3 +77,22 @@ const ThemeScript = () => {
     />
   );
 };
+
+export function ThemeSwitch() {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+  return (
+    <Switch
+      isSelected={theme === "dark"}
+      onChange={toggleTheme}
+      endContent={<span>dark_mode</span>}
+      startContent={<span>light_mode</span>}
+      classNames={{
+        endContent: "flex items-center material-symbols-outlined icon-xs",
+        startContent: "flex items-center material-symbols-outlined icon-xs",
+        thumbIcon: "flex items-center material-symbols-outlined icon-xs",
+        // base: "fixed top-4 right-4",
+      }}
+    />
+  );
+}

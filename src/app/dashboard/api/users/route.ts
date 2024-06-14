@@ -1,7 +1,9 @@
 import prisma from "@/configs/database";
-import { hasIncompleteFields, sleep } from "@/utils";
-import { UserRoles } from "@prisma/client";
+import { hasIncompleteFields } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcrypt";
+import { nAccesses, parseUserRoles } from ".";
+import { UserRoles } from "@/configs/roles";
 
 export async function POST(request: NextRequest) {
   interface ReqBody { personId: string, username: string, password: string, roles: UserRoles; }
@@ -9,33 +11,91 @@ export async function POST(request: NextRequest) {
   const reqBody = await request.json() as ReqBody;
   const { personId, username, password, roles } = reqBody;
 
+  // Check if some fields are missing
   if (hasIncompleteFields({ personId, username, password, roles })) {
     return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
   }
 
+  // Check if theres a user with the same username
+  const userExists = await prisma.user.findUnique({ where: { username: username } });
+  if (userExists) {
+    return NextResponse.json({ code: "USER_EXISTS", message: "A user with the same username already exists" });
+  }
+
+  // Check if person already has a user
+  const personHasUser = await prisma.user.findFirst({ where: { personId: personId } });
+  if (personHasUser) {
+    return NextResponse.json({ code: "PERSON_HAS_USER", message: "The person already has a user" });
+  }
+
+  // Create user
+  const hashedPassword = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
     data: {
       personId: personId,
-      isSuperAdmin: false,
       username: username,
-      password: password,
-      roles: roles
+      password: hashedPassword,
+      roles: Object.keys(roles).map((key) => ({ module: key, role: roles[key as keyof UserRoles] })),
     }
   });
 
   return NextResponse.json({ code: "OK", message: "User created successfully", data: user });
 }
 
+
 export async function GET(request: NextRequest) {
   request.headers.has("Authorization");
 
-  await sleep(0);
+  try {
+    const page = parseInt(request.nextUrl.searchParams.get("page") || "") || undefined;
+    const elements = parseInt(request.nextUrl.searchParams.get("elements") || "") || undefined;
 
-  const data = await getUsers();
+    const data = await getUsers(page, elements);
 
-  return NextResponse.json({ code: "OK", message: "Users fetched successfully", data: data });
+    return NextResponse.json({ code: "OK", message: "Users fetched successfully", data: data });
+
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ code: "ERROR", message: "An error occurred" });
+  }
 }
 
+
+async function getUsers(page: number | undefined, elements: number | undefined) {
+  const data = await prisma.user.findMany({
+    where: {
+      active: true,
+    },
+    skip: page && elements ? (page - 1) * elements : undefined,
+    take: elements,
+    select: {
+      id: true,
+      roles: true,
+      active: true,
+      username: true,
+      isSuperAdmin: true,
+      Person: {
+        select: {
+          name: true,
+          fatherLastName: true,
+          motherLastName: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  const users = data.map(user => ({
+    ...user,
+    activeModules: nAccesses(user.roles),
+    roles: parseUserRoles(user.roles, user.active),
+  }));
+
+  return users;
+}
+
+
+// TODO: Remove or fix these comments
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // async function getUsersDBRules() {
 //   const users = await prisma.user.findMany({
@@ -133,26 +193,29 @@ export async function GET(request: NextRequest) {
 //   });
 // }
 
-async function getUsers() {
-  const users = await prisma.user.findMany({
-    include: {
-      Person: true,
-    }
-  });
+// async function getUsers() {
+//   const users = await prisma.user.findMany({
+//     include: {
+//       Person: true,
+//     }
+//   });
 
-  return users.map((user) => {
-    if (user.isSuperAdmin) {
-      Object.keys(user.roles).forEach((role) => {
-        user.roles[role as keyof UserRoles] = "Admin";
-      });
-    }
+//   return users.map((user) => {
+//     if (user.isSuperAdmin) {
+//       Object.keys(user.roles).forEach((role) => {
+//         user.roles[role as keyof UserRoles] = "Admin";
+//       });
+//     }
 
-    return {
-      id: user.id,
-      isSuperAdmin: user.isSuperAdmin,
-      username: user.username,
-      name: user.Person.name,
-      roles: user.roles
-    };
-  });
-}
+//     return {
+//       id: user.id,
+//       isSuperAdmin: user.isSuperAdmin,
+//       username: user.username,
+//       name: user.Person.name,
+//       roles: user.roles
+//     };
+//   });
+// }
+
+
+
