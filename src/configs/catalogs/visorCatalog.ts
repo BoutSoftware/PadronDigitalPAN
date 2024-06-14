@@ -6,14 +6,17 @@ export interface TiposPunto {
   estructuraId: typeof ESTRUCTURAS[number]["id"],
 }
 
-export interface TiposNecesidades {
+export interface CategoriasNecesidades {
   id: string,
   nombre: string,
-  categoriaId: typeof CATEGORIAS_NECESIDADES[number]["id"],
-  detalles: {
+  tipos: {
     id: string,
     nombre: string,
-    color: string
+    detalles: {
+      id: string,
+      nombre: string,
+      color: string
+    }[]
   }[]
 }
 
@@ -100,60 +103,59 @@ export const TIPOS_PUNTO: TiposPunto[] = [
   }
 ];
 
-export const CATEGORIAS_NECESIDADES = [
+export const CATEGORIAS_NECESIDADES: CategoriasNecesidades[] = [
   {
     id: "infraestructura",
     nombre: "Infraestructura",
+    tipos: [
+      {
+        id: "baches",
+        nombre: "Baches",
+        detalles: [
+          {
+            id: "pequeno",
+            nombre: "Pequeño",
+            color: "ffd966"
+          },
+          {
+            id: "mediano",
+            nombre: "Mediano",
+            color: "f6b26b"
+          },
+          {
+            id: "grande",
+            nombre: "Grande",
+            color: "e06666"
+          }
+        ]
+      },
+    ]
   },
   {
     id: "mantenimiento",
     nombre: "Mantenimiento",
-  },
-] as const;
-
-export const TIPOS_NECESIDADES: TiposNecesidades[] = [
-  {
-    id: "baches",
-    nombre: "Baches",
-    categoriaId: "infraestructura",
-    detalles: [
+    tipos: [
       {
-        id: "pequeno",
-        nombre: "Pequeño",
-        color: "ffd966"
+        id: "basura",
+        nombre: "Basura",
+        detalles: [
+          {
+            id: "poda",
+            nombre: "Poda",
+            color: "ffd966"
+          },
+          {
+            id: "tiliches",
+            nombre: "Tiliches",
+            color: "f6b26b"
+          },
+          {
+            id: "deshechos",
+            nombre: "Deshechos",
+            color: "e06666"
+          }
+        ]
       },
-      {
-        id: "mediano",
-        nombre: "Mediano",
-        color: "f6b26b"
-      },
-      {
-        id: "grande",
-        nombre: "Grande",
-        color: "e06666"
-      }
-    ]
-  },
-  {
-    id: "basura",
-    nombre: "Basura",
-    categoriaId: "mantenimiento",
-    detalles: [
-      {
-        id: "poda",
-        nombre: "Poda",
-        color: "ffd966"
-      },
-      {
-        id: "tiliches",
-        nombre: "Tiliches",
-        color: "f6b26b"
-      },
-      {
-        id: "deshechos",
-        nombre: "Deshechos",
-        color: "e06666"
-      }
     ]
   },
 ];
@@ -181,10 +183,6 @@ export const getTipoPuntos = (ids: string[]) => {
   return TIPOS_PUNTO.filter(tipo => ids.includes(tipo.id));
 };
 
-// Aqui se manda el id de una categoria de necesidad, y te va a regresar una lista con los tipos de necesidades con sus detalles
-export const getTiposNecesidad = (id: string) => {
-  return TIPOS_NECESIDADES.filter(tipo => tipo.categoriaId === id);
-};
 
 
 
