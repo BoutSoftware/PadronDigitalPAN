@@ -176,7 +176,7 @@ model Visor_User {
   active    Boolean  @default(true)
   userId    String   @db.ObjectId
   title     String?
-  rol       VisRoles
+  rol       VisRoles?
 
   User            User                   @relation(fields: [userId], references: [id])
   Coordinators    Visor_Structure[]      @relation("CoordinatorRelation")
