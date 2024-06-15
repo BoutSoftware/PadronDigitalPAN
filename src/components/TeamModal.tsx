@@ -257,8 +257,8 @@ export default function TeamModal({ structureName }: TeamModalProps) {
                   <div className={`${selectedGeographicValues.length > 4 ? 'overflow-y-scroll h-24' : ''} px-8 flex flex-col gap-2`}>
                     {selectedGeographicValues.map((value) => (
                       <div key={value.key} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
-                        <span>{value.name}</span>
-                        <span className="material-symbols-outlined cursor-pointer" onClick={() => handleRemoveGeographicValue(value.key)}>close</span>
+                        <span className="text-sm">{value.name}</span>
+                        <Button isIconOnly className="material-symbols-outlined bg-transparent hover:bg-accent hover:text-white" size="sm" onClick={() => handleRemoveGeographicValue(value.key)}>close</Button>
                       </div>
                     ))}
                   </div>
@@ -289,11 +289,11 @@ export default function TeamModal({ structureName }: TeamModalProps) {
                       </SelectItem>
                     ))}
                   </Autocomplete>
-                  <div className={`mt-4 ${selectedTeamMembers.length > 4 ? 'overflow-y-scroll h-24' : ''} px-8`}>
+                  <div className={`mt-4 ${selectedTeamMembers.length > 4 ? 'overflow-y-scroll h-24' : ''} px-8 flex flex-col gap-2`}>
                     {selectedTeamMembers.map((member) => (
-                      <div key={member.key} className="flex justify-between items-center">
+                      <div key={member.key} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
                         <span>{member.name}</span>
-                        <span className="material-symbols-outlined cursor-pointer" onClick={() => handleRemoveTeamMember(member.key)}>close</span>
+                        <Button isIconOnly className="material-symbols-outlined bg-transparent hover:bg-accent hover:text-white" size="sm" onClick={() => handleRemoveTeamMember(member.key)}>close</Button>
                       </div>
                     ))}
                   </div>
