@@ -36,7 +36,8 @@ interface TeamModalProps {
 }
 
 export default function TeamModal({ structureName }: TeamModalProps) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  // const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("Jerarquia");
   const [selectedGeographicValues, setSelectedGeographicValues] = useState<GeographicValue[]>([]);
   const [selectedTeamMembers, setSelectedTeamMembers] = useState<Member[]>([]);
@@ -141,7 +142,7 @@ export default function TeamModal({ structureName }: TeamModalProps) {
       setActiveTab(tabs[currentIndex + 1]);
     } else {
       // Acción final, por ejemplo, agregar el equipo
-      onOpenChange();
+      setIsOpen(false)
     }
   };
 
@@ -180,7 +181,7 @@ export default function TeamModal({ structureName }: TeamModalProps) {
   return (
     <>
       <Button
-        onPress={onOpen}
+        onPress={() => setIsOpen(true)}
         color="primary"
         radius="sm"
         endContent={
@@ -189,11 +190,11 @@ export default function TeamModal({ structureName }: TeamModalProps) {
       >
         Agregar equipo
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center" size="xl">
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} placement="top-center" size="xl">
         <ModalContent>
           <>
             <ModalHeader className="flex flex-col gap-1">Agregando Equipo</ModalHeader>
-            <p className="text-sm text-gray-500 px-6">{structureName}</p>
+            <p className="text-sm text-gray-500 px-6">Estructura: {structureName}</p>
             <Tabs selectedKey={activeTab} onSelectionChange={handleTabChange} className="px-5 mt-4">
               <Tab key="Jerarquia" title="Jerarquia">
                 <ModalBody>
@@ -253,9 +254,9 @@ export default function TeamModal({ structureName }: TeamModalProps) {
                       </SelectItem>
                     ))}
                   </Autocomplete>
-                  <div className={`mt-4 ${selectedGeographicValues.length > 4 ? 'overflow-y-scroll h-24' : ''} px-8`}>
+                  <div className={`${selectedGeographicValues.length > 4 ? 'overflow-y-scroll h-24' : ''} px-8 flex flex-col gap-2`}>
                     {selectedGeographicValues.map((value) => (
-                      <div key={value.key} className="flex justify-between items-center">
+                      <div key={value.key} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
                         <span>{value.name}</span>
                         <span className="material-symbols-outlined cursor-pointer" onClick={() => handleRemoveGeographicValue(value.key)}>close</span>
                       </div>
