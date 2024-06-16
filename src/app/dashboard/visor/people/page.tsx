@@ -109,7 +109,7 @@ export default function Page() {
                       <Avatar showFallback name={aux.name} />
                       <div className="flex flex-col">
                         <span className="font-light">{aux.name}</span>
-                        <span className="font-light text-zinc-400 text-sm">3 Tipos de puntos asignados</span>
+                        <span className="font-light text-zinc-400 text-sm">Querétaro, Corregidora, El Marqués</span>
                       </div>
                     </div>
                     <Button variant="light">Modificar</Button>
