@@ -1,6 +1,6 @@
 'use client'
 
-import TeamModal from "@/components/TeamModal";
+import TeamModal from "@/components/visor/teams/TeamModal";
 
 export default function Teams() {
     return (

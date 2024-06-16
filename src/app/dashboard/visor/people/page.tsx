@@ -2,7 +2,7 @@
 import { fakeModuleAdmins, fakeStructCoors, fakeModuleSubCoor, fakeModuleAux, fakeModuleUsers } from "@/utils/Fake";
 import { Button, Divider, Avatar, Input } from "@nextui-org/react";
 import Header from "@/components/Header";
-import { useState } from "react";
+import React, { useState } from "react";
 import ModalStructCoor from "@/components/visor/people/ModalStructCoor";
 
 interface fakeData {
@@ -31,7 +31,7 @@ export default function Page() {
   });
 
   return (
-    <div className="p-4 w-full flex flex-col gap-4">
+    <div className="p-4 w-full flex flex-col gap-4 overflow-y-auto">
       <Header title="Personas" />
       {/* <Input
         label="Integrante"
@@ -44,13 +44,13 @@ export default function Page() {
             <h2 className="text-xl mb-2">Administradores de módulo</h2>
             {
               users?.admins.map((admin, index, array) => (
-                <>
+                <React.Fragment key={index}>
                   <div key={index} className="flex gap-2 items-center my-3">
                     <Avatar showFallback name={admin.name} />
                     <span className="font-light">{admin.name}</span>
                   </div>
                   {index !== (array.length - 1) && <Divider />}
-                </>
+                </React.Fragment>
               ))
             }
           </div>
@@ -61,7 +61,7 @@ export default function Page() {
             </div>
             {
               users?.coors.map((coor, index, array) => (
-                <>
+                <React.Fragment key={index}>
                   <div key={index} className="flex gap-2 justify-between items-center my-3">
                     <div className="flex gap-2 items-center">
                       <Avatar showFallback name={coor.name} />
@@ -73,7 +73,7 @@ export default function Page() {
                     <ModalStructCoor coordinator={{ id: coor.id, name: coor.name, structureId: coor.structureId }} />
                   </div>
                   {index !== (array.length - 1) && <Divider />}
-                </>
+                </React.Fragment>
               ))
             }
           </div>
@@ -84,7 +84,7 @@ export default function Page() {
             </div>
             {
               users?.subs.map((sub, index, array) => (
-                <>
+                <React.Fragment key={index}>
                   <div key={index} className="flex gap-2 justify-between items-center my-3">
                     <div className="flex gap-2 items-center">
                       <Avatar showFallback name={sub.name} />
@@ -96,7 +96,7 @@ export default function Page() {
                     <Button variant="light">Modificar</Button>
                   </div>
                   {index !== (array.length - 1) && <Divider />}
-                </>
+                </React.Fragment>
               ))
             }
           </div>
@@ -107,7 +107,7 @@ export default function Page() {
             </div>
             {
               users?.auxs.map((aux, index, array) => (
-                <>
+                <React.Fragment key={index}>
                   <div key={index} className="flex gap-2 justify-between items-center my-3">
                     <div className="flex gap-2 items-center">
                       <Avatar showFallback name={aux.name} />
@@ -119,7 +119,7 @@ export default function Page() {
                     <Button variant="light">Modificar</Button>
                   </div>
                   {index !== (array.length - 1) && <Divider />}
-                </>
+                </React.Fragment>
               ))
             }
           </div>
@@ -128,13 +128,13 @@ export default function Page() {
           <h2 className="text-xl mb-2">Usuarios del módulo</h2>
           {
             users?.users.map((user, index, array) => (
-              <>
+              <React.Fragment key={index}>
                 <div key={index} className="flex gap-2 items-center my-3">
                   <Avatar showFallback name={user.name} />
                   <span className="font-light">{user.name}</span>
                 </div>
                 {index !== (array.length - 1) && <Divider />}
-              </>
+              </React.Fragment>
             ))
           }
         </div>

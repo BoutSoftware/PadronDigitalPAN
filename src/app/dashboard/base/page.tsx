@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Header from "@/components/Header";
 import { Card, Skeleton, Button } from "@nextui-org/react";
-import TeamCard from "@/components/TeamCard";
+import TeamCard from "@/components/visor/teams/TeamCard";
 
 const teams = [
   {

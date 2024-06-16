@@ -72,8 +72,6 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
     }
   }, [currentCoordinator]);
 
-  console.log({ formOptions, form })
-
   return (
     <>
       <Button

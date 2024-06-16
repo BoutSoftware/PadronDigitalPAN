@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 export default function LayoutVisor({ children }: { children: ReactNode }) {
 
   return (
-    <div className="flex min-h-screen items-stretch">
+    <div className="flex h-screen items-stretch overflow-hidden">
       <VisorSidebar />
       {children}
     </div>
