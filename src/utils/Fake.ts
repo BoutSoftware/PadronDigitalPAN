@@ -10,19 +10,25 @@ export const fakeModuleAdmins = [
     name: "Fernando Martínez Rodríguez"
   }
 ];
-  
-export const fakeModuleStructCoor = [
+
+export const fakeStructCoors = [
   {
-    name: "Adriana Luna Peña"
+    name: "Adriana Luna Peña",
+    id: "1",
+    structureId: "gubernamental"
   },
   {
-    name: "Víctor Álvarez Serrano"
+    name: "Víctor Álvarez Serrano",
+    id: "2",
+    structureId: "gubernamental"
   },
   {
-    name: "Gabriela Moreno Ortega"
+    name: "Gabriela Moreno Ortega",
+    id: "3",
+    structureId: "gubernamental"
   }
 ];
-  
+
 export const fakeModuleSubCoor = [
   {
     name: "Pablo Navarro Esquivel"
@@ -34,7 +40,7 @@ export const fakeModuleSubCoor = [
     name: "Emilio Ferrer Navarro"
   }
 ];
-  
+
 export const fakeModuleAux = [
   {
     name: "Mónica Alvarez García"
@@ -46,7 +52,7 @@ export const fakeModuleAux = [
     name: "Silvia Martínez Rivas"
   }
 ];
-  
+
 export const fakeModuleUsers = [
   {
     name: "Alejandro López García"
@@ -115,3 +121,32 @@ export const fakeModuleUsers = [
     name: "Clara Moreno Castillo"
   }
 ];
+
+export const fakeCoordinators = [
+  {
+    id: "4",
+    name: "Javier Elihu Zamudio"
+  },
+]
+
+export const fakeTechnicals = [
+  {
+    id: "3",
+    name: "Felipe"
+  }
+]
+
+export const fakeStrctures = [
+  {
+    id: "gubernamental",
+    name: "Gubernamental"
+  },
+  {
+    id: "politica",
+    name: "Política"
+  },
+  {
+    id: "territorial",
+    name: "Territorial"
+  },
+]

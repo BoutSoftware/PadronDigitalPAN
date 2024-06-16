@@ -1,17 +1,21 @@
 "use client";
-import { fakeModuleAdmins, fakeModuleStructCoor, fakeModuleSubCoor, fakeModuleAux, fakeModuleUsers } from "@/utils/Fake";
+import { fakeModuleAdmins, fakeStructCoors, fakeModuleSubCoor, fakeModuleAux, fakeModuleUsers } from "@/utils/Fake";
 import { Button, Divider, Avatar, Input } from "@nextui-org/react";
 import Header from "@/components/Header";
 import { useState } from "react";
-import ModalStructCoor from "@/components/ModalStructCoor";
+import ModalStructCoor from "@/components/visor/people/ModalStructCoor";
 
 interface fakeData {
-  name: string
+  name: string,
 }
 
 interface usersInterface {
   admins: fakeData[]
-  coors: fakeData[]
+  coors: {
+    name: string,
+    id: string
+    structureId: string
+  }[]
   subs: fakeData[]
   auxs: fakeData[]
   users: fakeData[]
@@ -20,7 +24,7 @@ interface usersInterface {
 export default function Page() {
   const [users, setUsers] = useState<usersInterface>({
     admins: fakeModuleAdmins,
-    coors: fakeModuleStructCoor,
+    coors: fakeStructCoors,
     subs: fakeModuleSubCoor,
     auxs: fakeModuleAux,
     users: fakeModuleUsers
@@ -29,12 +33,12 @@ export default function Page() {
   return (
     <div className="p-4 w-full flex flex-col gap-4">
       <Header title="Personas" />
-      <Input
+      {/* <Input
         label="Integrante"
         placeholder="Busca un integrante"
         type="text"
-      />
-      <div className="flex gap-12">
+      /> */}
+      <div className="flex gap-16 p-4">
         <div className="flex flex-col gap-4 flex-1">
           <div className="flex flex-col">
             <h2 className="text-xl mb-2">Administradores de módulo</h2>
@@ -53,7 +57,7 @@ export default function Page() {
           <div className="flex flex-col">
             <div className="flex justify-between">
               <h2 className="text-xl mb-2">Coordinador de estructura</h2>
-              <ModalStructCoor action="Agregar" />
+              <ModalStructCoor />
             </div>
             {
               users?.coors.map((coor, index, array) => (
@@ -66,7 +70,7 @@ export default function Page() {
                         <span className="font-light text-zinc-400 text-sm">Estructura a cargo</span>
                       </div>
                     </div>
-                    <ModalStructCoor action="Modificar" coordinatorName={coor.name} />
+                    <ModalStructCoor coordinator={{ id: coor.id, name: coor.name, structureId: coor.structureId }} />
                   </div>
                   {index !== (array.length - 1) && <Divider />}
                 </>
@@ -120,6 +124,7 @@ export default function Page() {
             }
           </div>
         </div>
+        <Divider orientation="vertical" />
         <div className="flex-1 flex flex-col">
           <h2 className="text-xl mb-2">Usuarios del módulo</h2>
           {
