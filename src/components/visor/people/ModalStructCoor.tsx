@@ -1,5 +1,5 @@
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import { fakeCoordinators, fakeStrctures, fakeTechnicals } from "@/utils/Fake";
 
 interface ModalStructCoorProps {
@@ -72,6 +72,8 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
     }
   }, [currentCoordinator]);
 
+  console.log({ formOptions, form })
+
   return (
     <>
       <Button
@@ -106,8 +108,9 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
                 label="Estructura"
                 placeholder="Selecciona una estructura"
                 selectedKeys={form.struct ? [form.struct] : []}
-                onSelectionChange={(key) => {
-                  setForm({ ...form, struct: key as string });
+                onSelectionChange={(selection) => {
+                  if (selection === "all") return;
+                  setForm({ ...form, struct: [...selection][0] as string });
                 }}
                 isRequired
               >
