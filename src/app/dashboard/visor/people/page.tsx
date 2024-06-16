@@ -124,7 +124,6 @@ export default function Page() {
             }
           </div>
         </div>
-        <Divider orientation="vertical" />
         <div className="flex-1 flex flex-col">
           <h2 className="text-xl mb-2">Usuarios del módulo</h2>
           {
