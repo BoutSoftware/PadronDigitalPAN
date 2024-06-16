@@ -34,15 +34,25 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       return NextResponse.json({ code: "INVALID_ROLE", message: "Invalid role" });
     }
 
-    // if module is "visor" create a visor_user
-    let visorUserCreated;
-    let visorUserUpdated;
+    // Data to return to front
+    const data: {
+      visorUser?: any;
+      updatedUser: {
+        module: string;
+        role: string | null;
+      }[];
+    } = {
+      visorUser: undefined,
+      updatedUser: []
+    };
 
     if (module === "visor" as ModuleName) {
-      // Check if user already has a visor user
+      // Get current visor User (if exists)
       const visorUser = await prisma.visor_User.findFirst({ where: { userId: id } });
+
       if (visorUser) {
-        visorUserUpdated = await prisma.visor_User.update({
+        // Update Visor user
+        data.visorUser = await prisma.visor_User.update({
           where: { id: visorUser.id },
           data: {
             rol: role as VisorRole,
@@ -52,7 +62,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         });
       } else {
         // Create visor user
-        visorUserCreated = await prisma.visor_User.create({
+        data.visorUser = await prisma.visor_User.create({
           data: {
             userId: id,
             rol: role as VisorRole,
@@ -76,10 +86,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       }
     });
 
-    const data = {
-      visorUser: visorUserCreated || visorUserUpdated,
-      updatedUser: updatedUser.roles
-    };
+    data.updatedUser = updatedUser.roles;
 
     return NextResponse.json({ code: "OK", message: "User updated successfully", data: data });
   } catch (error) {
