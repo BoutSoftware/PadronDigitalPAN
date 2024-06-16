@@ -34,6 +34,44 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       return NextResponse.json({ code: "INVALID_ROLE", message: "Invalid role" });
     }
 
+    // Data to return to front
+    const data: {
+      visorUser?: any;
+      updatedUser: {
+        module: string;
+        role: string | null;
+      }[];
+    } = {
+      visorUser: undefined,
+      updatedUser: []
+    };
+
+    if (module === "visor" as ModuleName) {
+      // Get current visor User (if exists)
+      const visorUser = await prisma.visor_User.findFirst({ where: { userId: id } });
+
+      if (visorUser) {
+        // Update Visor user
+        data.visorUser = await prisma.visor_User.update({
+          where: { id: visorUser.id },
+          data: {
+            rol: role as VisorRole,
+            active: role !== null,
+            title: role === "Admin" ? "Administrador" : null
+          }
+        });
+      } else {
+        // Create visor user
+        data.visorUser = await prisma.visor_User.create({
+          data: {
+            userId: id,
+            rol: role as VisorRole,
+            title: role === "Admin" ? "Administrador" : undefined
+          }
+        });
+      }
+    }
+
     // Update user roles
     const updatedUser = await prisma.user.update({
       where: { id },
@@ -48,7 +86,9 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       }
     });
 
-    return NextResponse.json({ code: "OK", message: "User updated successfully", data: updatedUser.roles });
+    data.updatedUser = updatedUser.roles;
+
+    return NextResponse.json({ code: "OK", message: "User updated successfully", data: data });
   } catch (error) {
     console.log(error);
     return NextResponse.json({ code: "ERROR", message: "An error occurred" });

@@ -1,4 +1,4 @@
-export type VisorRole = "Admin" | "User" | "Viewer" | null;
+export type VisorRole = "Admin" | "User" | "Coordinator" | "Technical" | null;
 export type WhatsRole = "Admin" | "User" | "Sender" | null;
 
 export type ModuleName = "visor" | "whats";
@@ -15,7 +15,7 @@ export const modulesList: { id: ModuleName, name: string, roles: (UserRoles[Modu
   {
     id: "visor",
     name: "Visor",
-    roles: ["Admin", "User", "Viewer", null] as VisorRole[]
+    roles: ["Admin", "User", "Coordinator", "Technical", null] as VisorRole[]
   },
   {
     id: "whats",
