@@ -78,8 +78,8 @@ export default function ModalStructCoor({ action, coordinatorName }: ModalStruct
               >
                 <SelectItem key="Politico">Política</SelectItem>
                 <SelectItem key="Gubernamental">Gubernamental</SelectItem>
-                <SelectItem key="OtraEstructura1">Otra estructura</SelectItem>
-                <SelectItem key="OtraEstructura2">Otra estructura</SelectItem>
+                <SelectItem key="OtraEstructura1">Dia E</SelectItem>
+                <SelectItem key="OtraEstructura2">Campaña</SelectItem>
               </Select>
               <Autocomplete
                 label="Técnico"
@@ -90,11 +90,9 @@ export default function ModalStructCoor({ action, coordinatorName }: ModalStruct
                 }}
                 isRequired
               >
-                <AutocompleteItem key="1">Nombre de prueba</AutocompleteItem>
-                <AutocompleteItem key="2">Opción</AutocompleteItem>
-                <AutocompleteItem key="3">Opción</AutocompleteItem>
-                <AutocompleteItem key="4">Opción</AutocompleteItem>
-                <AutocompleteItem key="5">Opción</AutocompleteItem>
+                {
+
+                }
               </Autocomplete>
               <Autocomplete
                 label="Adjunto"
