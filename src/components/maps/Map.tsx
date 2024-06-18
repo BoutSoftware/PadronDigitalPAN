@@ -41,6 +41,44 @@ export default function Map({ children, center = defaultMapCenter, zoom = defaul
         streetViewControl: false,
       });
 
+      const flightPlanCoordinates = [
+        { lat: 20.69661181570421, lng: -99.69102603354762 },
+        { lat: 21.018073, lng: -101.257358 },
+        { lat: 22.156469, lng: -100.985540 },
+        { lat: 20.479879, lng: -98.882404 },
+        { lat: 19.700781, lng: -101.184418 }
+      ];
+      const flightPath = new google.maps.Polyline({
+        path: flightPlanCoordinates,
+        geodesic: true,
+        strokeColor: "#f31260",
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+      });
+
+      flightPath.setMap(myMap);
+
+      // Define the LatLng coordinates for the polygon's path.
+      const triangleCoords = [
+        { lat: 25.774, lng: -80.19 },
+        { lat: 18.466, lng: -66.118 },
+        { lat: 32.321, lng: -64.757 },
+        { lat: 25.774, lng: -80.19 },
+      ];
+
+      // Construct the polygon.
+      const bermudaTriangle = new google.maps.Polygon({
+        paths: triangleCoords,
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#FF0000",
+        fillOpacity: 0.35,
+      });
+
+      bermudaTriangle.setMap(myMap);
+
+
       setLoader(loader);
       setMap(myMap);
     };
