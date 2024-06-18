@@ -185,3 +185,13 @@ export const fakeModuleUsers = [
     name: "Clara Moreno Castillo"
   }
 ];
+
+export const fakePointTypes = [
+  "Tipo de punto 1",
+  "Tipo de punto 2",
+  "Tipo de punto 3",
+  "Tipo de punto 4",
+  "Tipo de punto 5",
+  "Tipo de punto 6",
+  "Tipo de punto 7"
+];

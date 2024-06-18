@@ -1,6 +1,6 @@
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import { fakeModuleAdmins } from "@/utils/Fake";
+import { fakeModuleAdmins, fakeModuleUsers } from "@/utils/Fake";
 
 interface ModalStructCoorProps {
   action: "Modificar" | "Agregar";
@@ -16,7 +16,7 @@ interface SelectedOptions {
 
 export default function ModalStructCoor({ action, coordinatorName }: ModalStructCoorProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({
+  const [formValues, setFormValues] = useState<SelectedOptions>({
     structCoor: "",
     struct: "",
     tecnical: "",
@@ -25,12 +25,12 @@ export default function ModalStructCoor({ action, coordinatorName }: ModalStruct
 
   useEffect(() => {
     if (coordinatorName) {
-      setSelectedOptions({
-        ...selectedOptions,
+      setFormValues({
+        ...formValues,
         structCoor: coordinatorName
       });
     }
-  }, [coordinatorName]);
+  }, []);
 
   return (
     <>
@@ -51,11 +51,11 @@ export default function ModalStructCoor({ action, coordinatorName }: ModalStruct
               <Autocomplete
                 label="Coordinador de estructura"
                 placeholder="Seleccione un coordinador de estructura"
-                selectedKey={selectedOptions.structCoor}
+                selectedKey={formValues.structCoor}
                 onSelectionChange={(key) => {
-                  setSelectedOptions({ ...selectedOptions, structCoor: key as string });
+                  setFormValues({ ...formValues, structCoor: key as string });
                 }}
-                value={selectedOptions.structCoor}
+                value={formValues.structCoor}
                 isDisabled={action === "Modificar"}
                 isRequired
               >
@@ -70,9 +70,9 @@ export default function ModalStructCoor({ action, coordinatorName }: ModalStruct
               <Select
                 label="Estructura"
                 placeholder="Selecciona una estructura"
-                selectedKeys={selectedOptions.struct}
+                selectedKeys={formValues.struct}
                 onSelectionChange={(key) => {
-                  setSelectedOptions({ ...selectedOptions, struct: key as string });
+                  setFormValues({ ...formValues, struct: key as string });
                 }}
                 isRequired
               >
@@ -84,22 +84,24 @@ export default function ModalStructCoor({ action, coordinatorName }: ModalStruct
               <Autocomplete
                 label="Técnico"
                 placeholder="Selecciona un técnico"
-                selectedKey={selectedOptions.tecnical}
+                selectedKey={formValues.tecnical}
                 onSelectionChange={(key) => {
-                  setSelectedOptions({ ...selectedOptions, tecnical: key as string });
+                  setFormValues({ ...formValues, tecnical: key as string });
                 }}
                 isRequired
               >
                 {
-
+                  fakeModuleUsers.map((user) => (
+                    <AutocompleteItem key={user.name}>{user.name}</AutocompleteItem>
+                  ))
                 }
               </Autocomplete>
               <Autocomplete
                 label="Adjunto"
                 placeholder="Selecciona un adjunto"
-                selectedKey={selectedOptions.attach}
+                selectedKey={formValues.attach}
                 onSelectionChange={(key) => {
-                  setSelectedOptions({ ...selectedOptions, attach: key as string });
+                  setFormValues({ ...formValues, attach: key as string });
                 }}
                 isRequired
               >

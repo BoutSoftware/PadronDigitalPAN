@@ -4,6 +4,7 @@ import { Button, Divider, Avatar, Input } from "@nextui-org/react";
 import Header from "@/components/Header";
 import { useEffect, useState } from "react";
 import ModalStructCoor from "@/components/ModalStructCoor";
+import ModalSubCoor from "@/components/ModalSubCoor";
 
 interface admin {
   name: string
@@ -148,7 +149,7 @@ export default function Page() {
                 <h2 className="text-xl">Sub Coordinador</h2>
                 <span className="text-zinc-400">{usersFiltered.subs.length}/{users.subs.length}</span>
               </div>
-              <Button color="primary">Agregar</Button>
+              <ModalSubCoor action="Agregar" />
             </div>
             {
               usersFiltered?.subs.length > 0 ? (
@@ -162,7 +163,7 @@ export default function Page() {
                           <span className="font-light text-zinc-400 text-sm">3 Tipos de puntos asignados</span>
                         </div>
                       </div>
-                      <Button variant="light">Modificar</Button>
+                      <ModalSubCoor action="Modificar" subCoordinatorName={sub.name} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </>
