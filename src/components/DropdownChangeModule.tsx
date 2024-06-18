@@ -6,6 +6,12 @@ import { useMemo } from "react";
 
 const moduleList = [
   {
+    key: "base",
+    icon: "",
+    name: "Base del Padrón",
+    href: "/dashboard/base"
+  },
+  {
     key: "visor",
     icon: "map",
     name: "Visor de Mapa",

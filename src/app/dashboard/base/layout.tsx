@@ -1,4 +1,4 @@
-import SideBar from "@/components/SideBar";
+import BaseSideBar from "@/components/BaseSideBar";
 
 export default function BasePlatformLayout({
   children,
@@ -7,7 +7,7 @@ export default function BasePlatformLayout({
 }>) {
   return (
     <div className="flex flex-grow overflow-hidden h-screen">
-      <SideBar />
+      <BaseSideBar />
 
       <div className="flex flex-grow overflow-auto">
         {children}

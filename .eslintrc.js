@@ -10,8 +10,7 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "next/core-web-vitals",
   ],
-  "overrides": [
-  ],
+  "overrides": [],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -24,12 +23,11 @@ module.exports = {
   "rules": {
     "indent": [
       "error",
-      2
+      2,
+      {
+        "SwitchCase": 1
+      }
     ],
-    // "linebreak-style": [
-    //   "error",
-    //   "unix"
-    // ],
     "quotes": [
       "error",
       "double"
@@ -38,9 +36,6 @@ module.exports = {
       "error",
       "always"
     ],
-    // unused imports
-    // "@typescript-eslint/no-unused-vars": "error",
-    // @next/next/no-page-custom-font
     "@next/next/no-page-custom-font": "off",
     "@next/next/google-font-display": "off",
   }

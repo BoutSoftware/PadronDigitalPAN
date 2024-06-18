@@ -1,7 +1,9 @@
 import { Button, Link } from "@nextui-org/react";
 import NextLink from "next/link";
+import { redirect } from "next/navigation";
 
 export default function Home() {
+  return redirect("/dashboard")
   return (
     <main className="flex-1 p-4">
       <div className="flex flex-col gap-4 justify-start items-start">

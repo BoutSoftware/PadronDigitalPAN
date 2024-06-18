@@ -1,19 +1,13 @@
 "use client";
-import { fakeModuleAdmins, fakeModuleStructCoor, fakeModuleSubCoor, fakeModuleAux, fakeModuleUsers } from "@/utils/Fake";
+import { fakeModuleAdmins, fakeStructCoors, fakeModuleSubCoor, fakeModuleAux, fakeModuleUsers } from "@/utils/Fake";
 import { Button, Divider, Avatar, Input } from "@nextui-org/react";
 import Header from "@/components/Header";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModalStructCoor from "@/components/ModalStructCoor";
 import ModalSubCoor from "@/components/ModalSubCoor";
 
 interface admin {
   name: string
-}
-interface structCoordinator {
-  name: string
-  estructura: string
-  tecnico: string
-  adjunto: string
 }
 interface subCoordinator {
   name: string
@@ -32,8 +26,15 @@ interface auxCoordinator {
 
 interface usersInterface {
   userSearched?: string
-  admins: admin[];
-  coors: structCoordinator[]
+  admins: admin[]
+  coors: {
+    name: string,
+    id: string
+    structureId: string
+    estructura: string
+    tecnico: string
+    adjunto: string
+  }[]
   subs: subCoordinator[]
   auxs: auxCoordinator[]
   users: admin[]
@@ -63,7 +64,7 @@ export default function Page() {
 
       setUsers({
         admins: fakeModuleAdmins,
-        coors: fakeModuleStructCoor,
+        coors: fakeStructCoors,
         subs: fakeModuleSubCoor,
         auxs: fakeModuleAux,
         users: fakeModuleUsers
@@ -72,7 +73,7 @@ export default function Page() {
       setUsersFiltered({
         userSearched: "",
         admins: fakeModuleAdmins,
-        coors: fakeModuleStructCoor,
+        coors: fakeStructCoors,
         subs: fakeModuleSubCoor,
         auxs: fakeModuleAux,
         users: fakeModuleUsers
@@ -81,7 +82,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="p-4 w-full flex flex-col gap-4">
+    <div className="p-4 w-full flex flex-col gap-4 overflow-y-auto">
       <Header title="Personas" />
       <Input
         label="Integrante"
@@ -100,13 +101,13 @@ export default function Page() {
             {
               usersFiltered?.admins?.length > 0 ? (
                 usersFiltered?.admins.map((admin, index, array) => (
-                  <>
-                    <div key={index} className="flex gap-2 items-center my-3">
+                  <React.Fragment key={index}>
+                    <div className="flex gap-2 items-center my-3">
                       <Avatar showFallback name={admin.name} />
                       <span className="font-light">{admin.name}</span>
                     </div>
                     {index !== (array.length - 1) && <Divider />}
-                  </>
+                  </React.Fragment>
                 ))
               ) : (
                 <p className="my-8 text-zinc-400">Ningún elemento coincide con la búsqueda realizada</p>
@@ -124,8 +125,8 @@ export default function Page() {
             {
               usersFiltered?.coors.length > 0 ? (
                 usersFiltered?.coors.map((coor, index, array) => (
-                  <>
-                    <div key={index} className="flex gap-2 justify-between items-center my-3">
+                  <React.Fragment key={index}>
+                    <div className="flex gap-2 justify-between items-center my-3">
                       <div className="flex gap-2 items-center">
                         <Avatar showFallback name={coor.name} />
                         <div className="flex flex-col">
@@ -136,7 +137,7 @@ export default function Page() {
                       <ModalStructCoor action="Modificar" coordinatorName={coor.name} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
-                  </>
+                  </React.Fragment>
                 ))
               ) : (
                 <p className="my-8 text-zinc-400">Ningún elemento coincide con la búsqueda realizada</p>
@@ -154,8 +155,8 @@ export default function Page() {
             {
               usersFiltered?.subs.length > 0 ? (
                 usersFiltered?.subs.map((sub, index, array) => (
-                  <>
-                    <div key={index} className="flex gap-2 justify-between items-center my-3">
+                  <React.Fragment key={index}>
+                    <div className="flex gap-2 justify-between items-center my-3">
                       <div className="flex gap-2 items-center">
                         <Avatar showFallback name={sub.name} />
                         <div className="flex flex-col">
@@ -166,7 +167,7 @@ export default function Page() {
                       <ModalSubCoor action="Modificar" subCoordinatorName={sub.name} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
-                  </>
+                  </React.Fragment>
                 ))
               ) : (
                 <p className="my-8 text-zinc-400">Ningún elemento coincide con la búsqueda realizada</p>
@@ -184,7 +185,7 @@ export default function Page() {
             {
               usersFiltered?.auxs.length > 0 ? (
                 usersFiltered?.auxs.map((aux, index, array) => (
-                  <>
+                  <React.Fragment key={index}>
                     <div key={index} className="flex gap-2 justify-between items-center my-3">
                       <div className="flex gap-2 items-center">
                         <Avatar showFallback name={aux.name} />
@@ -196,7 +197,7 @@ export default function Page() {
                       <Button variant="light">Modificar</Button>
                     </div>
                     {index !== (array.length - 1) && <Divider />}
-                  </>
+                  </React.Fragment>
                 ))
               ) : (
                 <p className="my-8 text-zinc-400">Ningún elemento coincide con la búsqueda realizada</p>
@@ -212,13 +213,13 @@ export default function Page() {
           {
             usersFiltered?.users.length > 0 ? (
               usersFiltered?.users.map((user, index, array) => (
-                <>
+                <React.Fragment key={index}>
                   <div key={index} className="flex gap-2 items-center my-3">
                     <Avatar showFallback name={user.name} />
                     <span className="font-light">{user.name}</span>
                   </div>
                   {index !== (array.length - 1) && <Divider />}
-                </>
+                </React.Fragment>
               ))
             ) : (
               <p className="my-8 text-zinc-400">Ningún elemento coincide con la búsqueda realizada</p>

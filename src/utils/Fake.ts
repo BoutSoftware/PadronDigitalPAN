@@ -10,10 +10,12 @@ export const fakeModuleAdmins = [
     name: "Fernando Martínez Rodríguez"
   }
 ];
-  
-export const fakeModuleStructCoor = [
+
+export const fakeStructCoors = [
   {
     name: "Juan Carlos Pérez Gómez",
+    id:"1",
+    structureId:"gubernamental",
     estructura: "Gubernamental",
     tecnico: "María Elena López Martínez",
     adjunto: "Carlos Eduardo Sánchez Ruiz"
@@ -21,23 +23,29 @@ export const fakeModuleStructCoor = [
   {
     name: "Ana Isabel Rodríguez Torres",
     estructura: "Campaña",
+    id:"2",
+    structureId:"campaña",
     tecnico: "Luis Alberto Fernández Jiménez",
     adjunto: "Marta Cristina Gómez Morales"
   },
   {
     name: "Pedro Javier García Hernández",
+    id:"2",
+    structureId:"diae",
     estructura: "Día E",
     tecnico: "Lucía María Martín Sánchez",
     adjunto: "José Antonio Torres Pérez"
   },
   {
     name: "Laura Beatriz González Ramírez",
+    id:"4",
+    structureId:"politico",
     estructura: "Político",
     tecnico: "David Alejandro Romero Díaz",
     adjunto: "Elena Patricia Ruiz Fernández"
   }
 ];
-  
+
 export const fakeModuleSubCoor = [
   {
     "name": "Gabriel Antonio López Ramírez",
@@ -75,8 +83,7 @@ export const fakeModuleSubCoor = [
     "tecnico": "Roberto Carlos Sánchez Pérez",
     "tipoPunto": ["Logística", "Publicidad"]
   }
-]
-;
+];
   
 export const fakeModuleAux = [
   {
@@ -114,8 +121,7 @@ export const fakeModuleAux = [
     "municipios": ["Querétaro", "San Juan del Río", "Tequisquiapan"],
     "tecnico": "Luis Alberto Hernández Jiménez"
   }
-]
-;
+];
   
 export const fakeModuleUsers = [
   {
@@ -194,4 +200,32 @@ export const fakePointTypes = [
   "Tipo de punto 5",
   "Tipo de punto 6",
   "Tipo de punto 7"
+];
+export const fakeCoordinators = [
+  {
+    id: "4",
+    name: "Javier Elihu Zamudio"
+  },
+];
+
+export const fakeTechnicals = [
+  {
+    id: "3",
+    name: "Felipe"
+  }
+];
+
+export const fakeStructures = [
+  {
+    id: "gubernamental",
+    name: "Gubernamental"
+  },
+  {
+    id: "politica",
+    name: "Política"
+  },
+  {
+    id: "territorial",
+    name: "Territorial"
+  },
 ];
