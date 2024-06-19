@@ -1,6 +1,6 @@
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select } from "@nextui-org/react";
 import { Key, useEffect, useState } from "react";
-import { fakeCoordinators, fakeStrctures, fakeTechnicals } from "@/utils/Fake";
+import { fakeCoordinators, fakeStructures, fakeTechnicals } from "@/utils/Fake";
 
 interface ModalStructCoorProps {
   coordinator?: {
