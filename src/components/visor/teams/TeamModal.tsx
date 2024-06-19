@@ -36,7 +36,6 @@ interface TeamModalProps {
 }
 
 export default function TeamModal({ structureName }: TeamModalProps) {
-  // const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("Jerarquia");
   const [selectedGeographicValues, setSelectedGeographicValues] = useState<GeographicValue[]>([]);
@@ -49,85 +48,44 @@ export default function TeamModal({ structureName }: TeamModalProps) {
   const [geographicValues, setGeographicValues] = useState<GeographicValue[]>([]);
   const [links, setLinks] = useState<Link[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
+  const [teamName, setTeamName] = useState<string>("");
 
   const tabs = ["Jerarquia", "Tipo de punto", "Participantes"];
 
-  // Simulación de datos para los selects (se van a obtener desde la API)
+  //useEffect para obtener los datos de la API al montar el componente
   useEffect(() => {
-    // Simulación de carga de datos
-    const fetchCoordinationAssistants = () => {
-      const data: CoordinationAssistant[] = [
-        { key: "1", name: "Carlos Hernández" },
-        { key: "2", name: "María González" },
-        { key: "3", name: "Javier Méndez" },
-        { key: "4", name: "Ana Martínez" },
-        { key: "5", name: "Luis Pérez" },
-        { key: "6", name: "Gabriela Ramírez" },
-      ];
-      setCoordinationAssistants(data);
+    const fetchData = async () => {
+      try {
+        const [coordinationRes, pointTypesRes, geographicLevelsRes, geographicValuesRes, linksRes, membersRes] = await Promise.all([
+          fetch('/api/coordinationAssistants'),
+          fetch('/api/pointTypes'),
+          fetch('/api/geographicLevels'),
+          fetch('/api/geographicValues'),
+          fetch('/api/links'),
+          fetch('/api/members')
+        ]);
+
+        const [coordinationData, pointTypesData, geographicLevelsData, geographicValuesData, linksData, membersData] = await Promise.all([
+          coordinationRes.json(),
+          pointTypesRes.json(),
+          geographicLevelsRes.json(),
+          geographicValuesRes.json(),
+          linksRes.json(),
+          membersRes.json()
+        ]);
+
+        setCoordinationAssistants(coordinationData);
+        setPointTypes(pointTypesData);
+        setGeographicLevels(geographicLevelsData);
+        setGeographicValues(geographicValuesData);
+        setLinks(linksData);
+        setMembers(membersData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
-    const fetchPointTypes = () => {
-      const data: PointType[] = [
-        { key: "1", name: "Necesidad" },
-        { key: "2", name: "Publicidad" },
-        { key: "3", name: "Encuestas" },
-        { key: "4", name: "Toques" },
-      ];
-      setPointTypes(data);
-    };
-
-    const fetchGeographicLevels = () => {
-      const data: GeographicLevel[] = [
-        { key: "1", name: "Municipios" },
-        { key: "2", name: "Entidades" },
-        { key: "3", name: "Colonias" },
-      ];
-      setGeographicLevels(data);
-    };
-
-    const fetchGeographicValues = () => {
-      const data: GeographicValue[] = [
-        { key: "1", name: "Querétaro" },
-        { key: "2", name: "San Juan del Río" },
-        { key: "3", name: "El Marqués" },
-        { key: "4", name: "Corregidora" },
-        { key: "5", name: "Tequisquiapan" },
-      ];
-      setGeographicValues(data);
-    };
-
-    const fetchLinks = () => {
-      const data: Link[] = [
-        { key: "1", name: "Juan López" },
-        { key: "2", name: "Sofía Torres" },
-        { key: "3", name: "Ricardo Mendoza" },
-        { key: "4", name: "Elena Cruz" },
-        { key: "5", name: "Miguel Ángel" },
-        { key: "6", name: "Patricia Díaz" },
-      ];
-      setLinks(data);
-    };
-
-    const fetchMembers = () => {
-      const data: Member[] = [
-        { key: "1", name: "Fernando Salinas" },
-        { key: "2", name: "Rosa Martínez" },
-        { key: "3", name: "Carlos Romero" },
-        { key: "4", name: "Lucía Sánchez" },
-        { key: "5", name: "Manuel Ortiz" },
-        { key: "6", name: "Laura Gutiérrez" },
-      ];
-      setMembers(data);
-    };
-
-    // Llamar a las funciones de carga de datos
-    fetchCoordinationAssistants();
-    fetchPointTypes();
-    fetchGeographicLevels();
-    fetchGeographicValues();
-    fetchLinks();
-    fetchMembers();
+    fetchData();
   }, []);
 
   // Maneja el cambio de pestañas en el modal
@@ -141,8 +99,7 @@ export default function TeamModal({ structureName }: TeamModalProps) {
     if (currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
     } else {
-      // Acción final, por ejemplo, agregar el equipo
-      setIsOpen(false)
+      handleSubmit();
     }
   };
 
@@ -176,6 +133,37 @@ export default function TeamModal({ structureName }: TeamModalProps) {
     setSelectedTeamMembers(
       selectedTeamMembers.filter((member) => member.key !== key)
     );
+  };
+
+  // Función para enviar los datos del equipo a la API
+  const handleSubmit = async () => {
+    const teamData = {
+      name: teamName,
+      coordinationAssistant: coordinationAssistants.find((ca) => ca.key === "1")?.name,
+      pointTypes: selectedGeographicValues.map(gv => gv.name),
+      geographicValues: selectedGeographicValues.map(gv => gv.name),
+      members: selectedTeamMembers.map(m => m.name),
+      structureName
+    };
+
+    try {
+      const response = await fetch('/api/createTeam', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(teamData)
+      });
+
+      if (response.ok) {
+        console.log("Team created successfully");
+        setIsOpen(false);
+      } else {
+        console.error("Error creating team:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error creating team:", error);
+    }
   };
 
   return (
@@ -213,6 +201,7 @@ export default function TeamModal({ structureName }: TeamModalProps) {
                     label="Nombre del equipo"
                     placeholder="Escribe el nombre del equipo"
                     isRequired
+                    onChange={(e) => setTeamName(e.target.value)}
                   />
                 </ModalBody>
               </Tab>
@@ -311,4 +300,3 @@ export default function TeamModal({ structureName }: TeamModalProps) {
     </>
   );
 }
-
