@@ -58,6 +58,10 @@ export async function GET() {
       }
     });
 
+    if (!teams.length) {
+      return NextResponse.json({ code: "NOT_FOUND", message: "No teams found" });
+    }
+
     const data: StructureTeams[] = teams.reduce((acc, team) => {
       const structure = team.Auxiliary.SubCoordinator.Structure;
       const { id: structureId, structureType } = structure;
