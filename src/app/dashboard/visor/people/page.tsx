@@ -4,6 +4,7 @@ import { Button, Divider, Avatar, Input } from "@nextui-org/react";
 import Header from "@/components/Header";
 import React, { useState } from "react";
 import ModalStructCoor from "@/components/visor/people/ModalStructCoor";
+import AuxiliaresModal from "@/components/visor/people/AuxiliaresModal";
 
 interface fakeData {
   name: string,
@@ -17,7 +18,11 @@ interface usersInterface {
     structureId: string
   }[]
   subs: fakeData[]
-  auxs: fakeData[]
+  auxs: {
+    name: string,
+    id: string
+    structureId: string
+  }[]
   users: fakeData[]
 }
 
@@ -103,7 +108,7 @@ export default function Page() {
           <div className="flex flex-col">
             <div className="flex justify-between">
               <h2 className="text-xl mb-2">Auxiliar de coordinación</h2>
-              <Button color="primary">Agregar</Button>
+              <AuxiliaresModal/>
             </div>
             {
               users?.auxs.map((aux, index, array) => (
@@ -116,7 +121,7 @@ export default function Page() {
                         <span className="font-light text-zinc-400 text-sm">Querétaro, Corregidora, El Marqués</span>
                       </div>
                     </div>
-                    <Button variant="light">Modificar</Button>
+                    <AuxiliaresModal auxCoordinator={{ id: aux.id, name: aux.name, structureId: aux.structureId }} />
                   </div>
                   {index !== (array.length - 1) && <Divider />}
                 </React.Fragment>

@@ -43,13 +43,19 @@ export const fakeModuleSubCoor = [
 
 export const fakeModuleAux = [
   {
-    name: "Mónica Alvarez García"
+    name: "Adriana Luna Peña",
+    id: "1",
+    structureId: "gubernamental"
   },
   {
-    name: "Guillermo López Torres"
+    name: "Víctor Álvarez Serrano",
+    id: "2",
+    structureId: "gubernamental"
   },
   {
-    name: "Silvia Martínez Rivas"
+    name: "Gabriela Moreno Ortega",
+    id: "3",
+    structureId: "gubernamental"
   }
 ];
 
