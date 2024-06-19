@@ -35,7 +35,7 @@ function VisorSidebar() {
       color="secondary"
       aria-label="Visor Navigation"
       onAction={(key) => { router.push(String(key)); }}
-      className={`hidden lg:flex items-center px-2 py-4 max-w-60 bg-primary text-primary-foreground ${isCaminante && "!hidden"} ${!isOpen && "w-4 p-0 hide-children"}`}
+      className={`hidden lg:flex items-center px-2 py-4 max-w-60 bg-primary text-primary-foreground transition-all ${isCaminante && "!hidden"} ${!isOpen && "w-24 p-0 hide-children"}`}
     >
       <ListboxItem
         startContent={<span className="material-symbols-outlined">groups</span>}

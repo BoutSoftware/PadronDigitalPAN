@@ -3,6 +3,7 @@ import TeamModal from "./TeamModal";
 import TeamCard from "./TeamCard";
 import { useEffect, useState } from "react";
 import { fakeTeams } from "@/utils/Fake";
+import { Divider } from "@nextui-org/react";
 
 interface TeamsOfAStructureProps {
   structureName: string
@@ -29,21 +30,22 @@ export default function TeamsOfAStructure({ structureName }: TeamsOfAStructurePr
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl">{structureName}</h2>
+        <h2 className="text-2xl">{structureName}</h2>
         <TeamModal structureName={structureName} />
       </div>
-      <div className="flex flex-wrap gap-8">
+      <Divider />
+      <div className="flex flex-wrap gap-6">
         {
           teams?.map((team, index) => (
             <TeamCard
               key={index}
-              enlaceName={team.enlace}
+              enlace={team.enlace}
               geoConfig={team.geoConfig}
               puntos={team.pointTypes.join(", ")}
               id={index}
-              teamName={team.teamName} />
+              team={team.teamName} />
           ))
         }
       </div>
