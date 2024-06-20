@@ -1,22 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input, Tabs, Tab, Select, SelectItem, Autocomplete } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Tabs, Tab, Select, SelectItem, Autocomplete } from "@nextui-org/react";
+import { TIPOS_PUNTO, CONFIGURACIONES_GEOGRAFICAS } from "../../../configs/catalogs/visorCatalog";
 
 interface CoordinationAssistant {
-  key: string;
-  name: string;
-}
-
-interface PointType {
-  key: string;
-  name: string;
-}
-
-interface GeographicLevel {
-  key: string;
-  name: string;
-}
-
-interface GeographicValue {
   key: string;
   name: string;
 }
@@ -35,147 +21,117 @@ interface TeamModalProps {
   structureName: string;
 }
 
-export default function TeamModal({ structureName }: TeamModalProps) {
-  // const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("Jerarquia");
-  const [selectedGeographicValues, setSelectedGeographicValues] = useState<GeographicValue[]>([]);
-  const [selectedTeamMembers, setSelectedTeamMembers] = useState<Member[]>([]);
-
-  // Estados para almacenar las opciones de los selects
+  const [selectedGeographicValues, setSelectedGeographicValues] = useState<string[]>([]);
+  const [selectedPointTypes, setSelectedPointTypes] = useState<string[]>([]);
+  const [selectedTeamMembers, setSelectedTeamMembers] = useState<string[]>([]);
   const [coordinationAssistants, setCoordinationAssistants] = useState<CoordinationAssistant[]>([]);
-  const [pointTypes, setPointTypes] = useState<PointType[]>([]);
-  const [geographicLevels, setGeographicLevels] = useState<GeographicLevel[]>([]);
-  const [geographicValues, setGeographicValues] = useState<GeographicValue[]>([]);
   const [links, setLinks] = useState<Link[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
+  const [teamName, setTeamName] = useState<string>("");
 
   const tabs = ["Jerarquia", "Tipo de punto", "Participantes"];
 
-  // Simulación de datos para los selects (se van a obtener desde la API)
-  useEffect(() => {
-    // Simulación de carga de datos
-    const fetchCoordinationAssistants = () => {
-      const data: CoordinationAssistant[] = [
-        { key: "1", name: "Carlos Hernández" },
-        { key: "2", name: "María González" },
-        { key: "3", name: "Javier Méndez" },
-        { key: "4", name: "Ana Martínez" },
-        { key: "5", name: "Luis Pérez" },
-        { key: "6", name: "Gabriela Ramírez" },
-      ];
-      setCoordinationAssistants(data);
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const [coordinationRes, linksRes, membersRes] = await Promise.all([
+  //         fetch('/api/coordinationAssistants'),
+  //         fetch('/api/links'),
+  //         fetch('/api/members')
+  //       ]);
 
-    const fetchPointTypes = () => {
-      const data: PointType[] = [
-        { key: "1", name: "Necesidad" },
-        { key: "2", name: "Publicidad" },
-        { key: "3", name: "Encuestas" },
-        { key: "4", name: "Toques" },
-      ];
-      setPointTypes(data);
-    };
+  //       const [coordinationData, linksData, membersData] = await Promise.all([
+  //         coordinationRes.json(),
+  //         linksRes.json(),
+  //         membersRes.json()
+  //       ]);
 
-    const fetchGeographicLevels = () => {
-      const data: GeographicLevel[] = [
-        { key: "1", name: "Municipios" },
-        { key: "2", name: "Entidades" },
-        { key: "3", name: "Colonias" },
-      ];
-      setGeographicLevels(data);
-    };
+  //       setCoordinationAssistants(coordinationData);
+  //       setLinks(linksData);
+  //       setMembers(membersData);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-    const fetchGeographicValues = () => {
-      const data: GeographicValue[] = [
-        { key: "1", name: "Querétaro" },
-        { key: "2", name: "San Juan del Río" },
-        { key: "3", name: "El Marqués" },
-        { key: "4", name: "Corregidora" },
-        { key: "5", name: "Tequisquiapan" },
-      ];
-      setGeographicValues(data);
-    };
+  //   fetchData();
+  // }, []);
 
-    const fetchLinks = () => {
-      const data: Link[] = [
-        { key: "1", name: "Juan López" },
-        { key: "2", name: "Sofía Torres" },
-        { key: "3", name: "Ricardo Mendoza" },
-        { key: "4", name: "Elena Cruz" },
-        { key: "5", name: "Miguel Ángel" },
-        { key: "6", name: "Patricia Díaz" },
-      ];
-      setLinks(data);
-    };
-
-    const fetchMembers = () => {
-      const data: Member[] = [
-        { key: "1", name: "Fernando Salinas" },
-        { key: "2", name: "Rosa Martínez" },
-        { key: "3", name: "Carlos Romero" },
-        { key: "4", name: "Lucía Sánchez" },
-        { key: "5", name: "Manuel Ortiz" },
-        { key: "6", name: "Laura Gutiérrez" },
-      ];
-      setMembers(data);
-    };
-
-    // Llamar a las funciones de carga de datos
-    fetchCoordinationAssistants();
-    fetchPointTypes();
-    fetchGeographicLevels();
-    fetchGeographicValues();
-    fetchLinks();
-    fetchMembers();
-  }, []);
-
-  // Maneja el cambio de pestañas en el modal
   const handleTabChange = (key: React.Key) => {
     setActiveTab(key as string);
   };
 
-  // Maneja el avance a la siguiente pestaña o el cierre del modal
   const handleNext = () => {
     const currentIndex = tabs.indexOf(activeTab);
     if (currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
     } else {
-      // Acción final, por ejemplo, agregar el equipo
-      setIsOpen(false)
+      handleSubmit();
     }
   };
 
-  // Maneja la selección de valores geográficos
   const handleGeographicValueSelectionChange = (key: React.Key) => {
-    const selectedValue = geographicValues.find(
-      (value) => value.key === key
-    );
-    if (selectedValue && !selectedGeographicValues.some((value) => value.key === key)) {
-      setSelectedGeographicValues([...selectedGeographicValues, selectedValue]);
+    if (!selectedGeographicValues.includes(key as string)) {
+      setSelectedGeographicValues([...selectedGeographicValues, key as string]);
     }
   };
 
-  // Maneja la selección de miembros del equipo
+  const handlePointTypeSelectionChange = (key: React.Key) => {
+    if (!selectedPointTypes.includes(key as string)) {
+      setSelectedPointTypes([...selectedPointTypes, key as string]);
+    }
+  };
+
   const handleTeamMemberSelectionChange = (key: React.Key) => {
-    const selectedMember = members.find((member) => member.key === key);
-    if (selectedMember && !selectedTeamMembers.some((member) => member.key === key)) {
-      setSelectedTeamMembers([...selectedTeamMembers, selectedMember]);
+    if (!selectedTeamMembers.includes(key as string)) {
+      setSelectedTeamMembers([...selectedTeamMembers, key as string]);
     }
   };
 
-  // Maneja la eliminación de valores geográficos seleccionados
   const handleRemoveGeographicValue = (key: string) => {
-    setSelectedGeographicValues(
-      selectedGeographicValues.filter((value) => value.key !== key)
-    );
+    setSelectedGeographicValues(selectedGeographicValues.filter((value) => value !== key));
   };
 
-  // Maneja la eliminación de miembros seleccionados
   const handleRemoveTeamMember = (key: string) => {
-    setSelectedTeamMembers(
-      selectedTeamMembers.filter((member) => member.key !== key)
-    );
+    setSelectedTeamMembers(selectedTeamMembers.filter((member) => member !== key));
+  };
+
+  const handleSubmit = async () => {
+    const teamData = {
+      name: teamName,
+      pointTypesIDs: selectedPointTypes,
+      geographicConf: {
+        geographicLevel: selectedGeographicValues[0], // Assuming you select only one geographic level
+        values: selectedGeographicValues.slice(1), // Remaining selected values
+      },
+      members: selectedTeamMembers,
+    };
+
+    // try {
+    //   const res = await fetch('/api/createTeam', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify(teamData)
+    //   });
+
+    //   const result = await res.json();
+
+    //   if (result.code === "OK") {
+    //     console.log("Team created successfully");
+    //     setIsOpen(false);
+    //   } else {
+    //     console.error("Error creating team:", result.statusText);
+    //   }
+    // } catch (error) {
+    //   console.error("Error creating team:", error);
+    // }
+    console.log(teamData);
   };
 
   return (
@@ -213,6 +169,7 @@ export default function TeamModal({ structureName }: TeamModalProps) {
                     label="Nombre del equipo"
                     placeholder="Escribe el nombre del equipo"
                     isRequired
+                    onChange={(e) => setTeamName(e.target.value)}
                   />
                 </ModalBody>
               </Tab>
@@ -223,10 +180,11 @@ export default function TeamModal({ structureName }: TeamModalProps) {
                     placeholder="Selecciona los tipos de punto"
                     isRequired
                     selectionMode="multiple"
+                    onSelectionChange={(_key) => handlePointTypeSelectionChange} // la variable _key no se está usando
                   >
-                    {pointTypes.map((type) => (
-                      <SelectItem key={type.key} value={type.key}>
-                        {type.name}
+                    {TIPOS_PUNTO.map((type) => (
+                      <SelectItem key={type.id} value={type.id}>
+                        {type.nombre}
                       </SelectItem>
                     ))}
                   </Select>
@@ -236,9 +194,9 @@ export default function TeamModal({ structureName }: TeamModalProps) {
                     placeholder="Seleccione el nivel geográfico"
                     isRequired
                   >
-                    {geographicLevels.map((level) => (
-                      <SelectItem key={level.key} value={level.key}>
-                        {level.name}
+                    {CONFIGURACIONES_GEOGRAFICAS.map((level) => (
+                      <SelectItem key={level.id} value={level.id}>
+                        {level.nombre}
                       </SelectItem>
                     ))}
                   </Select>
@@ -248,17 +206,17 @@ export default function TeamModal({ structureName }: TeamModalProps) {
                     isRequired
                     onSelectionChange={handleGeographicValueSelectionChange}
                   >
-                    {geographicValues.map((value) => (
-                      <SelectItem key={value.key} value={value.key}>
-                        {value.name}
+                    {CONFIGURACIONES_GEOGRAFICAS.map((value) => (
+                      <SelectItem key={value.id} value={value.id}>
+                        {value.nombre}
                       </SelectItem>
                     ))}
                   </Autocomplete>
-                  <div className={`${selectedGeographicValues.length > 4 ? 'overflow-y-scroll h-24' : ''} px-8 flex flex-col gap-2`}>
+                  <div className={`${selectedGeographicValues.length > 4 ? "overflow-y-scroll h-24" : ""} px-8 flex flex-col gap-2`}>
                     {selectedGeographicValues.map((value) => (
-                      <div key={value.key} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
-                        <span className="text-sm">{value.name}</span>
-                        <Button isIconOnly className="material-symbols-outlined bg-transparent hover:bg-accent hover:text-white" size="sm" onClick={() => handleRemoveGeographicValue(value.key)}>close</Button>
+                      <div key={value} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
+                        <span className="text-sm">{value}</span>
+                        <Button isIconOnly className="material-symbols-outlined bg-transparent hover:bg-accent hover:text-white" size="sm" onClick={() => handleRemoveGeographicValue(value)}>close</Button>
                       </div>
                     ))}
                   </div>
@@ -289,20 +247,20 @@ export default function TeamModal({ structureName }: TeamModalProps) {
                       </SelectItem>
                     ))}
                   </Autocomplete>
-                  <div className={`mt-4 ${selectedTeamMembers.length > 4 ? 'overflow-y-scroll h-24' : ''} px-8 flex flex-col gap-2`}>
+                  <div className={`mt-4 ${selectedTeamMembers.length > 4 ? "overflow-y-scroll h-24" : ""} px-8 flex flex-col gap-2`}>
                     {selectedTeamMembers.map((member) => (
-                      <div key={member.key} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
-                        <span>{member.name}</span>
-                        <Button isIconOnly className="material-symbols-outlined bg-transparent hover:bg-accent hover:text-white" size="sm" onClick={() => handleRemoveTeamMember(member.key)}>close</Button>
+                      <div key={member} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
+                        <span>{member}</span>
+                        <Button isIconOnly className="material-symbols-outlined bg-transparent hover:bg-accent hover:text-white" size="sm" onClick={() => handleRemoveTeamMember(member)}>close</Button>
                       </div>
                     ))}
                   </div>
                 </ModalBody>
               </Tab>
             </Tabs>
-            <ModalFooter>
-              <Button onPress={handleNext} color="primary">
-                {activeTab === "Participantes" ? "Agregar Equipo" : "Siguiente"}
+            <ModalFooter className="mt-2">
+              <Button color="primary" onPress={handleNext}>
+                {activeTab === "Participantes" ? "Agregar equipo" : "Siguiente"}
               </Button>
             </ModalFooter>
           </>
@@ -310,5 +268,6 @@ export default function TeamModal({ structureName }: TeamModalProps) {
       </Modal>
     </>
   );
-}
+};
 
+export default TeamModal;

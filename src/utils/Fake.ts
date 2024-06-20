@@ -13,43 +13,113 @@ export const fakeModuleAdmins = [
 
 export const fakeStructCoors = [
   {
-    name: "Adriana Luna Peña",
+    name: "Juan Carlos Pérez Gómez",
     id: "1",
-    structureId: "gubernamental"
+    structureId: "gubernamental",
+    estructura: "Gubernamental",
+    tecnico: "María Elena López Martínez",
+    adjunto: "Carlos Eduardo Sánchez Ruiz"
   },
   {
-    name: "Víctor Álvarez Serrano",
+    name: "Ana Isabel Rodríguez Torres",
+    estructura: "Campaña",
     id: "2",
-    structureId: "gubernamental"
+    structureId: "campaña",
+    tecnico: "Luis Alberto Fernández Jiménez",
+    adjunto: "Marta Cristina Gómez Morales"
   },
   {
-    name: "Gabriela Moreno Ortega",
-    id: "3",
-    structureId: "gubernamental"
+    name: "Pedro Javier García Hernández",
+    id: "2",
+    structureId: "diae",
+    estructura: "Día E",
+    tecnico: "Lucía María Martín Sánchez",
+    adjunto: "José Antonio Torres Pérez"
+  },
+  {
+    name: "Laura Beatriz González Ramírez",
+    id: "4",
+    structureId: "politico",
+    estructura: "Político",
+    tecnico: "David Alejandro Romero Díaz",
+    adjunto: "Elena Patricia Ruiz Fernández"
   }
 ];
 
 export const fakeModuleSubCoor = [
   {
-    name: "Pablo Navarro Esquivel"
+    "name": "Gabriel Antonio López Ramírez",
+    "estructura": "Gubernamental",
+    "tecnico": "José Manuel Fernández Pérez",
+    "tipoPunto": ["Logística", "Finanzas"]
   },
   {
-    name: "Carla Jiménez Solís"
+    "name": "Marta Lucía Torres González",
+    "estructura": "Campaña",
+    "tecnico": "Luis Alberto Hernández Jiménez",
+    "tipoPunto": ["Comunicación", "Publicidad"]
   },
   {
-    name: "Emilio Ferrer Navarro"
+    "name": "Raúl Ernesto García Morales",
+    "estructura": "Día E",
+    "tecnico": "Ana Patricia Rodríguez Martínez",
+    "tipoPunto": ["Organización", "Voluntariado"]
+  },
+  {
+    "name": "Carmen Teresa Martínez Santos",
+    "estructura": "Político",
+    "tecnico": "Francisco Javier Pérez Ruiz",
+    "tipoPunto": ["Estrategia", "Análisis"]
+  },
+  {
+    "name": "Alejandro Luis Gómez Fernández",
+    "estructura": "Gubernamental",
+    "tecnico": "María José González Ramírez",
+    "tipoPunto": ["Legal", "Finanzas"]
+  },
+  {
+    "name": "Isabel Cristina Hernández López",
+    "estructura": "Campaña",
+    "tecnico": "Roberto Carlos Sánchez Pérez",
+    "tipoPunto": ["Logística", "Publicidad"]
   }
 ];
 
 export const fakeModuleAux = [
   {
-    name: "Mónica Alvarez García"
+    "name": "Sofía Beatriz Torres Jiménez",
+    "estructura": "Gubernamental",
+    "subCoor": "Alejandro Luis Gómez Fernández",
+    "municipios": ["Ciudad de México", "Naucalpan", "Toluca"],
+    "tecnico": "Laura Patricia Hernández García"
   },
   {
-    name: "Guillermo López Torres"
+    "name": "Diego Alejandro Ramírez Martínez",
+    "estructura": "Campaña",
+    "subCoor": "Isabel Cristina Hernández López",
+    "municipios": ["Guadalajara", "Zapopan", "Tlaquepaque"],
+    "tecnico": "Carlos Eduardo Fernández Pérez"
   },
   {
-    name: "Silvia Martínez Rivas"
+    "name": "Lucía Fernanda Gómez Morales",
+    "estructura": "Día E",
+    "subCoor": "Raúl Ernesto García Morales",
+    "municipios": ["Monterrey", "San Pedro", "Apodaca"],
+    "tecnico": "María José Sánchez Ruiz"
+  },
+  {
+    "name": "Andrés Felipe Martínez Torres",
+    "estructura": "Político",
+    "subCoor": "Carmen Teresa Martínez Santos",
+    "municipios": ["Puebla", "Cholula", "Atlixco"],
+    "tecnico": "José Manuel Pérez Ramírez"
+  },
+  {
+    "name": "Valeria Sofía González Ramírez",
+    "estructura": "Gubernamental",
+    "subCoor": "Gabriel Antonio López Ramírez",
+    "municipios": ["Querétaro", "San Juan del Río", "Tequisquiapan"],
+    "tecnico": "Luis Alberto Hernández Jiménez"
   }
 ];
 
@@ -122,12 +192,21 @@ export const fakeModuleUsers = [
   }
 ];
 
+export const fakePointTypes = [
+  "Tipo de punto 1",
+  "Tipo de punto 2",
+  "Tipo de punto 3",
+  "Tipo de punto 4",
+  "Tipo de punto 5",
+  "Tipo de punto 6",
+  "Tipo de punto 7"
+];
 export const fakeCoordinators = [
   {
     id: "4",
     name: "Javier Elihu Zamudio"
   },
-];
+]
 
 export const fakeTechnicals = [
   {
@@ -136,7 +215,7 @@ export const fakeTechnicals = [
   }
 ];
 
-export const fakeStrctures = [
+export const fakeStructures = [
   {
     id: "gubernamental",
     name: "Gubernamental"
@@ -148,116 +227,5 @@ export const fakeStrctures = [
   {
     id: "territorial",
     name: "Territorial"
-  },
-];
-
-export const fakeTeams = [
-  {
-    teamName: "Equipo Alpha",
-    enlace: "David Muñoz Castro",
-    pointTypes: ["Necesidad", "Crucero"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia El Pedregal", "Colonia Centro"]
-    }
-  },
-  {
-    teamName: "Equipo Beta",
-    enlace: "María González López",
-    pointTypes: ["Exploración", "Avanzada"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia La Florida", "Colonia San Miguel"]
-    }
-  },
-  {
-    teamName: "Equipo Gamma",
-    enlace: "Juan Pérez Martínez",
-    pointTypes: ["Apoyo", "Seguridad"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia Las Palmas", "Colonia Del Valle"]
-    }
-  },
-  {
-    teamName: "Equipo Delta",
-    enlace: "Ana Torres Sánchez",
-    pointTypes: ["Intervención", "Rescate"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia Jardines", "Colonia Los Ángeles"]
-    }
-  },
-  {
-    teamName: "Equipo Épsilon",
-    enlace: "Carlos Hernández Ruiz",
-    pointTypes: ["Reconocimiento", "Vigilancia"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia La Primavera", "Colonia La Esperanza"]
-    }
-  },
-  {
-    teamName: "Equipo Zeta",
-    enlace: "Laura Martínez Fernández",
-    pointTypes: ["Logística", "Soporte"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia El Bosque", "Colonia El Sol"]
-    }
-  },
-  {
-    teamName: "Equipo Eta",
-    enlace: "Pedro Jiménez Ríos",
-    pointTypes: ["Estrategia", "Planificación"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia Las Fuentes", "Colonia Del Mar"]
-    }
-  },
-  {
-    teamName: "Equipo Theta",
-    enlace: "Rosa López García",
-    pointTypes: ["Comunicación", "Coordinación"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia La Loma", "Colonia San Juan"]
-    }
-  },
-  {
-    teamName: "Equipo Iota",
-    enlace: "Miguel Ángel Romero",
-    pointTypes: ["Análisis", "Informe"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia La Estrella", "Colonia El Faro"]
-    }
-  },
-  {
-    teamName: "Equipo Kappa",
-    enlace: "Sofía Castillo Díaz",
-    pointTypes: ["Evaluación", "Monitoreo"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia El Prado", "Colonia Santa María"]
-    }
-  },
-  {
-    teamName: "Equipo Lambda",
-    enlace: "Diego Ortiz Pérez",
-    pointTypes: ["Apoyo Técnico", "Mantenimiento"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia El Encanto", "Colonia Los Pinos"]
-    }
-  },
-  {
-    teamName: "Equipo Mu",
-    enlace: "Carolina Vega Hernández",
-    pointTypes: ["Capacitación", "Desarrollo"],
-    geoConfig: {
-      level: "Colonia",
-      values: ["Colonia La Hacienda", "Colonia El Lago"]
-    }
   },
 ];
