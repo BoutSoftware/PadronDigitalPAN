@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import React, { useEffect, useState } from "react";
 import ModalStructCoor from "@/components/ModalStructCoor";
 import ModalSubCoor from "@/components/ModalSubCoor";
+import ModalAuxCoor from "@/components/visor/people/ModalAuxCoor";
 
 interface admin {
   name: string
@@ -36,7 +37,13 @@ interface usersInterface {
     adjunto: string
   }[]
   subs: subCoordinator[]
-  auxs: auxCoordinator[]
+  auxs: {
+    name: string
+    estructura: string
+    subCoor: string
+    municipios: string[]
+    tecnico: string
+  }[]
   users: admin[]
 }
 
@@ -180,7 +187,7 @@ export default function Page() {
                 <h2 className="text-xl">Auxiliar de coordinación</h2>
                 <span className="text-zinc-400">{usersFiltered.auxs.length}/{users.auxs.length}</span>
               </div>
-              <Button color="primary">Agregar</Button>
+              <ModalAuxCoor action="Agregar" />
             </div>
             {
               usersFiltered?.auxs.length > 0 ? (
@@ -194,7 +201,7 @@ export default function Page() {
                           <span className="font-light text-zinc-400 text-sm">Querétaro, Corregidora, El Marqués</span>
                         </div>
                       </div>
-                      <Button variant="light">Modificar</Button>
+                      <ModalAuxCoor action="Modificar" auxCoordinatorName={aux.name} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>
