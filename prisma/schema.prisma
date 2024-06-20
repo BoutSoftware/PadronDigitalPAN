@@ -245,11 +245,12 @@ model Visor_Team {
   active         Boolean    @default(true)
   geographicConf VisGeoConf
   linkId         String     @db.ObjectId
-  auxiliaryId    String     @db.ObjectId
+  // TODO: Una vez que haya ruta para crear axuliares, quitar la relacion opcional
+  auxiliaryId    String?     @db.ObjectId
   pointTypesIDs  String[]
 
   Link      Visor_User        @relation(fields: [linkId], references: [id])
-  Auxiliary Visor_Auxiliaries @relation(fields: [auxiliaryId], references: [id])
+  Auxiliary Visor_Auxiliaries? @relation(fields: [auxiliaryId], references: [id])
 
   Caminantes Visor_Caminantes[]
   Rounds     Visor_Round[]
