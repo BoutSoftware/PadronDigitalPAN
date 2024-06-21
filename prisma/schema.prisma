@@ -190,16 +190,17 @@ model Visor_User {
 model Visor_Structure {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   structureType String
-  coordinatorId String   @db.ObjectId
+  // Cambia el tener un cooridnador a opcional, en caso de que en algun momento se reemplace el coordinador o se ponga de baja
+  coordinatorId String?  @db.ObjectId
   technicalId   String   @db.ObjectId
   attachId      String   @db.ObjectId
   auditorId     String   @db.ObjectId
   pointTypesIDs String[]
 
-  Coordinator Visor_User @relation("CoordinatorRelation", fields: [coordinatorId], references: [id])
-  Technical   Visor_User @relation("TechnicalRelation", fields: [technicalId], references: [id])
-  Attach      Visor_User @relation("AttachRelation", fields: [attachId], references: [id])
-  Auditor     Visor_User @relation("AuditorRelation", fields: [auditorId], references: [id])
+  Coordinator Visor_User? @relation("CoordinatorRelation", fields: [coordinatorId], references: [id])
+  Technical   Visor_User  @relation("TechnicalRelation", fields: [technicalId], references: [id])
+  Attach      Visor_User  @relation("AttachRelation", fields: [attachId], references: [id])
+  Auditor     Visor_User  @relation("AuditorRelation", fields: [auditorId], references: [id])
 
   VisorSubCoordinators Visor_SubCoordinator[]
 }
