@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Tabs, Tab, Select, SelectItem, Autocomplete } from "@nextui-org/react";
-import { TIPOS_PUNTO, CONFIGURACIONES_GEOGRAFICAS } from '../../../configs/catalogs/visorCatalog';
+import { TIPOS_PUNTO, CONFIGURACIONES_GEOGRAFICAS } from "../../../configs/catalogs/visorCatalog";
 
 interface CoordinationAssistant {
   key: string;
@@ -35,31 +35,31 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
 
   const tabs = ["Jerarquia", "Tipo de punto", "Participantes"];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [coordinationRes, linksRes, membersRes] = await Promise.all([
-          fetch('/api/coordinationAssistants'),
-          fetch('/api/links'),
-          fetch('/api/members')
-        ]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const [coordinationRes, linksRes, membersRes] = await Promise.all([
+  //         fetch('/api/coordinationAssistants'),
+  //         fetch('/api/links'),
+  //         fetch('/api/members')
+  //       ]);
 
-        const [coordinationData, linksData, membersData] = await Promise.all([
-          coordinationRes.json(),
-          linksRes.json(),
-          membersRes.json()
-        ]);
+  //       const [coordinationData, linksData, membersData] = await Promise.all([
+  //         coordinationRes.json(),
+  //         linksRes.json(),
+  //         membersRes.json()
+  //       ]);
 
-        setCoordinationAssistants(coordinationData);
-        setLinks(linksData);
-        setMembers(membersData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  //       setCoordinationAssistants(coordinationData);
+  //       setLinks(linksData);
+  //       setMembers(membersData);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   const handleTabChange = (key: React.Key) => {
     setActiveTab(key as string);
@@ -180,7 +180,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
                     placeholder="Selecciona los tipos de punto"
                     isRequired
                     selectionMode="multiple"
-                    onSelectionChange={ (_key) => handlePointTypeSelectionChange}
+                    onSelectionChange={(_key) => handlePointTypeSelectionChange} // la variable _key no se está usando
                   >
                     {TIPOS_PUNTO.map((type) => (
                       <SelectItem key={type.id} value={type.id}>
@@ -212,7 +212,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
                       </SelectItem>
                     ))}
                   </Autocomplete>
-                  <div className={`${selectedGeographicValues.length > 4 ? 'overflow-y-scroll h-24' : ''} px-8 flex flex-col gap-2`}>
+                  <div className={`${selectedGeographicValues.length > 4 ? "overflow-y-scroll h-24" : ""} px-8 flex flex-col gap-2`}>
                     {selectedGeographicValues.map((value) => (
                       <div key={value} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
                         <span className="text-sm">{value}</span>
@@ -247,7 +247,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
                       </SelectItem>
                     ))}
                   </Autocomplete>
-                  <div className={`mt-4 ${selectedTeamMembers.length > 4 ? 'overflow-y-scroll h-24' : ''} px-8 flex flex-col gap-2`}>
+                  <div className={`mt-4 ${selectedTeamMembers.length > 4 ? "overflow-y-scroll h-24" : ""} px-8 flex flex-col gap-2`}>
                     {selectedTeamMembers.map((member) => (
                       <div key={member} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
                         <span>{member}</span>

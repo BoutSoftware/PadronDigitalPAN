@@ -140,8 +140,8 @@ export default function BasePlatformWelcome() {
             <TeamCard
               key={team.id}
               id={team.id}
-              teamName={team.teamName}
-              enlaceName={team.enlaceName}
+              team={team.teamName}
+              enlace={team.enlaceName}
               puntos={team.puntos}
               geoConfig={team.geoConfig}
             />

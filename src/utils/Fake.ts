@@ -14,8 +14,8 @@ export const fakeModuleAdmins = [
 export const fakeStructCoors = [
   {
     name: "Juan Carlos Pérez Gómez",
-    id:"1",
-    structureId:"gubernamental",
+    id: "1",
+    structureId: "gubernamental",
     estructura: "Gubernamental",
     tecnico: "María Elena López Martínez",
     adjunto: "Carlos Eduardo Sánchez Ruiz"
@@ -23,23 +23,23 @@ export const fakeStructCoors = [
   {
     name: "Ana Isabel Rodríguez Torres",
     estructura: "Campaña",
-    id:"2",
-    structureId:"campaña",
+    id: "2",
+    structureId: "campaña",
     tecnico: "Luis Alberto Fernández Jiménez",
     adjunto: "Marta Cristina Gómez Morales"
   },
   {
     name: "Pedro Javier García Hernández",
-    id:"2",
-    structureId:"diae",
+    id: "2",
+    structureId: "diae",
     estructura: "Día E",
     tecnico: "Lucía María Martín Sánchez",
     adjunto: "José Antonio Torres Pérez"
   },
   {
     name: "Laura Beatriz González Ramírez",
-    id:"4",
-    structureId:"politico",
+    id: "4",
+    structureId: "politico",
     estructura: "Político",
     tecnico: "David Alejandro Romero Díaz",
     adjunto: "Elena Patricia Ruiz Fernández"
@@ -84,7 +84,7 @@ export const fakeModuleSubCoor = [
     "tipoPunto": ["Logística", "Publicidad"]
   }
 ];
-  
+
 export const fakeModuleAux = [
   {
     "name": "Sofía Beatriz Torres Jiménez",
@@ -122,7 +122,7 @@ export const fakeModuleAux = [
     "tecnico": "Luis Alberto Hernández Jiménez"
   }
 ];
-  
+
 export const fakeModuleUsers = [
   {
     name: "Alejandro López García"
@@ -206,7 +206,7 @@ export const fakeCoordinators = [
     id: "4",
     name: "Javier Elihu Zamudio"
   },
-];
+]
 
 export const fakeTechnicals = [
   {

@@ -43,7 +43,7 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
         variant={action === "Agregar" ? "solid" : "light"}
       >{action}</Button>
 
-      <Modal isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(!isModalOpen)}>
+      <Modal size="lg" isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(!isModalOpen)}>
         <ModalContent>
           <ModalHeader>
             <h3>{action} Subcoordinador</h3>

@@ -1,10 +1,10 @@
 "use client";
 import { fakeModuleAdmins, fakeStructCoors, fakeModuleSubCoor, fakeModuleAux, fakeModuleUsers } from "@/utils/Fake";
-import { Button, Divider, Avatar, Input } from "@nextui-org/react";
+import { Divider, Avatar, Input } from "@nextui-org/react";
 import Header from "@/components/Header";
 import React, { useEffect, useState } from "react";
-import ModalStructCoor from "@/components/ModalStructCoor";
-import ModalSubCoor from "@/components/ModalSubCoor";
+import ModalStructCoor from "@/components/visor/people/ModalStructCoor";
+import ModalSubCoor from "@/components/visor/people/ModalSubCoor";
 import ModalAuxCoor from "@/components/visor/people/ModalAuxCoor";
 
 interface admin {
@@ -15,14 +15,6 @@ interface subCoordinator {
   estructura: string
   tecnico: string
   tipoPunto: string[]
-}
-
-interface auxCoordinator {
-  name: string
-  estructura: string
-  subCoor: string
-  municipios: string[]
-  tecnico: string
 }
 
 interface usersInterface {
@@ -65,27 +57,22 @@ export default function Page() {
 
   useEffect(() => {
     // Make fetch to get people
+    setUsers({
+      admins: fakeModuleAdmins,
+      coors: fakeStructCoors,
+      subs: fakeModuleSubCoor,
+      auxs: fakeModuleAux,
+      users: fakeModuleUsers
+    });
 
-    if (true) {
-      // If all good, then set people
-
-      setUsers({
-        admins: fakeModuleAdmins,
-        coors: fakeStructCoors,
-        subs: fakeModuleSubCoor,
-        auxs: fakeModuleAux,
-        users: fakeModuleUsers
-      });
-
-      setUsersFiltered({
-        userSearched: "",
-        admins: fakeModuleAdmins,
-        coors: fakeStructCoors,
-        subs: fakeModuleSubCoor,
-        auxs: fakeModuleAux,
-        users: fakeModuleUsers
-      });
-    }
+    setUsersFiltered({
+      userSearched: "",
+      admins: fakeModuleAdmins,
+      coors: fakeStructCoors,
+      subs: fakeModuleSubCoor,
+      auxs: fakeModuleAux,
+      users: fakeModuleUsers
+    });
   }, []);
 
   return (
@@ -213,9 +200,9 @@ export default function Page() {
           </div>
         </div>
         <div className="flex-1 flex flex-col">
-          <div>
+          <div className="flex items-center gap-2">
             <h2 className="text-xl mb-2">Usuarios del módulo</h2>
-            <span>{usersFiltered.users.length}/{users.users.length}</span>
+            <span className="text-zinc-400">{usersFiltered.users.length}/{users.users.length}</span>
           </div>
           {
             usersFiltered?.users.length > 0 ? (

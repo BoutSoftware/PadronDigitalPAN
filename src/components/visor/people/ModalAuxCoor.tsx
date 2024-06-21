@@ -46,7 +46,7 @@ export default function ModalAuxCoor({ action, auxCoordinatorName, subCoordinato
         variant={action === "Agregar" ? "solid" : "light"}
       >{action}</Button>
 
-      <Modal isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(!isModalOpen)}>
+      <Modal size="lg" isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(!isModalOpen)}>
         <ModalContent>
           <ModalHeader>
             <h3>{action} auxiliar de coordinación</h3>
