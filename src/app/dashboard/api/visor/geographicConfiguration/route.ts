@@ -3,6 +3,7 @@ import prisma from "@/configs/database";
 import { NextRequest, NextResponse } from "next/server";
 
 // Example: http://localhost:3000/api/visor/geographicConfiguration?configuration=%7B%22geographicLevel%22%3A%22colonias%22%2C%22values%22%3A%5B%2266180b33ecdc61ace386d69c%22%2C%226673332c95f06ac335cd03d6%22%5D%7D
+// Example: http://localhost:3020/dashboard/api/visor/geographicConfiguration?configuration=%7B%22geographicLevel%22%3A%22colonias%22%7D
 export async function GET( request: NextRequest ) {
   try {
     
