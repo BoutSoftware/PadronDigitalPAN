@@ -23,7 +23,7 @@ export async function GET( request: NextRequest ) {
     //   return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Configuration no valida" });
     // }
 
-    if (!geographicLevel || !values) {
+    if (!geographicLevel) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Configuration is missing" });
     }
 
