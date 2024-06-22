@@ -18,13 +18,12 @@ interface CardProps {
 export default function TeamCard({ id, team, enlace, puntos, geoConfig }: CardProps) {
   const router = useRouter();
 
-  // Función para manejar la navegación a las rutas de mapa o tabla
   const handleNavigation = (path: string) => {
-    router.push(`/team/${id}/${path}`); // Redirige a la ruta correspondiente con el id del equipo y el path proporcionado
+    router.push(`teams/${id}/${path}`);
   };
 
   return (
-    <div className="flex flex-col gap-4 w-[370px] h-80 shadow rounded-md">
+    <div className="flex flex-col gap-4 w-[370px] h-80 shadow rounded-md hover:cursor-pointer" onClick={() => handleNavigation("members")}>
       <h3 className="text-primary-600 text-xl font-bold pt-4 px-4">{team}</h3>
       <Divider />
       <div className="flex-1 px-4">
@@ -35,8 +34,8 @@ export default function TeamCard({ id, team, enlace, puntos, geoConfig }: CardPr
         </ul>
       </div>
       <div className="flex justify-end items-center gap-2 pb-4 px-4">
-        <Button variant="light" isIconOnly>{<span className="material-symbols-outlined">pin_drop</span>}</Button>
-        <Button variant="light" isIconOnly>{<span className="material-symbols-outlined">toc</span>}</Button>
+        <Button variant="light" onPress={() => handleNavigation("map")} isIconOnly>{<span className="material-symbols-outlined">pin_drop</span>}</Button>
+        <Button variant="light" onPress={() => handleNavigation("points")} isIconOnly>{<span className="material-symbols-outlined">toc</span>}</Button>
       </div>
     </div>
   );
