@@ -30,6 +30,18 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Update title of Visor_User to Subcoordinator
+    await prisma.visor_User.update({
+      where: { id: userId },
+      data: { title: "Subcoordinador" }
+    });
+
+    // Update title of Visor_User to Technical
+    await prisma.visor_User.update({
+      where: { id: technicalId },
+      data: { title: "Técnico de subcoordinación" }
+    });
+
     return NextResponse.json({ code: "OK", message: "Subcoordinator created", data: subcoordinator });
   } catch (error) {
     console.error(error);
