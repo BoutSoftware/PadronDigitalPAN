@@ -96,11 +96,14 @@ export async function GET() {
   }
 }
 
+interface createTeam extends Visor_Team {
+  caminantes: string[];
+}
 export async function POST(request: NextRequest) {
   try {
-    const { name, geographicConf, linkId, auxiliaryId, pointTypesIDs } = (await request.json()) as Visor_Team;
+    const { name, geographicConf, linkId, auxiliaryId, pointTypesIDs, caminantes } = (await request.json()) as createTeam;
 
-    if (hasIncompleteFields({ name, geographicConf, linkId })) {
+    if (hasIncompleteFields({ name, geographicConf, linkId, auxiliaryId })) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
     }
 
@@ -110,9 +113,17 @@ export async function POST(request: NextRequest) {
         geographicConf,
         linkId,
         auxiliaryId,
-        pointTypesIDs
-      }
+        pointTypesIDs,
+        Caminantes: {
+          // connect: caminantes.map((caminante) => ({ id: caminante, userId: caminante })),
+          createMany: {
+            data: caminantes.map((caminante) => ({ userId: caminante })),
+          },
+        },
+      },
     });
+
+    
 
     return NextResponse.json({ code: "OK", message: "Team created succesfully", data: team });
   } catch (error) {
