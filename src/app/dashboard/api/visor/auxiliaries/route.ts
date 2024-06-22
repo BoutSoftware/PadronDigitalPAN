@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const {userId, technicalId, active, subCoordinator, municipiosIDs} = await request.json() as Visor_Auxiliaries;
+    const {userId, technicalId, subCoordinator, municipiosIDs} = await request.json() as Visor_Auxiliaries;
 
     if (hasIncompleteFields({userId, technicalId, subCoordinator})) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
       data: {
         userId,
         technicalId,
-        active,
         subCoordinator,
         municipiosIDs
       }

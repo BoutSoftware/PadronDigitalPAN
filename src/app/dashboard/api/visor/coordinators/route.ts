@@ -12,7 +12,6 @@ export async function GET(request: NextRequest) {
     const users = await prisma.visor_User.findMany({
       where: {
         rol: "Coordinator",
-        active: true,
         ...(onlyFree ? { Coordinators: { none: { } } } : undefined)
       },
       include: {
@@ -20,7 +19,7 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    return NextResponse.json(users);
+    return NextResponse.json({ code: "OK", message: "Coordinators retrieved succesfully", data: users });
 
 
   } catch (error) {
