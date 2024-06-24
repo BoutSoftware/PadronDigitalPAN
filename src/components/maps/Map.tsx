@@ -23,7 +23,7 @@ export default function Map({ children, center = defaultMapCenter, zoom = defaul
 
   useEffect(() => {
     const initMap = async () => {
-      console.log("Initializing Map");
+      //console.log("Initializing Map");
 
       const loader = new Loader({
         apiKey: GCP_API_KEY,
@@ -54,6 +54,8 @@ export default function Map({ children, center = defaultMapCenter, zoom = defaul
         strokeColor: "#f31260",
         strokeOpacity: 1.0,
         strokeWeight: 2,
+        editable: true,
+        draggable: true
       });
 
       flightPath.setMap(myMap);
@@ -66,6 +68,22 @@ export default function Map({ children, center = defaultMapCenter, zoom = defaul
         { lat: 25.774, lng: -80.19 },
       ];
 
+      // GeoJsonQro.features.map((municipioInfo) => {
+      //   console.log(municipioInfo.properties.Name2);
+      // });
+      // console.log(QroCoords);
+
+      // const municipalityCoords = GeoJsonQro.features[17].geometry.coordinates.map(coor => ({ lat: coor[1], lng: coor[0] }));
+
+      // const AmealcoPolygon = new google.maps.Polygon({
+      //   paths: municipalityCoords,
+      //   strokeColor: "#00155E",
+      //   strokeOpacity: 0.8,
+      //   strokeWeight: 5,
+      //   fillColor: "#00155E",
+      //   fillOpacity: 0.20
+      // });
+      //AmealcoPolygon.setMap(myMap);
       // Construct the polygon.
       const bermudaTriangle = new google.maps.Polygon({
         paths: triangleCoords,

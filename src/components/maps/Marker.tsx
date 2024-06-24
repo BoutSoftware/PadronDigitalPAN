@@ -33,7 +33,7 @@ export default function Marker({ children, position, title, image }: MarkerProps
   const initMarker = async () => {
     if (!map || !loader) return;
 
-    console.log(`Initializing Marker "${title}"`);
+    //console.log(`Initializing Marker "${title}"`);
 
     const { AdvancedMarkerElement } = await loader.importLibrary("marker");
 
@@ -54,7 +54,7 @@ export default function Marker({ children, position, title, image }: MarkerProps
   useEffect(() => {
     if (!marker) return;
 
-    console.log(`Updating Marker "${marker.title}"`);
+    //console.log(`Updating Marker "${marker.title}"`);
 
     marker.position = position;
     marker.title = title || "";

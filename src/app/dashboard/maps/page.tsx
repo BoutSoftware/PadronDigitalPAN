@@ -4,6 +4,8 @@ import Map from "@/components/maps/Map";
 import Marker from "@/components/maps/Marker";
 import PopUp from "@/components/maps/PopUp";
 import { Spacer } from "@nextui-org/react";
+import { formattedCoors } from "@/utils/GeoJsonQro";
+import Polygone from "@/components/maps/Polygone";
 
 const Estados = [
   {
@@ -37,6 +39,18 @@ export default function MapsExperimentPage() {
       <Spacer y={2} />
 
       <Map className="flex flex-1">
+
+        {
+          formattedCoors.map((municipio) => (
+            <Polygone key={municipio.id} {...municipio}>
+              <PopUp>
+                <h3 className="text-lg font-semibold">{municipio.municipality}</h3>
+                <p>ID del municipio: {municipio.id}</p>
+              </PopUp>
+            </Polygone>
+          ))
+        }
+
         {Estados.map((estado, index) => (
           <Marker
             key={index}
