@@ -5,19 +5,20 @@ import { Divider } from "@nextui-org/react";
 
 interface TeamsOfAStructureProps {
   structureName: string
-  teams: Team[]
+  teams?: Team[]
 }
 
 interface GeoConfig {
-  level: string;
-  values: string[];
+  geographicLevel: string
+  values: string[]
 }
 
 interface Team {
-  teamName: string;
-  enlace: string;
-  pointTypes: string[];
-  geoConfig: GeoConfig
+  id: string
+  name: string
+  linkName: string
+  pointTypesIDs: string[]
+  geographicConf: GeoConfig
 }
 
 export default function TeamsOfAStructure({ structureName, teams }: TeamsOfAStructureProps) {
@@ -30,19 +31,22 @@ export default function TeamsOfAStructure({ structureName, teams }: TeamsOfAStru
       <Divider />
       <div className="flex flex-wrap gap-6 min-w-full">
         {
-          teams.length > 0 ? (
+          teams && (
             teams.map((team, index) => (
               <TeamCard
                 key={index}
-                enlace={team.enlace}
-                geoConfig={team.geoConfig}
-                puntos={team.pointTypes.join(", ")}
-                id={index}
-                team={team.teamName} />
+                enlace={team.linkName}
+                geographicConf={team.geographicConf}
+                puntos={team.pointTypesIDs?.join(", ")}
+                id={team.id}
+                team={team.name} />
             ))
-          ) : (
-            <h4>Ninguna opción coincide con el elemento de busqueda</h4>
-          )
+          )}
+        {
+          !teams && (<h4 className="text-foreground-400">No hay equipos para esta estructura</h4>)
+        }
+        {
+          teams?.length == 0 && (<h4 className="text-foreground-400">Ninguna opción coincide con el elemento de busqueda</h4>)
         }
       </div>
     </div>

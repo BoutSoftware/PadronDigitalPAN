@@ -2,20 +2,20 @@ import React from "react";
 import { Button, Divider } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 
-interface GeoConfig {
-  level: string;
-  values: string[];
+interface GeographicConf {
+  geographicLevel: string
+  values: string[]
 }
 
 interface CardProps {
-  id: number;
+  id: string;
   team: string;
   enlace: string;
   puntos: string;
-  geoConfig: GeoConfig;
+  geographicConf: GeographicConf;
 }
 
-export default function TeamCard({ id, team, enlace, puntos, geoConfig }: CardProps) {
+export default function TeamCard({ id, team, enlace, puntos, geographicConf }: CardProps) {
   const router = useRouter();
 
   // Función para manejar la navegación a las rutas de mapa o tabla
@@ -31,7 +31,7 @@ export default function TeamCard({ id, team, enlace, puntos, geoConfig }: CardPr
         <ul>
           <li className="text-default-400 my-2 text-sm"><span className="text-default-600 font-medium">Enlace: </span>{enlace}</li>
           <li className="text-default-400 my-2 text-sm"><span className="text-default-600 font-medium">Tipos de punto: </span>{puntos}</li>
-          <li className="text-default-400 my-2 text-sm"><span className="text-default-600 font-medium">{geoConfig.level}: </span>{geoConfig.values.join(", ")}</li>
+          <li className="text-default-400 my-2 text-sm"><span className="text-default-600 font-medium">{geographicConf?.geographicLevel}: </span>{geographicConf?.values.join(", ")}</li>
         </ul>
       </div>
       <div className="flex justify-end items-center gap-2 pb-4 px-4">
