@@ -1,5 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function Page() {
-  return (
-    <div>Contenido del visor</div>
-  );
+  redirect("/dashboard/visor/teams");
 }

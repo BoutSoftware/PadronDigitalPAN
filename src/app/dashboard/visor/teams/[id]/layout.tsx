@@ -1,12 +1,36 @@
 "use client";
 import { ReactNode, useState, useEffect } from "react";
 import { Tabs, Tab } from "@nextui-org/react";
+import { useParams } from "next/navigation";
+import Header from "@/components/Header";
 
-export default function LayoutVisor({ children }: { children: ReactNode }) {
+interface Team {
+  id: string,
+  name: string
+}
+
+export default function LayoutTeam({ children }: { children: ReactNode }) {
+  const [team, setTeam] = useState<Team>();
+  const params = useParams<{ id: string }>();
+
+  useEffect(() => {
+
+    // fetch(params.id)
+
+    setTeam({
+      id: params.id,
+      name: "Nombre del equipo"
+    });
+
+  }, []);
+
   return (
-    <div className="flex-col h-screen items-stretch overflow-hidden">
-      {children}
+    <div className="flex-col h-screen items-stretch overflow-hidden flex-1">
+      <div className="p-4">
+        <Header title={team?.name} />
+      </div>
       <TeamTabs />
+      {children}
     </div>
   );
 }
@@ -33,11 +57,11 @@ function TeamTabs() {
     // Establecer el estado inicial
     handleResize();
     // Añadir event listener para el resize
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Limpiar el event listener al desmontar el componente
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -47,7 +71,7 @@ function TeamTabs() {
   }
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full ml-4 flex-col">
       <Tabs aria-label="Options">
         <Tab key="Configuración" title="Configuración"></Tab>
         <Tab key="Tabla" title="Tabla"></Tab>
