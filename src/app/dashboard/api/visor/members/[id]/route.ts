@@ -8,6 +8,9 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     const { newStatus } = await request.json() as { newStatus: boolean | null };
 
+    console.log(newStatus);
+    
+
     const memberUpdated = await prisma.visor_Caminantes.update({
       where: {
         id
