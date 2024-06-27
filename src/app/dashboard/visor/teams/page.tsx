@@ -44,7 +44,7 @@ export default function Teams() {
 
     const teamsByStructure = {
       ...teams,
-      territorial: resBody.data.map((structure: Structure) => { if (structure.structureType == "Territorial") return structure.teams; })[0] || fakeTeams,
+      territorial: resBody.data.map((structure: Structure) => { if (structure.structureType == "Territorial") return structure.teams; })[0],
       gubernamental: resBody.data.map((structure: Structure) => { if (structure.structureType == "Gubernamental") return structure.teams; })[0],
       campaign: resBody.data.map((structure: Structure) => { if (structure.structureType == "Campaña") return structure.teams; })[0],
       diaD: resBody.data.map((structure: Structure) => { if (structure.structureType == "Dia D") return structure.teams; })[0],
@@ -60,8 +60,7 @@ export default function Teams() {
   }, []);
 
   useEffect(() => {
-    console.log(filteredTeams);
-    console.log(teams);
+    console.log({ filteredTeams, teams });
   }, [filteredTeams, teams]);
 
   useEffect(() => {

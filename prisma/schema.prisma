@@ -208,7 +208,7 @@ model Visor_Structure {
   Attach      Visor_User? @relation("AttachRelation", fields: [attachId], references: [id])
   Auditor     Visor_User? @relation("AuditorRelation", fields: [auditorId], references: [id])
 
-  VisorSubCoordinators Visor_SubCoordinator[]
+  // VisorSubCoordinators Visor_SubCoordinator[]
 }
 
 model Visor_structureCoordinator {
@@ -227,15 +227,15 @@ model Visor_SubCoordinator {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt     DateTime @default(now())
   active        Boolean  @default(true)
-  category      String
   userId        String   @db.ObjectId
   technicalId   String   @db.ObjectId
   pointTypesIDs String[]
-  structureId   String   @db.ObjectId
+  structureId   String
+  // structureId   String   @db.ObjectId
 
-  User      Visor_User      @relation("SubCoordinatorRelation", fields: [userId], references: [id])
-  Technical Visor_User      @relation("SubTechnicalRelation", fields: [technicalId], references: [id])
-  Structure Visor_Structure @relation(fields: [structureId], references: [id])
+  User      Visor_User @relation("SubCoordinatorRelation", fields: [userId], references: [id])
+  Technical Visor_User @relation("SubTechnicalRelation", fields: [technicalId], references: [id])
+  // Structure Visor_Structure @relation(fields: [structureId], references: [id])
 
   Auxiliaries Visor_Auxiliaries[]
 }

@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 // Create a subcoordinator
 export async function POST(request: NextRequest) {
   interface reqBody {
-    category: string;
     userId: string;
     technicalId: string;
     pointTypesIDs: string[];
@@ -14,15 +13,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const reqBody = await request.json() as reqBody;
-    const { category, userId, technicalId, pointTypesIDs, structureId } = reqBody;
+    const { userId, technicalId, pointTypesIDs, structureId } = reqBody;
 
-    if (hasIncompleteFields({ category, userId, technicalId, pointTypesIDs, structureId })) {
+    if (hasIncompleteFields({ userId, technicalId, pointTypesIDs, structureId })) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
     }
 
     const subcoordinator = await prisma.visor_SubCoordinator.create({
       data: {
-        category,
         userId,
         technicalId,
         pointTypesIDs,
@@ -46,5 +44,29 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ code: "ERROR", message: "An error occurred" });
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const estructura = searchParams.get("estructura") as string;
+
+    if (!estructura) {
+      return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
+    }
+
+    const subCooridnadores = await prisma.visor_SubCoordinator.findMany({
+      where: {
+        structureId: estructura
+      }
+    });
+
+    return NextResponse.json({ code: "OK", message: "Subcoordinators found", data: subCooridnadores });
+
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ code: "ERROR", message: "An error occurred" });
+
   }
 }

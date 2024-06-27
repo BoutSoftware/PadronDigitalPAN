@@ -1,6 +1,7 @@
 import prisma from "@/configs/database";
 import { ModuleName, VisorRole, WhatsRole, modulesList } from "@/configs/roles";
 import { hasIncompleteFields } from "@/utils";
+import { $Enums } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
@@ -36,7 +37,15 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     // Data to return to front
     const data: {
-      visorUser?: any;
+      visorUser?: {
+        id: string;
+        createdAt: Date;
+        active: boolean;
+        userId: string;
+        title: string | null;
+        rol: $Enums.VisRoles | null;
+      }
+
       updatedUser: {
         module: string;
         role: string | null;
@@ -66,7 +75,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
           data: {
             userId: id,
             rol: role as VisorRole,
-            title: role === "Admin" ? "Administrador" : undefined
+            title: role === "Admin" ? "Administrador" : null
           }
         });
       }

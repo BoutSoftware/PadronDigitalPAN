@@ -1,4 +1,4 @@
-import { CONFIGURACIONES_GEOGRAFICAS } from "@/configs/catalogs/visorCatalog";
+import { CONFIGURACIONES_GEOGRAFICAS, ESTRUCTURAS } from "@/configs/catalogs/visorCatalog";
 import prisma from "@/configs/database";
 import { hasIncompleteFields } from "@/utils";
 import { Visor_Team } from "@prisma/client";
@@ -46,30 +46,17 @@ export async function GET() {
         },
         Auxiliary: {
           include: {
-            SubCoordinator: {
-              include: {
-                Structure: {
-                  select: {
-                    id: true,
-                    structureType: true
-                  }
-                }
-              }
-            }
+            SubCoordinator: true
           }
         }
       }
     });
 
-    if (!teams.length) {
-      return NextResponse.json({ code: "NOT_FOUND", message: "No teams found" });
-    }
-
     const data: StructureTeams[] = [];
 
     for (const team of teams) {
-      const structure = team.Auxiliary.SubCoordinator.Structure;
-      const { id: structureId, structureType } = structure;
+      const structureId = team.Auxiliary.SubCoordinator.structureId;
+      const teamStructure = ESTRUCTURAS.find(e => e.id === structureId);
 
       // Get the Team's Geographic configuration
       const geoLevel = team.geographicConf.geographicLevel as typeof CONFIGURACIONES_GEOGRAFICAS[number]["id"];
@@ -107,7 +94,7 @@ export async function GET() {
       } else {
         data.push({
           structureId,
-          structureType,
+          structureType: teamStructure!.nombre,
           teams: [teamInfo],
         });
       }
