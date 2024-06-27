@@ -18,10 +18,43 @@ export async function GET(request: NextRequest) {
         SubCoordinator: {
           structureId: estructura
         }
+      },
+      include: {
+        SubCoordinator: {
+          select: {
+            pointTypesIDs: true
+          }
+        },
+        User: {
+          include: {
+            User: {
+              include: {
+                Person: {
+                  select: {
+                    name: true,
+                    fatherLastName: true,
+                    motherLastName: true
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     });
 
-    return NextResponse.json({ code: "OK", message: "Auxiliaries found", data: auxiliaries });
+    const data = auxiliaries.map((aux) => {
+      const auxPerson = aux.User.User.Person;
+      return {
+        ...aux,
+        User: undefined,
+        SubCoordinator: undefined,
+        fullName: `${auxPerson.name} ${auxPerson.fatherLastName} ${auxPerson.motherLastName}`,
+        pointTypes: aux.SubCoordinator.pointTypesIDs
+      };
+    });
+
+    return NextResponse.json({ code: "OK", message: "Auxiliaries found", data: data });
 
   } catch (error) {
     console.log(error);
