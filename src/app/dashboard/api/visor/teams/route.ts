@@ -96,11 +96,14 @@ export async function GET() {
   }
 }
 
+interface createTeam extends Visor_Team {
+  caminantes: string[];
+}
 export async function POST(request: NextRequest) {
   try {
-    const { name, geographicConf, linkId, auxiliaryId, pointTypesIDs } = (await request.json()) as Visor_Team;
+    const { name, geographicConf, linkId, auxiliaryId, pointTypesIDs, caminantes } = (await request.json()) as createTeam;
 
-    if (hasIncompleteFields({ name, geographicConf, linkId })) {
+    if (hasIncompleteFields({ name, geographicConf, linkId, auxiliaryId })) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
     }
 
@@ -110,9 +113,20 @@ export async function POST(request: NextRequest) {
         geographicConf,
         linkId,
         auxiliaryId,
-        pointTypesIDs
-      }
+        pointTypesIDs,
+        Caminantes: {
+          // TODO: En caso de que ya exista un usuario con ese ID, no lo crea. Y agregar mas logica de validación
+          createMany: {
+            data: caminantes.map((caminante) => ({ userId: caminante })),
+          },
+        },
+      },
+      include: {
+        Caminantes: true,
+      },
     });
+
+    
 
     return NextResponse.json({ code: "OK", message: "Team created succesfully", data: team });
   } catch (error) {
