@@ -45,7 +45,7 @@ export default function ModalAddUser() {
     if (form.personName.length > 0) {
       query += "&name=" + form.personName;
     }
-    const res = await fetch("/dashboard/api/persons" + query, { method: "GET" }).then(res => res.json());
+    const res = await fetch("/dashboard/api/directory/persons" + query, { method: "GET" }).then(res => res.json());
     console.log(res);
     if (res.data) setPeople(res.data);
   }
