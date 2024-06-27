@@ -2,27 +2,11 @@
 import prisma from "@/configs/database";
 import { NextRequest, NextResponse } from "next/server";
 
-// Example: http://localhost:3020/dashboard/api/visor/geographicConfiguration?configuration=%7B%22geographicLevel%22%3A%22colonias%22%2C%22values%22%3A%5B%2266180b33ecdc61ace386d69c%22%2C%226673332c95f06ac335cd03d6%22%5D%7D
-// Example: http://localhost:3020/dashboard/api/visor/geographicConfiguration?configuration=%7B%22geographicLevel%22%3A%22colonias%22%7D
-export async function GET( request: NextRequest ) {
+export async function GET(request: NextRequest) {
   try {
-    
     const searchParams = request.nextUrl.searchParams;
-    
-    const configuration = searchParams.get("configuration");
-    
-
-    if (!configuration) {
-      return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Configuration is missing" });
-    }
-
-    // const { geographicLevel, values } = JSON.parse(configuration) as { geographicLevel: typeof CONFIGURACIONES_GEOGRAFICAS[number]["id"]; values: string[] };
-    const { geographicLevel, values } = JSON.parse(configuration) as { geographicLevel: keyof typeof geographicFunctions; values: string[] };
-
-    
-    // if (!CONFIGURACIONES_GEOGRAFICAS.find((geographic) => geographic.id === geographicLevel)) {
-    //   return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Configuration no valida" });
-    // }
+    const geographicLevel = searchParams.get("geographicLevel") as keyof typeof geographicFunctions;
+    const municipios = searchParams.get("municipios")?.split(",") as string[];
 
     if (!geographicLevel) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Configuration is missing" });
@@ -36,65 +20,69 @@ export async function GET( request: NextRequest ) {
       secciones: getElectoralSection
     };
 
-    const geographicData = await geographicFunctions[geographicLevel](values);
+    const geographicData = await geographicFunctions[geographicLevel]({ municipios });
 
     return NextResponse.json({
       code: "OK",
       message: `${geographicLevel} retrieved successfully`,
       data: geographicData,
     });
-    
+
   } catch (error) {
     console.log(error);
     return NextResponse.json({ code: "ERROR", message: "An error occurred" });
-    
+
   }
 }
 
 
 
 // Function to query the database for geographic configuration based on the geographic level
-export async function getColonias(values: string[]) {
+export async function getColonias({ municipios }: { municipios: string[] }) {
   const colonias = await prisma.colonia.findMany({
     where: {
-      id: {
-        in: values
-      }
+      municipioId: (!municipios.length) ? {
+        in: municipios
+      } : undefined
     }
   });
 
   return colonias;
 }
 
-export async function getMunicipios(values: string[]) {
-  const municipios = await prisma.municipio.findMany({
+export async function getMunicipios({ municipios }: { municipios: string[] }) {
+  const resultadoMunicipios = await prisma.municipio.findMany({
     where: {
-      id: {
-        in: values
-      }
+      id: (!municipios.length) ? {
+        in: municipios
+      } : undefined
     }
   });
 
-  return municipios;
+  return resultadoMunicipios;
 }
 
-export async function getDelegaciones(values: string[]) {
-  const delegaciones = await prisma.delegation.findMany({
-    where: {
-      id: {
-        in: values
-      }
-    }
-  });
+export async function getDelegaciones({ municipios }: { municipios: string[] }) {
+  // TODO: Esto NECESITA un implementacion mucho mas limpia
+  // Este es el id del municipio de queretaro xd
+  if (!municipios.length || "667bcf8e6ae4f348d52a3af1" in municipios) {
+    return [];
+  }
+
+  const delegaciones = await prisma.delegation.findMany();
 
   return delegaciones;
 }
 
-export async function getDistritosLocales(values: string[]) {
+export async function getDistritosLocales({ municipios }: { municipios: string[] }) {
   const distritosLocales = await prisma.localDistric.findMany({
     where: {
-      id: {
-        in: values
+      ElectoralSections: {
+        some: {
+          municipioId: (!municipios.length) ? {
+            in: municipios
+          } : undefined
+        }
       }
     }
   });
@@ -102,12 +90,12 @@ export async function getDistritosLocales(values: string[]) {
   return distritosLocales;
 }
 
-export async function getElectoralSection(values: string[]) {
+export async function getElectoralSection({ municipios }: { municipios: string[] }) {
   const electoralSection = await prisma.electoralSection.findMany({
     where: {
-      id: {
-        in: values
-      }
+      municipioId: (!municipios.length) ? {
+        in: municipios
+      } : undefined
     }
   });
 

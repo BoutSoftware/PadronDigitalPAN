@@ -43,9 +43,11 @@ model ElectoralSection {
   number           Int
   localDistricId   String @db.ObjectId
   federalDistricId String @db.ObjectId
+  municipioId      String @db.ObjectId
 
   LocalDistric   LocalDistric   @relation(fields: [localDistricId], references: [id])
   FederalDistric FederalDistric @relation(fields: [federalDistricId], references: [id])
+  Municipio      Municipio      @relation(fields: [municipioId], references: [id])
   Addresses      Address[]
   VisorNeeds     Visor_Need[]
 }
@@ -57,7 +59,8 @@ model Municipio {
 
   VisorAuxiliaries Visor_Auxiliaries[] @relation(fields: [visorAuxiliariesIDs], references: [id])
 
-  Colonias Colonia[]
+  Colonias         Colonia[]
+  ElectoralSection ElectoralSection[]
 }
 
 model Delegation {
