@@ -6,9 +6,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 // TODO: Paginación (¿Cuántos elementos por página?)
-// TODO: Conexión con el backend
-// TODO: Centrar los elementos
-// TODO: Navegar a la pantalla de usuario individual (No la tengo en mi rama aún)
 
 interface Person {
   name: string;

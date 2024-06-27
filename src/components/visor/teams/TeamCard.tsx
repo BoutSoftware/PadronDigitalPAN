@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Divider } from "@nextui-org/react";
+import { Button, Card, Divider } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 
 interface GeographicConf {
@@ -23,7 +23,7 @@ export default function TeamCard({ id, team, enlace, puntos, geographicConf }: C
   };
 
   return (
-    <div className="flex flex-col gap-4 w-[370px] h-80 shadow rounded-md hover:cursor-pointer" onClick={() => handleNavigation("members")}>
+    <Card className="flex flex-col gap-4 w-full h-64 shadow rounded-md hover:cursor-pointer" onClick={() => handleNavigation("members")}>
       <h3 className="text-primary-600 text-xl font-bold pt-4 px-4">{team}</h3>
       <Divider />
       <div className="flex-1 px-4">
@@ -37,7 +37,7 @@ export default function TeamCard({ id, team, enlace, puntos, geographicConf }: C
         <Button variant="light" onPress={() => handleNavigation("map")} isIconOnly>{<span className="material-symbols-outlined">pin_drop</span>}</Button>
         <Button variant="light" onPress={() => handleNavigation("points")} isIconOnly>{<span className="material-symbols-outlined">toc</span>}</Button>
       </div>
-    </div>
+    </Card>
   );
 }
 

@@ -6,10 +6,10 @@ export default function BasePlatformLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex flex-grow overflow-hidden h-screen">
+    <div className="flex overflow-hidden h-screen">
       <BaseSideBar />
 
-      <div className="flex flex-grow overflow-auto">
+      <div className="overflow-y-auto w-full">
         {children}
       </div>
     </div>

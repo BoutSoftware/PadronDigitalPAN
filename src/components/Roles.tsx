@@ -1,7 +1,6 @@
 import React from "react";
 import { Select, SelectItem } from "@nextui-org/react";
 import { UserRoles, modulesList } from "@/configs/roles";
-import { parseUserRoles } from "@/app/dashboard/api/users";
 
 export default function Roles({ userRoles, userId }: { userRoles: UserRoles, userId: string }) {
   const [currentUserRoles, setCurrentUserRoles] = React.useState<UserRoles>(userRoles);
@@ -35,8 +34,6 @@ export default function Roles({ userRoles, userId }: { userRoles: UserRoles, use
       return;
     }
     alert("Roles modificados correctamente");
-    // Update the user roles
-    setCurrentUserRoles(parseUserRoles(resBody.data) as UserRoles);
   };
 
   return (

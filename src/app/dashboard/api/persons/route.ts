@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/configs/database";
-import { removeAccents } from "@/utils";
+import { hasIncompleteFields, removeAccents } from "@/utils";
 
 // Ejemplo de como acceder a la ruta GET de la API: http://localhost:3000/api/persons?name=[name]
 export async function GET(request: NextRequest) {
@@ -42,4 +42,23 @@ export async function GET(request: NextRequest) {
     console.log(error);
     return NextResponse.json({ code: "ERROR", message: "An error occurred" });
   }
+}
+
+export async function POST(request: NextRequest) {
+  const { name, fatherLastName, motherLastName } = await request.json();
+
+  // Validate Complete Fields
+  if (hasIncompleteFields({ name, fatherLastName, motherLastName })) {
+    return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "There are Incomplete fields" });
+  }
+
+  const personResult = await prisma.person.create({
+    data: {
+      fatherLastName: fatherLastName,
+      name: name,
+      motherLastName: motherLastName
+    }
+  });
+
+  return NextResponse.json({ code: "OK", message: "Persons created successfully", data: personResult });
 }

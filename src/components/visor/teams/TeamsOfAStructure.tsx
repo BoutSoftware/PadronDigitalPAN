@@ -23,13 +23,13 @@ interface Team {
 
 export default function TeamsOfAStructure({ structureName, teams }: TeamsOfAStructureProps) {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl">Estructura {structureName}</h2>
         <TeamModal structureName={structureName} />
       </div>
       <Divider />
-      <div className="flex flex-wrap gap-6 min-w-full">
+      <div className="grid grid-cols-2 xl:grid-cols-4 lg:grid-cols-2 justify-items-center gap-6 min-w-full">
         {
           teams && (
             teams.map((team, index) => (

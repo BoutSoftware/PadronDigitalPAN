@@ -8,7 +8,7 @@ import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownM
 
 export default function BaseSideBar() {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(true);
   const { isSuperAdmin } = useContext(authContext);
 
   return (
@@ -17,7 +17,7 @@ export default function BaseSideBar() {
       aria-label="Main Navigation"
       onAction={(key) => { router.push(String(key)); }}
       className={`flex items-center h-full px-2 py-4 max-w-60 bg-primary text-primary-foreground relative ${!isOpen && "w-4 p-0 hide-children"}`}
-      classNames={{ list: `h-full` }}
+      classNames={{ list: "h-full" }}
       topContent={
         <>
           <SideBarTopContent />
