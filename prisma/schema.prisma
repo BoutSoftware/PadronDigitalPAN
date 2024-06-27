@@ -172,19 +172,22 @@ model Visor_User {
   title     String?
   rol       VisRoles?
 
-  User            User                   @relation(fields: [userId], references: [id])
-  Coordinators    Visor_Structure[]      @relation("CoordinatorRelation")
-  Technicals      Visor_Structure[]      @relation("TechnicalRelation")
-  Attachs         Visor_Structure[]      @relation("AttachRelation")
-  Auditors        Visor_Structure[]      @relation("AuditorRelation")
-  SubCoordinators Visor_SubCoordinator[] @relation("SubCoordinatorRelation")
-  SubTechnicals   Visor_SubCoordinator[] @relation("SubTechnicalRelation")
-  Auxiliaries     Visor_Auxiliaries[]    @relation("AuxiliaryRelation")
-  AuxTechnicals   Visor_Auxiliaries[]    @relation("AuxTechnicalRelation")
+  User            User                         @relation(fields: [userId], references: [id])
+  Coordinators    Visor_Structure[]            @relation("CoordinatorRelation")
+  Technicals      Visor_Structure[]            @relation("TechnicalRelation")
+  Attachs         Visor_Structure[]            @relation("AttachRelation")
+  Auditors        Visor_Structure[]            @relation("AuditorRelation")
+  SubCoordinators Visor_SubCoordinator[]       @relation("SubCoordinatorRelation")
+  SubTechnicals   Visor_SubCoordinator[]       @relation("SubTechnicalRelation")
+  Auxiliaries     Visor_Auxiliaries[]          @relation("AuxiliaryRelation")
+  AuxTechnicals   Visor_Auxiliaries[]          @relation("AuxTechnicalRelation")
   Links           Visor_Team[]
   Caminantes      Visor_Caminantes[]
   RoundCreators   Visor_Round[]
   NeedCreators    Visor_Need[]
+  a               Visor_structureCoordinator[] @relation("TechnicalRelation")
+  b               Visor_structureCoordinator[] @relation("AttachRelation")
+  c               Visor_structureCoordinator[] @relation("VisorUserRelation")
 }
 
 model Visor_Structure {
@@ -192,17 +195,29 @@ model Visor_Structure {
   structureType String
   // Cambia el tener un cooridnador a opcional, en caso de que en algun momento se reemplace el coordinador o se ponga de baja
   coordinatorId String?  @db.ObjectId
-  technicalId   String   @db.ObjectId
-  attachId      String   @db.ObjectId
-  auditorId     String   @db.ObjectId
+  technicalId   String?  @db.ObjectId
+  attachId      String?  @db.ObjectId
+  auditorId     String?  @db.ObjectId
   pointTypesIDs String[]
 
   Coordinator Visor_User? @relation("CoordinatorRelation", fields: [coordinatorId], references: [id])
-  Technical   Visor_User  @relation("TechnicalRelation", fields: [technicalId], references: [id])
-  Attach      Visor_User  @relation("AttachRelation", fields: [attachId], references: [id])
-  Auditor     Visor_User  @relation("AuditorRelation", fields: [auditorId], references: [id])
+  Technical   Visor_User? @relation("TechnicalRelation", fields: [technicalId], references: [id])
+  Attach      Visor_User? @relation("AttachRelation", fields: [attachId], references: [id])
+  Auditor     Visor_User? @relation("AuditorRelation", fields: [auditorId], references: [id])
 
   VisorSubCoordinators Visor_SubCoordinator[]
+}
+
+model Visor_structureCoordinator {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  structureId String
+  visorUserId String @db.ObjectId
+  technicalId String @db.ObjectId
+  attachId    String @db.ObjectId
+
+  Technical Visor_User @relation("TechnicalRelation", fields: [technicalId], references: [id])
+  Attach    Visor_User @relation("AttachRelation", fields: [attachId], references: [id])
+  VisorUser Visor_User @relation("VisorUserRelation", fields: [visorUserId], references: [id])
 }
 
 model Visor_SubCoordinator {

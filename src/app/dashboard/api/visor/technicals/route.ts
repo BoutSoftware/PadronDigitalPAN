@@ -11,15 +11,12 @@ export async function GET(request: NextRequest) {
     const technicals = await prisma.visor_User.findMany({
       where: {
         rol: "Technical",
-        ...(onlyFree ? { Technicals: { none: {} } } : undefined)
+        ...(onlyFree ? { title: null } : undefined)
       },
-      include: {
-        Technicals: true
-      }
     });
 
     return NextResponse.json({ code: "OK", message: "Technicals retrieved succesfully", data: technicals });
-    
+
   } catch (error) {
     console.log(error);
     return NextResponse.json({ code: "ERROR", message: "An error occurred" });
