@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Tabs, Tab, Select, SelectItem, Autocomplete } from "@nextui-org/react";
 import { TIPOS_PUNTO, CONFIGURACIONES_GEOGRAFICAS } from "../../../configs/catalogs/visorCatalog";
 

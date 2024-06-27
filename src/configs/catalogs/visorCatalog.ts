@@ -59,7 +59,7 @@ export const CONFIGURACIONES_GEOGRAFICAS = [
     nombre: "Secciones"
   },
   {
-    id: "coloinias",
+    id: "colonias",
     nombre: "Colonia/Localidad"
   },
 ] as const;

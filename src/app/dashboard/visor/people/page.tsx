@@ -76,7 +76,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="p-4 w-full flex flex-col gap-4 overflow-y-auto">
+    <div className="p-8 w-full flex flex-col gap-4 overflow-y-auto">
       <Header title="Personas" />
       <Input
         label="Integrante"
@@ -85,7 +85,7 @@ export default function Page() {
         value={usersFiltered?.userSearched}
         onValueChange={(userSearched) => handleSearchUser(userSearched)}
       />
-      <div className="flex gap-12">
+      <div className="flex gap-20 px-4 w-full">
         <div className="flex flex-col gap-4 flex-1">
           <div className="flex flex-col">
             <div className="flex items-center gap-2">

@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
             data: {
               addressId: personAddress.id,
               colonia: address.pendingAddress.colonia,
-              delgation: address.pendingAddress.delgation,
+              delegation: address.pendingAddress.delegation,
               municipio: address.pendingAddress.municipio,
               street: address.pendingAddress.street
             }
