@@ -33,7 +33,7 @@ export default function Teams() {
   const [teams, setTeams] = useState<TeamsByStructure | undefined>(undefined);
   const [filteredTeams, setFilteredTeams] = useState<TeamsByStructure | undefined>(undefined);
   const [teamSearched, setTeamSearched] = useState("");
-  const [selectedStructuresKeys, setSelectedStructuresKeys] = useState(new Set([]));
+  const [selectedStructuresKeys, setSelectedStructuresKeys] = useState<string[]>([]);
 
   const selectedStructures = useMemo(() => ((Array.from(selectedStructuresKeys).join(", ").replace("_", " "))), [selectedStructuresKeys]);
 
@@ -84,7 +84,7 @@ export default function Teams() {
     <div className="p-8 flex flex-col gap-4 overflow-auto flex-1">
       <Header title="Equipos" />
 
-      <div className="flex gap-4 items-end">
+      <div className="flex gap-4 items-end my-4">
         <Input
           label="Busca un equipo"
           labelPlacement="outside"
@@ -103,7 +103,7 @@ export default function Teams() {
               aria-label="Estructuras a filtrar"
               selectionMode="multiple"
               selectedKeys={selectedStructuresKeys}
-              onSelectionChange={setSelectedStructuresKeys}
+              onSelectionChange={(value) => setSelectedStructuresKeys([...(value as Set<string>)])}
               closeOnSelect={false}
             >
               <DropdownItem key="Territorial">Territorial</DropdownItem>

@@ -1,3 +1,4 @@
+import { CONFIGURACIONES_GEOGRAFICAS } from "@/configs/catalogs/visorCatalog";
 import prisma from "@/configs/database";
 import { hasIncompleteFields } from "@/utils";
 import { Visor_Team } from "@prisma/client";
@@ -64,30 +65,54 @@ export async function GET() {
       return NextResponse.json({ code: "NOT_FOUND", message: "No teams found" });
     }
 
-    const data: StructureTeams[] = teams.reduce((acc, team) => {
+    const data: StructureTeams[] = [];
+
+    for (const team of teams) {
       const structure = team.Auxiliary.SubCoordinator.Structure;
       const { id: structureId, structureType } = structure;
+
+      // Get the Team's Geographic configuration
+      const geoLevel = team.geographicConf.geographicLevel as typeof CONFIGURACIONES_GEOGRAFICAS[number]["id"];
+      const geographicConf = {
+        geographicLevel: CONFIGURACIONES_GEOGRAFICAS.find((val) => val.id === geoLevel)!.nombre,
+        values: [] as string[],
+      };
+      if (geoLevel === "colonias") {
+        geographicConf.values = (await prisma.colonia.findMany({ where: { id: { in: team.geographicConf.values } } })).map((val) => val.name);
+      } else if (geoLevel === "delegaciones") {
+        geographicConf.values = (await prisma.delegation.findMany({ where: { id: { in: team.geographicConf.values } } })).map((val) => val.name);
+      } else if (geoLevel === "distritosLocales") {
+        geographicConf.values = (await prisma.localDistric.findMany({ where: { id: { in: team.geographicConf.values } } })).map((val) => val.number.toString());
+      } else if (geoLevel === "municipios") {
+        geographicConf.values = (await prisma.municipio.findMany({ where: { id: { in: team.geographicConf.values } } })).map((val) => val.name);
+      } else if (geoLevel === "secciones") {
+        geographicConf.values = (await prisma.electoralSection.findMany({ where: { id: { in: team.geographicConf.values } } })).map((val) => val.number.toString());
+      } else {
+        geographicConf.values = ["Nivel de Configuración geografico invalido"];
+      }
+
+      // Join All team info
       const teamInfo = {
         id: team.id,
         name: team.name,
         linkName: `${team.Link.User.Person.name} ${team.Link.User.Person.fatherLastName} ${team.Link.User.Person.motherLastName}`,
         pointTypesIDs: team.pointTypesIDs,
-        geographicConf: team.geographicConf,
+        geographicConf
       };
-    
-      const existingStructure = acc.find(d => d.structureId === structureId);
+
+      // Insert the team into a structure (or create a new one)
+      const existingStructure = data.find(d => d.structureId === structureId);
       if (existingStructure) {
         existingStructure.teams.push(teamInfo);
       } else {
-        acc.push({
+        data.push({
           structureId,
           structureType,
           teams: [teamInfo],
         });
       }
-    
-      return acc;
-    }, [] as StructureTeams[]);
+    }
+
 
     return NextResponse.json({ code: "OK", message: "Teams retrieved successfully", data: data });
   } catch (error) {
@@ -96,11 +121,14 @@ export async function GET() {
   }
 }
 
+interface createTeam extends Visor_Team {
+  caminantes: string[];
+}
 export async function POST(request: NextRequest) {
   try {
-    const { name, geographicConf, linkId, auxiliaryId, pointTypesIDs } = (await request.json()) as Visor_Team;
+    const { name, geographicConf, linkId, auxiliaryId, pointTypesIDs, caminantes } = (await request.json()) as createTeam;
 
-    if (hasIncompleteFields({ name, geographicConf, linkId })) {
+    if (hasIncompleteFields({ name, geographicConf, linkId, auxiliaryId })) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
     }
 
@@ -110,9 +138,20 @@ export async function POST(request: NextRequest) {
         geographicConf,
         linkId,
         auxiliaryId,
-        pointTypesIDs
-      }
+        pointTypesIDs,
+        Caminantes: {
+          // TODO: En caso de que ya exista un usuario con ese ID, no lo crea. Y agregar mas logica de validación
+          createMany: {
+            data: caminantes.map((caminante) => ({ userId: caminante })),
+          },
+        },
+      },
+      include: {
+        Caminantes: true,
+      },
     });
+
+
 
     return NextResponse.json({ code: "OK", message: "Team created succesfully", data: team });
   } catch (error) {
