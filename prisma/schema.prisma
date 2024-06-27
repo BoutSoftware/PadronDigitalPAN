@@ -25,9 +25,8 @@ model Complement {
 }
 
 model LocalDistric {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  number      Int
-  municipioId String? @db.ObjectId
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  number Int
 
   ElectoralSections ElectoralSection[]
 }
