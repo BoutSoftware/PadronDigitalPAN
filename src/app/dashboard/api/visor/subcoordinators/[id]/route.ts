@@ -3,7 +3,7 @@ import { hasIncompleteFields } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 // Update subcoordinator
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   interface reqBody {
     category: string;
     userId: string;
@@ -31,7 +31,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const subcoordinator = await prisma.visor_SubCoordinator.update({
       where: { id },
       data: {
-        category,
         userId,
         technicalId,
         pointTypesIDs,

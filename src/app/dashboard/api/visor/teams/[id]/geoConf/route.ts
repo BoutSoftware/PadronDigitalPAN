@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Udate geographic configuration
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   interface reqBody {
     geographicLevel?: string;
     values: string[];
