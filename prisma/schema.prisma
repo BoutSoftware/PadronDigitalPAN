@@ -25,12 +25,11 @@ model Complement {
 }
 
 model LocalDistric {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  number Int
-  municipioId       String?            @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  number      Int
+  municipioId String? @db.ObjectId
 
   ElectoralSections ElectoralSection[]
-  Municipio         Municipio?         @relation(fields: [municipioId], references: [id])
 }
 
 model FederalDistric {
@@ -45,9 +44,11 @@ model ElectoralSection {
   number           Int
   localDistricId   String @db.ObjectId
   federalDistricId String @db.ObjectId
+  municipioId      String @db.ObjectId
 
   LocalDistric   LocalDistric   @relation(fields: [localDistricId], references: [id])
   FederalDistric FederalDistric @relation(fields: [federalDistricId], references: [id])
+  Municipio      Municipio      @relation(fields: [municipioId], references: [id])
   Addresses      Address[]
   VisorNeeds     Visor_Need[]
 }
@@ -59,8 +60,8 @@ model Municipio {
 
   VisorAuxiliaries Visor_Auxiliaries[] @relation(fields: [visorAuxiliariesIDs], references: [id])
 
-  Colonias      Colonia[]
-  LocalDistrics LocalDistric[]
+  Colonias         Colonia[]
+  ElectoralSection ElectoralSection[]
 }
 
 model Delegation {
