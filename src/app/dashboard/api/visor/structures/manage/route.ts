@@ -6,20 +6,20 @@ import { Visor_Structure } from "@prisma/client";
 // Ejemplo de como acceder a la ruta POST de la API: http://localhost:3020/dashboard/api/visor/structures/manage
 export async function POST(request: NextRequest) {
   try {
-    
+
     const { id, coordinatorId, technicalId, auditorId } = await request.json() as Visor_Structure;
 
-    if( hasIncompleteFields({ id, coordinatorId, technicalId, auditorId }) ) {
+    if (hasIncompleteFields({ id, coordinatorId, technicalId, auditorId })) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
     }
 
-    if( technicalId === auditorId ) {
+    if (technicalId === auditorId) {
       return NextResponse.json({ code: "BAD_FIELDS", message: "technicalId and auditorId cannot be the same" });
     }
 
     console.log({ id, coordinatorId, technicalId, auditorId });
-    
-    
+
+
     const structure = await prisma.visor_Structure.update({
       where: { id },
       data: {
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ code: "OK", message: "Structure updated", data: structure });
-    
+
   } catch (error) {
     console.log(error);
     return NextResponse.json({ code: "ERROR", message: "An error occurred" });
@@ -66,12 +66,12 @@ export async function PATCH(request: NextRequest) {
 
     const { id, coordinatorId, technicalId, auditorId } = await request.json() as Visor_Structure;
 
-    if( hasIncompleteFields({ coordinatorId }) ) {
+    if (hasIncompleteFields({ coordinatorId })) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
     }
 
     // Verify if technicalId is the same as auditorId
-    if( technicalId === auditorId && (technicalId !== undefined || technicalId !== null) ) {
+    if (technicalId === auditorId && (technicalId !== undefined || technicalId !== null)) {
       return NextResponse.json({ code: "BAD_FIELDS", message: "technicalId and auditorId cannot be the same" });
     }
 
@@ -79,13 +79,13 @@ export async function PATCH(request: NextRequest) {
     const structure = await prisma.visor_Structure.findFirst({ where: { coordinatorId: coordinatorId as string } });
 
     console.log({ structure, id });
-    
 
-    if( structure?.id !== id ) {
+
+    if (structure?.id !== id) {
       // Structure changed
       // Remove the fields of the old structure
       console.log("Structure is changed, removing fields");
-      
+
       await prisma.visor_Structure.update({
         where: { id: structure?.id },
         data: {
@@ -99,13 +99,11 @@ export async function PATCH(request: NextRequest) {
             update: {
               title: "Sin titulo"
             },
-            disconnect: true
           },
           Auditor: {
             update: {
               title: "Sin titulo"
             },
-            disconnect: true
           }
         }
       });
@@ -124,7 +122,6 @@ export async function PATCH(request: NextRequest) {
       //     }
       //   }
       // });
-      
     }
 
     const structureUpdated = await prisma.visor_Structure.update({
