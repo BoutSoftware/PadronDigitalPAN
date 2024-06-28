@@ -33,6 +33,7 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
 
   useEffect(() => {
     // TODO: Get Selects Data from API
+    // TODO: Este "setFormOptions" o useEffect esta causando un loop infinito, hay que optimizarlo
     setFormOptions({
       structures: fakeStructures,
       coordinators: fakeCoordinators,
