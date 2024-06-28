@@ -13,7 +13,7 @@ interface SideBarProps {
 }
 
 export default function SideBar(props: SideBarProps) {
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <Listbox
@@ -21,7 +21,7 @@ export default function SideBar(props: SideBarProps) {
       aria-label={props.ariaLabel}
       onAction={props.onAction}
       className={`flex items-center h-full px-2 py-4 max-w-60 bg-primary text-primary-foreground relative ${!isOpen && "w-4 p-0 hide-children"}`}
-      classNames={{ list: `h-full` }}
+      classNames={{ list: "h-full" }}
       topContent={<>
         {props.topContent}
         <Button color="secondary" className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-6 min-w-0 !flex" isIconOnly size="sm" onPress={() => setIsOpen(!isOpen)}>

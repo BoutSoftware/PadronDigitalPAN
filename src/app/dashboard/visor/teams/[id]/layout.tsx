@@ -22,7 +22,7 @@ export default function LayoutTeam({ children }: { children: ReactNode }) {
       name: "Nombre del equipo"
     });
 
-  }, []);
+  }, [params.id]);
 
   return (
     <div className="flex-col h-screen items-stretch overflow-hidden flex-1">

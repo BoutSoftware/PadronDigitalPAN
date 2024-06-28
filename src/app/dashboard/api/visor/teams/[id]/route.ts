@@ -49,18 +49,18 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const geoLevel = team?.geographicConf.geographicLevel as typeof CONFIGURACIONES_GEOGRAFICAS[number]["id"];
     const geographicConf = {
       geographicLevel: CONFIGURACIONES_GEOGRAFICAS.find((val) => val.id === geoLevel)!,
-      values: [] as {id: string, name: string}[],
+      values: [] as { id: string, name: string }[],
     };
     if (geoLevel === "colonias") {
       geographicConf.values = (await prisma.colonia.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.name }));
     } else if (geoLevel === "delegaciones") {
       geographicConf.values = (await prisma.delegation.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.name }));
     } else if (geoLevel === "distritosLocales") {
-      geographicConf.values = (await prisma.localDistric.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({id: val.id, name: val.number.toString()}));
+      geographicConf.values = (await prisma.localDistric.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.number.toString() }));
     } else if (geoLevel === "municipios") {
       geographicConf.values = (await prisma.municipio.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.name }));
     } else if (geoLevel === "secciones") {
-      geographicConf.values = (await prisma.electoralSection.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.number.toString()}));
+      geographicConf.values = (await prisma.electoralSection.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.number.toString() }));
     }
 
     const formatedTeam = {
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       auxiliaryId: undefined,
       linkId: undefined,
       createdAt: undefined,
-      
+
     };
 
 
