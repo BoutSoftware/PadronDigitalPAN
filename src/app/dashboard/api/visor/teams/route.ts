@@ -30,18 +30,21 @@ export async function GET() {
         pointTypesIDs: true,
         geographicConf: true,
         Link: {
-          include: {
-            User: {
-              include: {
-                Person: {
-                  select: {
-                    name: true,
-                    fatherLastName: true,
-                    motherLastName: true
-                  }
-                }
-              }
-            }
+          // include: {
+          //   User: {
+          //     include: {
+          //       Person: {
+          //         select: {
+          //           name: true,
+          //           fatherLastName: true,
+          //           motherLastName: true
+          //         }
+          //       }
+          //     }
+          //   }
+          // }
+          select: {
+            fullname: true,
           }
         },
         Auxiliary: {
@@ -82,7 +85,8 @@ export async function GET() {
       const teamInfo = {
         id: team.id,
         name: team.name,
-        linkName: `${team.Link.User.Person.name} ${team.Link.User.Person.fatherLastName} ${team.Link.User.Person.motherLastName}`,
+        // linkName: `${team.Link.User.Person.name} ${team.Link.User.Person.fatherLastName} ${team.Link.User.Person.motherLastName}`,
+        linkName: team.Link.fullname,
         pointTypesIDs: team.pointTypesIDs,
         geographicConf
       };
