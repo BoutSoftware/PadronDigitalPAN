@@ -263,11 +263,11 @@ model Visor_Team {
   name           String
   active         Boolean    @default(true)
   geographicConf VisGeoConf
-  linkId         String     @db.ObjectId
+  linkId         String?    @db.ObjectId
   auxiliaryId    String     @db.ObjectId
   pointTypesIDs  String[]
 
-  Link      Visor_User        @relation(fields: [linkId], references: [id])
+  Link      Visor_User?       @relation(fields: [linkId], references: [id])
   Auxiliary Visor_Auxiliaries @relation(fields: [auxiliaryId], references: [id])
 
   Caminantes Visor_Caminantes[]
@@ -279,12 +279,12 @@ model Visor_Team {
 model Visor_Caminantes {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt DateTime @default(now())
-  userId    String   @db.ObjectId
+  userId    String?  @db.ObjectId
   active    Boolean  @default(true)
   teamId    String   @db.ObjectId
 
-  User Visor_User @relation(fields: [userId], references: [id])
-  Team Visor_Team @relation(fields: [teamId], references: [id])
+  User Visor_User? @relation(fields: [userId], references: [id])
+  Team Visor_Team  @relation(fields: [teamId], references: [id])
 }
 
 model Visor_Round {
