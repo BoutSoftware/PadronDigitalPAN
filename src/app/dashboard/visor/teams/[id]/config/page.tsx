@@ -1,59 +1,94 @@
 "use client";
 import { Avatar, Button, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-interface membersAndConfigState {
-  structure: string
-  members: {
-    aux: string
-    enlace: string
-    members: {
+interface TeamResponse {
+  id: string
+  name: string
+  active: boolean
+  Structure: {
+    id: string
+    nombre: string
+  }
+  Caminantes: {
+    id: string
+    name: string
+    active: boolean
+  }[]
+  Link: {
+    id: string
+    active: boolean
+    name: string
+  }
+  Auxiliary: {
+    id: string
+    active: boolean
+    name: string
+  }
+  TiposPunto: {
+    id: string
+    nombre: string
+    icon: string
+    estructuraId: string
+  }[]
+  geographicConf: {
+    geographicLevel: {
+      id: string
+      nombre: string
+    }
+    values: {
       id: string
       name: string
-      isActive: boolean
     }[]
   }
-  geographicArea: {
-    id: string
-    name: string
-    level: string
-  }[]
-  pointTypes: {
-    id: string
-    name: string
-  }[]
 }
 
 export default function Page() {
 
-  const [membersAndConfig, setMembersAndConfig] = useState<membersAndConfigState | null>(null);
+  const [membersAndConfig, setMembersAndConfig] = useState<TeamResponse | null>(null);
+  const { id } = useParams();
+
+  async function getTeamInfo() {
+    const resBody = await fetch(`/dashboard/api/visor/teams/${id}`)
+      .then(res => res.json())
+      .catch(err => console.error(err));
+
+    if (resBody.code == "ERROR") {
+      alert(resBody.message);
+      return;
+    }
+
+    setMembersAndConfig(resBody.data);
+  }
 
   useEffect(() => {
-    setMembersAndConfig({
-      structure: "Territorial",
-      members: {
-        aux: "Javier Zamudio",
-        enlace: "Noel Vázquez",
-        members: [
-          { id: "1", name: "Diego Martínez García", isActive: true },
-          { id: "2", name: "Diego Martínez García", isActive: true },
-          { id: "3", name: "Diego Martínez García", isActive: true },
-          { id: "4", name: "Diego Martínez García", isActive: true },
-          { id: "5", name: "Diego Martínez García", isActive: true }
-        ]
-      },
-      geographicArea: [
-        { id: "1", name: "Rancho largo", level: "Colonia" },
-        { id: "2", name: "Rancho largo", level: "Colonia" },
-        { id: "3", name: "Rancho largo", level: "Colonia" },
-        { id: "4", name: "Rancho largo", level: "Colonia" },
-        { id: "5", name: "Rancho largo", level: "Colonia" }
-      ],
-      pointTypes: [
-        { id: "1", name: "Necesidad" },
-        { id: "2", name: "Cruceros" }
-      ]
-    });
+    getTeamInfo();
+    // setMembersAndConfig({
+    //   structure: "Territorial",
+    //   members: {
+    //     aux: "Javier Zamudio",
+    //     enlace: "Noel Vázquez",
+    //     members: [
+    //       { id: "1", name: "Diego Martínez García", isActive: true },
+    //       { id: "2", name: "Diego Martínez García", isActive: true },
+    //       { id: "3", name: "Diego Martínez García", isActive: true },
+    //       { id: "4", name: "Diego Martínez García", isActive: true },
+    //       { id: "5", name: "Diego Martínez García", isActive: true }
+    //     ]
+    //   },
+    //   geographicArea: [
+    //     { id: "1", name: "Rancho largo", level: "Colonia" },
+    //     { id: "2", name: "Rancho largo", level: "Colonia" },
+    //     { id: "3", name: "Rancho largo", level: "Colonia" },
+    //     { id: "4", name: "Rancho largo", level: "Colonia" },
+    //     { id: "5", name: "Rancho largo", level: "Colonia" }
+    //   ],
+    //   pointTypes: [
+    //     { id: "1", name: "Necesidad" },
+    //     { id: "2", name: "Cruceros" }
+    //   ]
+    // });
   }, []);
 
   return (
@@ -61,40 +96,40 @@ export default function Page() {
       <div className="flex flex-col flex-1 gap-4">
         <h2 className="text-2xl text-foreground-600 ">Estructura perteneciente</h2>
         <Divider />
-        <span className="text-foreground-400">{membersAndConfig?.structure}</span>
+        <span className="text-foreground-400">{membersAndConfig?.Structure.nombre}</span>
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl text-foreground-600 ">Auxiliar de coordinación</h2>
           <Divider />
           <div className="flex items-center gap-2">
-            <Avatar showFallback name={membersAndConfig?.members.aux} src="https://images.unsplash.com/broken" />
-            <span>{membersAndConfig?.members.aux}</span>
+            <Avatar showFallback name={membersAndConfig?.Auxiliary.name} src="https://images.unsplash.com/broken" />
+            <span>{membersAndConfig?.Auxiliary.name}</span>
           </div>
         </div>
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl text-foreground-600 ">Enlace del equipo</h2>
           <Divider />
           <div className="flex items-center gap-2">
-            <Avatar showFallback name={membersAndConfig?.members.aux} src="https://images.unsplash.com/broken" />
-            <p>{membersAndConfig?.members.enlace}</p>
+            <Avatar showFallback name={membersAndConfig?.Link.name} src="https://images.unsplash.com/broken" />
+            <p>{membersAndConfig?.Link.name}</p>
           </div>
         </div>
         <div className="flex flex-col gap-4">
           <h2 className="text-2xl text-foreground-600 ">
             Miembros
-            <span className="text-base text-foreground-400"> {membersAndConfig?.members.members.length} miembros en el equipo</span>
+            <span className="text-base text-foreground-400"> {membersAndConfig?.Caminantes.length} miembros en el equipo</span>
           </h2>
           <Divider />
           <div className="flex flex-col gap-4">
             {
-              membersAndConfig?.members.members.map(member => (
-                <div key={member.id} className="flex justify-between items-center">
+              membersAndConfig?.Caminantes.map(({ id, active, name }) => (
+                <div key={id} className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
-                    <Avatar showFallback name={member.name} src="https://images.unsplash.com/broken" />
-                    <span className="">{member.name}</span>
+                    <Avatar showFallback name={name} src="https://images.unsplash.com/broken" />
+                    <span className="">{name}</span>
                   </div>
                   <Dropdown>
                     <DropdownTrigger>
-                      <Button>{member.isActive ? "Activo" : "Inactivo"}</Button>
+                      <Button>{active ? "Activo" : "Inactivo"}</Button>
                     </DropdownTrigger>
                     <DropdownMenu>
                       <DropdownItem key="active">Activo</DropdownItem>
@@ -137,11 +172,11 @@ export default function Page() {
           <Divider />
           <div className="flex flex-col gap-4">
             {
-              membersAndConfig?.geographicArea.map(config => (
-                <div key={config.id} className="flex justify-between">
+              membersAndConfig?.geographicConf.values.map(({ id, name }) => (
+                <div key={id} className="flex justify-between">
                   <div className="flex flex-col">
-                    <span>{config.name}</span>
-                    <span className="text-foreground-400">{config.level}</span>
+                    <span>{name}</span>
+                    <span className="text-foreground-400">{name}</span>
                   </div>
                   <Button>Quitar</Button>
                 </div>
@@ -153,15 +188,15 @@ export default function Page() {
           <div>
             <h2 className="text-2xl">
               Tipos de punto
-              <span className="text-foreground-400 text-base"> Marcando {membersAndConfig?.pointTypes.length} tipos de punto</span>
+              <span className="text-foreground-400 text-base"> Marcando {membersAndConfig?.TiposPunto.length} tipos de punto</span>
             </h2>
           </div>
           <Divider />
           <div className="flex flex-col gap-4">
             {
-              membersAndConfig?.pointTypes.map(point => (
-                <div key={point.id} className="flex justify-between items-center">
-                  <span>{point.name}</span>
+              membersAndConfig?.TiposPunto.map(({ id, nombre }) => (
+                <div key={id} className="flex justify-between items-center">
+                  <span>{nombre}</span>
                   <Button>Quitar</Button>
                 </div>
               ))
