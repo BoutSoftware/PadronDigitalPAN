@@ -143,7 +143,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       return NextResponse.json({ code: "NOT_FOUND", message: "Team not found" });
     }
 
-    const deletesMembers = await prisma.visor_User.updateMany({
+    const deletedMembers = await prisma.visor_User.updateMany({
       where: {
         Caminantes: {
           some: {
@@ -164,8 +164,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
           update: {
             title: null,
           },
-          // TODO: tambien quitar la relacion entre usuario_visor ( enlace ) y equipo?
-          disconnect: true
         },
         Caminantes: {
           updateMany: {
@@ -174,8 +172,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
             },
             data: {
               active: false,
-              // TODO: tambien quitar la relacion entre usuario_visor y caminante?
-              userId: null,
             }
           }
         }
