@@ -100,3 +100,60 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 
 }
+
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+
+    const id = params.id;
+    const team = await prisma.visor_Team.findUnique({ where: { id } });
+    
+    if (!team) {
+      return NextResponse.json({ code: "NOT_FOUND", message: "Team not found" });
+    }
+
+    const deletedMembers = await prisma.visor_User.updateMany({
+      where: {
+        Caminantes: {
+          some: {
+            teamId: id
+          }
+        }
+      },
+      data: {
+        title: null
+      }
+    });
+
+    const deletedTeam = await prisma.visor_Team.update({
+      where: { id },
+      data: {
+        active: false,
+        Link: {
+          update: {
+            title: null,
+          },
+        },
+        Caminantes: {
+          updateMany: {
+            where: {
+              teamId: id,
+            },
+            data: {
+              active: false,
+            }
+          }
+        }
+      },
+    });
+
+    // TODO: Aduitoria para checar quien elimino el equipo??
+
+
+    return NextResponse.json({ code: "OK", message: "Team deleted succesfully", data: deletedTeam });
+
+
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ code: "ERROR", message: "An error occurred" });
+  }
+}
