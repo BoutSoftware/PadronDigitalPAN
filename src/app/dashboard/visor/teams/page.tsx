@@ -57,6 +57,7 @@ export default function Teams() {
 
   useEffect(() => {
     handleGetTeamsAndSetThem();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -77,7 +78,7 @@ export default function Teams() {
       diaD: teams.diaD?.filter(team => team.name.includes(teamSearched)),
       gubernamental: teams.gubernamental?.filter(team => team.name.includes(teamSearched))
     });
-  }, [teamSearched]);
+  }, [teamSearched, teams]);
 
   return (
     <div className="p-8 flex flex-col gap-4 overflow-auto flex-1">
