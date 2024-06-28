@@ -23,11 +23,36 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     }
 
     // Verify if coordinator exists
-    const coordinatorExists = await prisma.visor_structureCoordinator.findFirst({ where: { id } });
+    const coordinatorExists = await prisma.visor_structureCoordinator.findFirst({
+      where: { id },
+      include: {
+        Technical: true,
+        Attach: true
+      }
+    });
 
     if (!coordinatorExists) {
       return NextResponse.json({ code: "NOT_FOUND", message: "Coordinator not found" });
     }
+
+    // Update title of free users (when a user is change in structure)
+    await prisma.visor_structureCoordinator.update({
+      where: { id },
+      data: {
+        Technical: {
+          update: {
+            title: technicalId === coordinatorExists.technicalId ?
+              coordinatorExists.Technical.title : null
+          }
+        },
+        Attach: {
+          update: {
+            title: attachId === coordinatorExists.attachId ?
+              coordinatorExists.Attach.title : null
+          }
+        }
+      }
+    });
 
     // Update coordination info of structure and titles of the users
     const updateResult = await prisma.visor_structureCoordinator.update({
