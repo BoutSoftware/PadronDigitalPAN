@@ -41,18 +41,22 @@ export default function Teams() {
     const resBody = await fetch("/dashboard/api/visor/teams")
       .then(res => res.json())
       .catch(err => console.log(err));
+    if (resBody.data) {
+      const teamsByStructure = {
+        ...teams,
+        territorial: resBody.data.map((structure: Structure) => { if (structure.structureType == "Territorial") return structure.teams; })[0],
+        gubernamental: resBody.data.map((structure: Structure) => { if (structure.structureType == "Gubernamental") return structure.teams; })[0],
+        campaign: resBody.data.map((structure: Structure) => { if (structure.structureType == "Campaña") return structure.teams; })[0],
+        diaD: resBody.data.map((structure: Structure) => { if (structure.structureType == "Dia D") return structure.teams; })[0],
+      };
 
-    const teamsByStructure = {
-      ...teams,
-      territorial: resBody.data.map((structure: Structure) => { if (structure.structureType == "Territorial") return structure.teams; })[0],
-      gubernamental: resBody.data.map((structure: Structure) => { if (structure.structureType == "Gubernamental") return structure.teams; })[0],
-      campaign: resBody.data.map((structure: Structure) => { if (structure.structureType == "Campaña") return structure.teams; })[0],
-      diaD: resBody.data.map((structure: Structure) => { if (structure.structureType == "Dia D") return structure.teams; })[0],
-    };
 
-
-    setTeams(teamsByStructure);
-    setFilteredTeams(teamsByStructure);
+      setTeams(teamsByStructure);
+      setFilteredTeams(teamsByStructure);
+    }
+    if (resBody.code === "ERROR") {
+      alert(resBody.message);
+    }
   }
 
   useEffect(() => {

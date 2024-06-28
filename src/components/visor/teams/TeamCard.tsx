@@ -19,6 +19,7 @@ export default function TeamCard({ id, team, enlace, puntos, geographicConf }: C
   const router = useRouter();
 
   const handleNavigation = (path: string) => {
+    alert("Handle navigation");
     router.push(`teams/${id}/${path}`);
   };
 
