@@ -13,38 +13,18 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           select: {
             User: {
               select: {
-                User: {
-                  select: {
-                    Person: {
-                      select: {
-                        name: true,
-                        fatherLastName: true,
-                        motherLastName: true
-                      }
-                    }
-                  }
-                }
+                fullname: true,
               }
             },
             id: true,
-            active: true
+            active: true,
           }
         },
         Link: {
           select: {
             id: true,
             active: true,
-            User: {
-              select: {
-                Person: {
-                  select: {
-                    name: true,
-                    fatherLastName: true,
-                    motherLastName: true
-                  }
-                }
-              }
-            }
+            fullname: true,
           }
         },
         Auxiliary: {
@@ -53,17 +33,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             active: true,
             User: {
               select: {
-                User: {
-                  select: {
-                    Person: {
-                      select: {
-                        name: true,
-                        fatherLastName: true,
-                        motherLastName: true
-                      }
-                    }
-                  }
-                }
+                fullname: true
               }
             },
             SubCoordinator: {
@@ -96,23 +66,21 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const formatedTeam = {
       ...team,
       Caminantes: team?.Caminantes?.map((caminante) => ({
-        // ...caminante,
-        id: caminante.id,
-        name: `${caminante.User.User.Person.name} ${caminante.User.User.Person.fatherLastName} ${caminante.User.User.Person.motherLastName}`,
+        id: id,
+        name: caminante.User.fullname,
         active: caminante.active
       })),
       Link: {
         id: team?.Link?.id,
         active: team?.Link?.active,
-        name: `${team?.Link?.User.Person.name} ${team?.Link?.User.Person.fatherLastName} ${team?.Link?.User.Person.motherLastName}`,
+        name: team?.Link?.fullname,
       },
       Auxiliary: {
         id: team?.Auxiliary?.id,
         active: team?.Auxiliary?.active,
-        name: `${team?.Auxiliary?.User.User.Person.name} ${team?.Auxiliary?.User.User.Person.fatherLastName} ${team?.Auxiliary?.User.User.Person.motherLastName}`,
+        name: team?.Auxiliary?.User.fullname,
       },
       Structure: team?.Auxiliary.SubCoordinator.structureId ? ESTRUCTURAS.find((s) => s.id === team?.Auxiliary.SubCoordinator.structureId) : null,
-      // TiposPunto: {team?.pointTypesIDs ? getTipoPuntos(team?.pointTypesIDs)}
       ...(team?.pointTypesIDs && { TiposPunto: getTipoPuntos(team?.pointTypesIDs) }),
       geographicConf,
       pointTypesIDs: undefined,

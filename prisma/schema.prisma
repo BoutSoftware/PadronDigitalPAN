@@ -172,6 +172,7 @@ model Visor_User {
   createdAt DateTime  @default(now())
   active    Boolean   @default(true)
   userId    String    @unique @db.ObjectId
+  fullname  String    @default("full_name")
   title     String?
   rol       VisRoles?
 
