@@ -8,7 +8,7 @@
     "prismaStudio": "prisma studio",
     "prismaUpdate": "prisma db push",
     "build": "prisma db push && next build",
-    "start": "next start"
+    "start": "next start -p 3020"
   },
   "dependencies": {
     "@nextui-org/react": "^2.2.10",

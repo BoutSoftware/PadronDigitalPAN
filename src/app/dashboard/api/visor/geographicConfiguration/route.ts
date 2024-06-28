@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
 
 // Function to query the database for geographic configuration based on the geographic level
-export async function getColonias({ municipios }: { municipios?: string[] }) {
+async function getColonias({ municipios }: { municipios?: string[] }) {
   const colonias = await prisma.colonia.findMany({
     where: {
       municipioId: (municipios?.length) ? {
@@ -50,7 +50,7 @@ export async function getColonias({ municipios }: { municipios?: string[] }) {
   return colonias;
 }
 
-export async function getMunicipios({ municipios }: { municipios?: string[] }) {
+async function getMunicipios({ municipios }: { municipios?: string[] }) {
   const resultadoMunicipios = await prisma.municipio.findMany({
     where: {
       id: (municipios?.length) ? {
@@ -62,7 +62,7 @@ export async function getMunicipios({ municipios }: { municipios?: string[] }) {
   return resultadoMunicipios;
 }
 
-export async function getDelegaciones({ municipios }: { municipios?: string[] }) {
+async function getDelegaciones({ municipios }: { municipios?: string[] }) {
   // TODO: Esto NECESITA un implementacion mucho mas limpia
   // Este es el id del municipio de queretaro xd
   if (!municipios?.length || "667bcf8e6ae4f348d52a3af1" in municipios) {
@@ -74,7 +74,7 @@ export async function getDelegaciones({ municipios }: { municipios?: string[] })
   return delegaciones;
 }
 
-export async function getDistritosLocales({ municipios }: { municipios?: string[] }) {
+async function getDistritosLocales({ municipios }: { municipios?: string[] }) {
   const distritosLocales = await prisma.localDistric.findMany({
     where: {
       ElectoralSections: {
@@ -90,7 +90,7 @@ export async function getDistritosLocales({ municipios }: { municipios?: string[
   return distritosLocales;
 }
 
-export async function getElectoralSection({ municipios }: { municipios?: string[] }) {
+async function getElectoralSection({ municipios }: { municipios?: string[] }) {
   const electoralSection = await prisma.electoralSection.findMany({
     where: {
       municipioId: (municipios?.length) ? {
