@@ -13,38 +13,18 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           select: {
             User: {
               select: {
-                User: {
-                  select: {
-                    Person: {
-                      select: {
-                        name: true,
-                        fatherLastName: true,
-                        motherLastName: true
-                      }
-                    }
-                  }
-                }
+                fullname: true,
               }
             },
             id: true,
-            active: true
+            active: true,
           }
         },
         Link: {
           select: {
             id: true,
             active: true,
-            User: {
-              select: {
-                Person: {
-                  select: {
-                    name: true,
-                    fatherLastName: true,
-                    motherLastName: true
-                  }
-                }
-              }
-            }
+            fullname: true,
           }
         },
         Auxiliary: {
@@ -53,17 +33,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             active: true,
             User: {
               select: {
-                User: {
-                  select: {
-                    Person: {
-                      select: {
-                        name: true,
-                        fatherLastName: true,
-                        motherLastName: true
-                      }
-                    }
-                  }
-                }
+                fullname: true
               }
             },
             SubCoordinator: {
@@ -79,47 +49,45 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const geoLevel = team?.geographicConf.geographicLevel as typeof CONFIGURACIONES_GEOGRAFICAS[number]["id"];
     const geographicConf = {
       geographicLevel: CONFIGURACIONES_GEOGRAFICAS.find((val) => val.id === geoLevel)!,
-      values: [] as {id: string, name: string}[],
+      values: [] as { id: string, name: string }[],
     };
     if (geoLevel === "colonias") {
       geographicConf.values = (await prisma.colonia.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.name }));
     } else if (geoLevel === "delegaciones") {
       geographicConf.values = (await prisma.delegation.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.name }));
     } else if (geoLevel === "distritosLocales") {
-      geographicConf.values = (await prisma.localDistric.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({id: val.id, name: val.number.toString()}));
+      geographicConf.values = (await prisma.localDistric.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.number.toString() }));
     } else if (geoLevel === "municipios") {
       geographicConf.values = (await prisma.municipio.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.name }));
     } else if (geoLevel === "secciones") {
-      geographicConf.values = (await prisma.electoralSection.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.number.toString()}));
+      geographicConf.values = (await prisma.electoralSection.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.number.toString() }));
     }
 
     const formatedTeam = {
       ...team,
       Caminantes: team?.Caminantes?.map((caminante) => ({
-        // ...caminante,
         id: id,
-        name: `${caminante.User?.User.Person.name} ${caminante.User?.User.Person.fatherLastName} ${caminante.User?.User.Person.motherLastName}`,
+        name: caminante.User.fullname,
         active: caminante.active
       })),
       Link: {
         id: team?.Link?.id,
         active: team?.Link?.active,
-        name: `${team?.Link?.User.Person.name} ${team?.Link?.User.Person.fatherLastName} ${team?.Link?.User.Person.motherLastName}`,
+        name: team?.Link?.fullname,
       },
       Auxiliary: {
         id: team?.Auxiliary?.id,
         active: team?.Auxiliary?.active,
-        name: `${team?.Auxiliary?.User.User.Person.name} ${team?.Auxiliary?.User.User.Person.fatherLastName} ${team?.Auxiliary?.User.User.Person.motherLastName}`,
+        name: team?.Auxiliary?.User.fullname,
       },
       Structure: team?.Auxiliary.SubCoordinator.structureId ? ESTRUCTURAS.find((s) => s.id === team?.Auxiliary.SubCoordinator.structureId) : null,
-      // TiposPunto: {team?.pointTypesIDs ? getTipoPuntos(team?.pointTypesIDs)}
       ...(team?.pointTypesIDs && { TiposPunto: getTipoPuntos(team?.pointTypesIDs) }),
       geographicConf,
       pointTypesIDs: undefined,
       auxiliaryId: undefined,
       linkId: undefined,
       createdAt: undefined,
-      
+
     };
 
 

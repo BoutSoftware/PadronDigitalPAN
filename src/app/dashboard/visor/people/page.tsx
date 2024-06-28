@@ -114,7 +114,7 @@ export default function Page() {
                 <h2 className="text-xl">Coordinador de estructura</h2>
                 <span className="text-zinc-400">{usersFiltered.coors.length}/{users.coors.length}</span>
               </div>
-              <ModalStructCoor action="Agregar" />
+              <ModalStructCoor />
             </div>
             {
               usersFiltered?.coors.length > 0 ? (
@@ -128,7 +128,7 @@ export default function Page() {
                           <span className="font-light text-zinc-400 text-sm">Estructura a cargo</span>
                         </div>
                       </div>
-                      <ModalStructCoor action="Modificar" coordinatorName={coor.name} />
+                      <ModalStructCoor coordinator={coor} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>
