@@ -148,11 +148,22 @@ export default function Page() {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <div>
+          <div className="justify-between flex">
             <h2 className="text-2xl">
               Tipos de punto
-              <span className="text-foreground-400 text-base"> Marcando {membersAndConfig?.TiposPunto.length} tipos de punto</span>
             </h2>
+            <Dropdown>
+              <DropdownTrigger>
+                <Button>{membersAndConfig?.TiposPunto.length} tipo{membersAndConfig?.TiposPunto.length > 1 && "s"} de punto</Button>
+              </DropdownTrigger>
+              <DropdownMenu>
+                {membersAndConfig?.TiposPunto.map(({ id, nombre }) => (
+                  <DropdownItem key={id}>
+                    {nombre}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
           </div>
           <Divider />
           <div className="flex flex-col gap-4">
