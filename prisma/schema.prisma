@@ -213,11 +213,12 @@ model Visor_Structure {
 }
 
 model Visor_structureCoordinator {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  active      Boolean @default(true)
   structureId String
-  visorUserId String @db.ObjectId
-  technicalId String @db.ObjectId
-  attachId    String @db.ObjectId
+  visorUserId String  @db.ObjectId
+  technicalId String  @db.ObjectId
+  attachId    String  @db.ObjectId
 
   Technical Visor_User @relation("TechnicalRelation", fields: [technicalId], references: [id])
   Attach    Visor_User @relation("AttachRelation", fields: [attachId], references: [id])
@@ -291,6 +292,7 @@ model Visor_Caminantes {
 model Visor_Round {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt     DateTime @default(now())
+  active        Boolean  @default(true)
   name          String
   startedAt     DateTime
   status        String
@@ -340,6 +342,7 @@ model Visor_Form {
 model Visor_Batch {
   id        String         @id @default(auto()) @map("_id") @db.ObjectId
   createdAt DateTime       @default(now())
+  active    Boolean        @default(true)
   name      String
   status    VisBatchStatus
   teamId    String         @db.ObjectId
