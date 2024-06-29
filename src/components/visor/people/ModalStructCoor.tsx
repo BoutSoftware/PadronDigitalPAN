@@ -53,13 +53,14 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
       };
 
       // Set Current Coordinator Info to formulary
-      setForm({
-        ...form,
-        structCoor: currentCoordinator.id,
-        struct: currentCoordinator.structureId,
-        attach: coordinatorData.attach.id,
-        tecnical: coordinatorData.technical.id
-      });
+      // TODO: Comenté setForm porque estaba haciendo que el componente se re-renderizara varias veces
+      // setForm({
+      //   ...form,
+      //   structCoor: currentCoordinator.id,
+      //   struct: currentCoordinator.structureId,
+      //   attach: coordinatorData.attach.id,
+      //   tecnical: coordinatorData.technical.id
+      // });
 
       // Manually add current coor and tech to options
       setFormOptions((value) => {

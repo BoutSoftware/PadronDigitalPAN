@@ -7,41 +7,44 @@ import ModalStructCoor from "@/components/visor/people/ModalStructCoor";
 import ModalSubCoor from "@/components/visor/people/ModalSubCoor";
 import ModalAuxCoor from "@/components/visor/people/ModalAuxCoor";
 
-interface admin {
-  name: string
-}
-interface subCoordinator {
-  name: string
-  estructura: string
-  tecnico: string
-  tipoPunto: string[]
-}
-
-interface usersInterface {
+interface users {
   userSearched?: string
-  admins: admin[]
+  admins: { name: string }[]
   coors: {
-    name: string,
+    Coordinators: null // No sé como viene la información
+    active: boolean
     id: string
-    structureId: string
-    estructura: string
-    tecnico: string
-    adjunto: string
+    rol: string
+    title?: string
+    userId: string
   }[]
-  subs: subCoordinator[]
-  auxs: {
-    name: string
-    estructura: string
-    subCoor: string
-    municipios: string[]
-    tecnico: string
+  technicals: {
+    Technicals: null // No sé como viene la información
+    active: true
+    id: string
+    rol: string
+    title?: string
+    userId: string
   }[]
-  users: admin[]
+  caminantes: {
+    User: {
+      Person: {
+        name: string
+        fatherLastName: string
+        motherLastName: string
+      }
+    }
+    active: boolean
+    id: string
+    rol: string
+    title?: string
+    userId: string
+  }
 }
 
 export default function Page() {
-  const [users, setUsers] = useState<usersInterface>({ admins: [], coors: [], subs: [], auxs: [], users: [] });
-  const [usersFiltered, setUsersFiltered] = useState<usersInterface>({ userSearched: "", admins: [], coors: [], subs: [], auxs: [], users: [] });
+  const [users, setUsers] = useState<users>({ admins: [], coors: [], subs: [], auxs: [], users: [] });
+  const [usersFiltered, setUsersFiltered] = useState<users>({ userSearched: "", admins: [], coors: [], subs: [], auxs: [], users: [] });
 
   function handleSearchUser(userSearched: string) {
     setUsersFiltered({
@@ -55,8 +58,25 @@ export default function Page() {
     });
   }
 
+  async function getPeople() {
+    const coordinatorsResponse = await fetch("/dashboard/api/visor/coordinators?onlyFree=true")
+      .then(res => res.json())
+      .catch(err => console.error(err));
+    const technicalsResponse = await fetch("/dashboard/api/visor/technicals?onlyFree=true")
+      .then(res => res.json())
+      .catch(err => console.log(err));
+    const caminantesResponse = await fetch("/dashboard/api/visor/caminantes?team=false")
+      .then(res => res.json())
+      .catch(err => console.error(err));
+    console.log(coordinatorsResponse);
+    console.log(technicalsResponse);
+    console.log(caminantesResponse);
+
+
+  }
+
   useEffect(() => {
-    // Make fetch to get people
+    getPeople();
     setUsers({
       admins: fakeModuleAdmins,
       coors: fakeStructCoors,
