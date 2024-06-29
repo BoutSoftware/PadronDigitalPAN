@@ -290,15 +290,15 @@ model Visor_Caminantes {
 }
 
 model Visor_Round {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt     DateTime @default(now())
-  active        Boolean  @default(true)
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime  @default(now())
+  active        Boolean   @default(true)
   name          String
-  startedAt     DateTime
+  startedAt     DateTime?
   status        String
   pointTypesIDs String[]
-  createdById   String   @db.ObjectId
-  teamId        String   @db.ObjectId
+  createdById   String    @db.ObjectId
+  teamId        String    @db.ObjectId
 
   CreatedBy Visor_User @relation(fields: [createdById], references: [id])
   Team      Visor_Team @relation(fields: [teamId], references: [id])
