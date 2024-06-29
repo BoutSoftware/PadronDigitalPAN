@@ -1,4 +1,5 @@
 "use client";
+import { Caminante } from "@/components/visor/individualTeam/Caminante";
 import { Avatar, Button, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -49,7 +50,7 @@ export default function Page() {
   const [membersAndConfig, setMembersAndConfig] = useState<TeamResponse | null>(null);
   const { id } = useParams();
 
-  async function getTeamInfo() {
+  async function getAndSetTeamInfo() {
     const resBody = await fetch(`/dashboard/api/visor/teams/${id}`)
       .then(res => res.json())
       .catch(err => console.error(err));
@@ -63,32 +64,8 @@ export default function Page() {
   }
 
   useEffect(() => {
-    getTeamInfo();
-    // setMembersAndConfig({
-    //   structure: "Territorial",
-    //   members: {
-    //     aux: "Javier Zamudio",
-    //     enlace: "Noel Vázquez",
-    //     members: [
-    //       { id: "1", name: "Diego Martínez García", isActive: true },
-    //       { id: "2", name: "Diego Martínez García", isActive: true },
-    //       { id: "3", name: "Diego Martínez García", isActive: true },
-    //       { id: "4", name: "Diego Martínez García", isActive: true },
-    //       { id: "5", name: "Diego Martínez García", isActive: true }
-    //     ]
-    //   },
-    //   geographicArea: [
-    //     { id: "1", name: "Rancho largo", level: "Colonia" },
-    //     { id: "2", name: "Rancho largo", level: "Colonia" },
-    //     { id: "3", name: "Rancho largo", level: "Colonia" },
-    //     { id: "4", name: "Rancho largo", level: "Colonia" },
-    //     { id: "5", name: "Rancho largo", level: "Colonia" }
-    //   ],
-    //   pointTypes: [
-    //     { id: "1", name: "Necesidad" },
-    //     { id: "2", name: "Cruceros" }
-    //   ]
-    // });
+    getAndSetTeamInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -122,21 +99,7 @@ export default function Page() {
           <div className="flex flex-col gap-4">
             {
               membersAndConfig?.Caminantes.map(({ id, active, name }) => (
-                <div key={id} className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <Avatar showFallback name={name} src="https://images.unsplash.com/broken" />
-                    <span className="">{name}</span>
-                  </div>
-                  <Dropdown>
-                    <DropdownTrigger>
-                      <Button>{active ? "Activo" : "Inactivo"}</Button>
-                    </DropdownTrigger>
-                    <DropdownMenu>
-                      <DropdownItem key="active">Activo</DropdownItem>
-                      <DropdownItem key="inactive">Inactivo</DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </div>
+                <Caminante key={id} id={id} active={active} name={name} />
               ))
             }
           </div>
