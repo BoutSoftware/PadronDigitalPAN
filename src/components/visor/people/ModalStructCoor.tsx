@@ -1,6 +1,7 @@
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select } from "@nextui-org/react";
-import { useEffect, useState } from "react";
-import { fakeCoordinators, fakeStructures, fakeTechnicals } from "@/utils/Fake";
+import { FormEvent, useEffect, useState } from "react";
+import { Visor_User, Visor_structureCoordinator } from "@prisma/client";
+import { ESTRUCTURAS } from "@/configs/catalogs/visorCatalog";
 
 interface ModalStructCoorProps {
   coordinator?: {
@@ -31,46 +32,186 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
     attach: ""
   });
 
-  useEffect(() => {
-    // TODO: Get Selects Data from API
-    setFormOptions({
-      structures: fakeStructures,
-      coordinators: fakeCoordinators,
-      technicals: fakeTechnicals,
+  // get coordinators
+  const getCoordinators = async () => {
+    const resBody = await (await fetch("/dashboard/api/visor/coordinators?onlyFree=true")).json();
+
+    if (resBody.code !== "OK") {
+      console.error("Error getting coordinators");
+      return;
+    }
+
+    setFormOptions((prevOptions) => ({
+      ...prevOptions,
+      coordinators: resBody.data.map((coordinator: Visor_User) => ({
+        id: coordinator.id,
+        name: coordinator.fullname
+      }))
+    }));
+  };
+
+  // get technicals
+  const getTechnicals = async () => {
+    const resBody = await (await fetch("/dashboard/api/visor/technicals?onlyFree=true")).json();
+
+    if (resBody.code !== "OK") {
+      console.error("Error getting technicals");
+      return;
+    }
+
+    setFormOptions((prevOptions) => ({
+      ...prevOptions,
+      technicals: resBody.data.map((technical: Visor_User) => ({
+        id: technical.id,
+        name: technical.fullname
+      }))
+    }));
+  };
+
+  // get structures from catalogs
+  const getStructures = () => {
+    setFormOptions((prevOptions) => ({
+      ...prevOptions,
+      structures: ESTRUCTURAS.map((structure) => ({
+        id: structure.id,
+        name: structure.nombre
+      }))
+    }));
+  };
+
+  const getCurrentCoordinator = async (currentCoordinator: { id: string; name: string; structureId: string; }) => {
+    const resBody = await (await fetch(`/dashboard/api/visor/structureCoordinators/${currentCoordinator.id}`)).json();
+
+    if (resBody.code !== "OK") {
+      console.error("Error getting current coordinator");
+      return;
+    }
+
+    const coorInfo: Visor_structureCoordinator & { Attach: Visor_User, Technical: Visor_User } = resBody.data;
+
+    const coordinatorData = {
+      technical: {
+        id: coorInfo.Technical.id,
+        name: coorInfo.Technical.fullname
+      },
+      attach: {
+        id: coorInfo.Attach.id,
+        name: coorInfo.Attach.fullname
+      }
+    };
+
+    setForm({
+      structCoor: currentCoordinator.id,
+      struct: currentCoordinator.structureId,
+      attach: coordinatorData.attach.id,
+      tecnical: coordinatorData.technical.id
     });
 
-    if (isModifying) {
-      // TODO: Get coordinator info from the API
-      const coordinatorData = {
-        technical: {
-          id: "1",
-          name: "Julio"
-        },
-        attach: {
-          id: "2",
-          name: "Agosto"
-        }
+    // Manually add current coor and tech to options
+    setFormOptions((value) => {
+      return {
+        ...value,
+        coordinators: [...value.coordinators, { id: currentCoordinator.id, name: currentCoordinator.name }],
+        technicals: [...value.technicals, { id: coordinatorData.technical.id, name: coordinatorData.technical.name }, { id: coordinatorData.attach.id, name: coordinatorData.attach.name }],
       };
+    });
+  };
 
-      // Set Current Coordinator Info to formulary
-      setForm({
-        ...form,
-        structCoor: currentCoordinator.id,
-        struct: currentCoordinator.structureId,
-        attach: coordinatorData.attach.id,
-        tecnical: coordinatorData.technical.id
-      });
+  // create structure coordinator
+  const createStructureCoordinator = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-      // Manually add current coor and tech to options
-      setFormOptions((value) => {
-        return {
-          ...value,
-          coordinators: [...value.coordinators, { id: currentCoordinator.id, name: currentCoordinator.name }],
-          technicals: [...value.technicals, { id: coordinatorData.technical.id, name: coordinatorData.technical.name }, { id: coordinatorData.attach.id, name: coordinatorData.attach.name }],
-        };
-      });
+    const reqBody = {
+      coordinatorId: form.structCoor,
+      structureId: form.struct,
+      technicalId: form.tecnical,
+      attachId: form.attach
+    };
+
+    const resBody = await fetch("/dashboard/api/visor/structureCoordinators", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(reqBody)
+    }).then((res) => res.json());
+
+    if (resBody.code === "BAD_FIELDS") {
+      return alert("El tecnico y el adjunto de coordinación no pueden ser el mismo usuario");
     }
-  }, [currentCoordinator, form, isModifying]);
+
+    if (resBody.code !== "OK") {
+      return alert("Error al crear el coordinador");
+    }
+
+    // TODO: Improve alerts
+    alert("Coordinador creado correctamente");
+
+    setForm({
+      structCoor: "",
+      struct: "",
+      tecnical: "",
+      attach: ""
+    });
+
+    setIsModalOpen(false);
+  };
+
+  // update structure coordinator
+  const updateStructureCoordinator = async (e: FormEvent<HTMLFormElement>, currentCoordinatorId: string) => {
+    e.preventDefault();
+
+    const reqBody = {
+      structureId: form.struct,
+      technicalId: form.tecnical,
+      attachId: form.attach
+    };
+
+    const resBody = await fetch(`/dashboard/api/visor/structureCoordinators/${currentCoordinatorId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(reqBody)
+    }).then((res) => res.json());
+
+    if (resBody.code === "BAD_FIELDS") {
+      return alert("El tecnico y el adjunto de coordinación no pueden ser el mismo usuario");
+    }
+
+    if (resBody.code !== "OK") {
+      return alert("Error al modificar el coordinador");
+    }
+
+    alert("Coordinador modificado correctamente");
+
+    setIsModalOpen(false);
+  };
+
+  // delete structure coordinator
+  const deleteStructureCoordinator = async () => {
+    const resBody = await fetch(`/dashboard/api/visor/structureCoordinators/${currentCoordinator?.id}`, {
+      method: "DELETE"
+    }).then((res) => res.json());
+
+    if (resBody.code !== "OK") {
+      return alert("Error al eliminar el coordinador");
+    }
+
+    alert("Coordinador eliminado correctamente");
+
+    setIsModalOpen(false);
+
+    // TODO: Actualizar la pantalla de personas cuando se elimine para que haga de nuevo el fetch de cooordinadores
+  };
+
+  useEffect(() => {
+    // asegurar que cada vez que se abra el modal las opciones esten actualizadas
+    if (isModalOpen) {
+      getStructures();
+      getCoordinators();
+      getTechnicals();
+      if (isModifying && currentCoordinator) {
+        getCurrentCoordinator(currentCoordinator);
+      }
+    }
+  }, [isModalOpen, isModifying, currentCoordinator]);
 
   return (
     <>
@@ -83,7 +224,11 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
       </Button>
       <Modal size="lg" isOpen={isModalOpen} isDismissable={true} onClose={() => setIsModalOpen(false)} >
         <ModalContent>
-          <form>
+          <form onSubmit={isModifying ?
+            (e) => updateStructureCoordinator(e, currentCoordinator.id) :
+            createStructureCoordinator
+          }>
+
             <ModalHeader>
               <h3>{isModifying ? "Modificar" : "Agregar"} Coordinador de estructura</h3>
             </ModalHeader>
@@ -144,7 +289,17 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
               </Autocomplete>
             </ModalBody>
             <ModalFooter className={`flex ${isModifying ? "justify-between" : "justify-end"}`}>
-              <Button color="danger" className={`${!isModifying ? "hidden" : ""}`}>Eliminar</Button>
+              <Button color="danger" className={`${!isModifying ? "hidden" : ""}`}
+                onPress={
+
+                  () => {
+                    if (confirm("¿Estás seguro que deseas eliminar este coordinador?")) {
+                      deleteStructureCoordinator();
+                    }
+                  }
+                }>
+
+                Eliminar</Button>
               <Button color="primary" type="submit">{isModifying ? "Modificar" : "Agregar"}</Button>
             </ModalFooter>
           </form>
