@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import ModalStructCoor from "@/components/visor/people/ModalStructCoor";
 import ModalSubCoor from "@/components/visor/people/ModalSubCoor";
 import ModalAuxCoor from "@/components/visor/people/ModalAuxCoor";
+import { getSubCoors, getTechnicals } from "@/utils/requests/people";
 
 interface admin {
   name: string
@@ -54,6 +55,17 @@ export default function Page() {
       users: users?.users.filter((user) => user.name.includes(userSearched)) || []
     });
   }
+
+  const getData = async () => {
+    const subCoordinators = await getSubCoors();
+    const Technicals = await getTechnicals();
+
+    setUsers({
+      ...users,
+      subs: subCoordinators,
+      auxs: Technicals
+    });
+  };
 
   useEffect(() => {
     // Make fetch to get people

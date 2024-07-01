@@ -52,9 +52,9 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const estructura = searchParams.get("estructura") as string;
 
-    if (!estructura) {
-      return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
-    }
+    // if (!estructura) {
+    //   return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
+    // }
 
     const subCooridnadores = await prisma.visor_SubCoordinator.findMany({
       where: {

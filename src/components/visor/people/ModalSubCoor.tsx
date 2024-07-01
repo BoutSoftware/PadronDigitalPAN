@@ -1,7 +1,13 @@
 "use client";
+import { ESTRUCTURAS, TIPOS_PUNTO } from "@/configs/catalogs/visorCatalog";
 import { fakeModuleSubCoor, fakeModuleUsers, fakePointTypes } from "@/utils/Fake";
+import { getSubCoors, getTechnicals } from "@/utils/requests/people";
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Selection } from "@nextui-org/react";
+import { Visor_User } from "@prisma/client";
 import { useEffect, useState } from "react";
+
+
+
 
 interface ModalSubCoorProps {
   action: "Modificar" | "Agregar";
@@ -10,8 +16,8 @@ interface ModalSubCoorProps {
 
 interface formValues {
   subCoor: string
-  struct: string
-  tecnical: string
+  struct: Selection,
+  technicalId: string
   pointTypes: Selection
 }
 
@@ -19,17 +25,67 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formValues, setFormValues] = useState<formValues>({
     subCoor: "",
-    struct: "",
-    tecnical: "",
+    struct: new Set([]),
+    technicalId: "",
     pointTypes: new Set([])
   });
 
+  const [subCoordinators, setsubCoordinators] = useState<Visor_User[]>([]);
+  const [Technicals, setTechnicals] = useState<Visor_User[]>([]);
+
+  const getData = async () => {
+    const subCoordinators = await getSubCoors(true);
+    const Technicals = await getTechnicals(true);
+    setsubCoordinators(subCoordinators);
+    setTechnicals(Technicals);
+  };
+
   useEffect(() => {
+    if (action === "Agregar") {
+      getData();
+    }
+
     if (subCoordinatorName) setFormValues({
       ...formValues,
       subCoor: subCoordinatorName
     });
   }, []);
+
+  const handleSubmit = async () => {
+
+    const formattedFormValues = {
+      userId: formValues.subCoor,
+      technicalId: formValues.technicalId,
+      structureId: [...formValues.struct][0],
+      pointTypesIDs: Array.from(formValues.pointTypes),
+    };
+    
+    const response = await fetch("/dashboard/api/visor/subcoordinators", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formattedFormValues),
+    });
+
+    const body = await response.json();
+
+    if (body.code === "OK") {
+      alert("Subcoordinador agregado correctamente");
+      setFormValues({
+        subCoor: "",
+        struct: new Set([]),
+        technicalId: "",
+        pointTypes: new Set([])
+      });
+      setIsModalOpen(false);
+    } else {
+      alert("Error al agregar el subcoordinador");
+    }
+
+    getData();
+
+  };
 
   useEffect(() => {
     console.log(formValues);
@@ -50,8 +106,8 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
           </ModalHeader>
           <ModalBody>
             <Autocomplete
-              label="Coordinador de estructura"
-              placeholder="Seleccione un coordinador de estructura"
+              label="Subcoordinador de estructura"
+              placeholder="Seleccione un subcoordinador de estructura"
               selectedKey={formValues.subCoor}
               onSelectionChange={(key) => {
                 setFormValues({ ...formValues, subCoor: key as string });
@@ -63,8 +119,8 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
                 action == "Modificar" ? (
                   <AutocompleteItem key={subCoordinatorName!}>{subCoordinatorName}</AutocompleteItem>
                 ) : (
-                  fakeModuleSubCoor.map((subCoor) => (
-                    <AutocompleteItem key={subCoor.name}>{subCoor.name}</AutocompleteItem>
+                  subCoordinators.map((subCoor) => (
+                    <AutocompleteItem key={subCoor.id}>{subCoor.fullname}</AutocompleteItem>
                   ))
                 )
               }
@@ -74,26 +130,27 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
               placeholder="Selecciona una estructura"
               selectedKeys={formValues.struct}
               onSelectionChange={(key) => {
-                setFormValues({ ...formValues, struct: key as string });
+                setFormValues({ ...formValues, struct: key });
               }}
               isRequired>
-              <SelectItem key="Politico">Política</SelectItem>
-              <SelectItem key="Gubernamental">Gubernamental</SelectItem>
-              <SelectItem key="DiaE">Dia E</SelectItem>
-              <SelectItem key="Camapaña">Campaña</SelectItem>
+              {
+                ESTRUCTURAS.map((struct) => (
+                  <SelectItem key={struct.id}>{struct.nombre}</SelectItem>
+                ))
+              }
             </Select>
             <Autocomplete
               label="Técnico"
               placeholder="Seleccione un técnico"
-              selectedKey={formValues.tecnical}
+              selectedKey={formValues.technicalId}
               onSelectionChange={(key) => {
-                setFormValues({ ...formValues, tecnical: key as string });
+                setFormValues({ ...formValues, technicalId: key as string });
               }}
-              value={formValues.tecnical}
+              value={formValues.technicalId}
               isRequired>
               {
-                fakeModuleUsers.map((user) => (
-                  <AutocompleteItem key={user.name}>{user.name}</AutocompleteItem>
+                Technicals.map((user) => (
+                  <AutocompleteItem key={user.id}>{user.fullname}</AutocompleteItem>
                 ))
               }
             </Autocomplete>
@@ -104,17 +161,18 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
               multiple
               onSelectionChange={(selectedKeys) => setFormValues({ ...formValues, pointTypes: selectedKeys })}
               selectionMode="multiple"
+              isDisabled={ Array.from(formValues.struct).length === 0 }
             >
               {
-                fakePointTypes.map((point) => (
-                  <AutocompleteItem key={point}>{point}</AutocompleteItem>
+                TIPOS_PUNTO.filter((point) => point.estructuraId === Array.from(formValues.struct)[0]).map((point) => (
+                  <AutocompleteItem key={point.id}>{point.nombre}</AutocompleteItem>
                 ))
               }
             </Select>
           </ModalBody>
           <ModalFooter className={`flex ${action === "Modificar" ? "justify-between" : "justify-end"}`}>
             <Button color="danger" className={`${action === "Agregar" ? "hidden" : ""}`}>Eliminar</Button>
-            <Button color="primary" type="submit">{action}</Button>
+            <Button color="primary" type="submit" onClick={handleSubmit}>{action}</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
