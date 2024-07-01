@@ -32,6 +32,7 @@ export default function ModalAuxCoor({ action, auxCoordinatorName, subCoordinato
       ...formValues,
       auxCoor: auxCoordinatorName
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

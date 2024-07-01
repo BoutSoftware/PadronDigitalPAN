@@ -206,7 +206,7 @@ export const fakeCoordinators = [
     id: "4",
     name: "Javier Elihu Zamudio"
   },
-]
+];
 
 export const fakeTechnicals = [
   {
