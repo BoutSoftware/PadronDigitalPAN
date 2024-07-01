@@ -2,6 +2,7 @@
 
 import Header from "@/components/Header";
 import TeamsOfAStructure, { fakeTeams } from "@/components/visor/teams/TeamsOfAStructure";
+import { ESTRUCTURAS } from "@/configs/catalogs/visorCatalog";
 import { Button, Dropdown, DropdownItem, DropdownTrigger, DropdownMenu, Input } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -16,6 +17,8 @@ interface Team {
   pointTypesIDs: string[]
   geographicConf: GeoConfig
 }
+
+// TODO: Use ids
 interface TeamsByStructure {
   territorial: Team[]
   gubernamental: Team[]
@@ -44,6 +47,7 @@ export default function Teams() {
 
     const teamsByStructure = {
       ...teams,
+      // TODO: Use Ids
       territorial: resBody.data.map((structure: Structure) => { if (structure.structureType == "Territorial") return structure.teams; })[0],
       gubernamental: resBody.data.map((structure: Structure) => { if (structure.structureType == "Gubernamental") return structure.teams; })[0],
       campaign: resBody.data.map((structure: Structure) => { if (structure.structureType == "Campaña") return structure.teams; })[0],
@@ -71,6 +75,7 @@ export default function Teams() {
       return;
     }
 
+    // TODO: Use ids
     setFilteredTeams({
       territorial: teams.territorial?.filter(team => team.name.includes(teamSearched)),
       campaign: teams.campaign?.filter(team => team.name.includes(teamSearched)),
@@ -105,10 +110,9 @@ export default function Teams() {
               onSelectionChange={(value) => setSelectedStructuresKeys([...(value as Set<string>)])}
               closeOnSelect={false}
             >
-              <DropdownItem key="Territorial">Territorial</DropdownItem>
-              <DropdownItem key="Gubernamental">Gubernamental</DropdownItem>
-              <DropdownItem key="Dia_D">Dia D</DropdownItem>
-              <DropdownItem key="Campaña">Campaña</DropdownItem>
+              {ESTRUCTURAS.map((str) => {
+                return <DropdownItem key={str.id}>{str.nombre}</DropdownItem>;
+              })}
             </DropdownMenu>
           </Dropdown>
         </div>
@@ -118,25 +122,30 @@ export default function Teams() {
         filteredTeams ? (
           <div className="flex-1 flex flex-col gap-8">
             {
-              (selectedStructures.includes("Territorial") || selectedStructures.length == 0)
+              (selectedStructures.includes("territorial") || selectedStructures.length == 0)
               &&
-              <TeamsOfAStructure structureName="Territorial" teams={filteredTeams.territorial} />
+              <TeamsOfAStructure structureId="territorial" teams={filteredTeams.territorial} />
             }
             {
               (selectedStructures.includes("Campaña") || selectedStructures.length == 0)
               &&
-              <TeamsOfAStructure structureName="Campaña" teams={filteredTeams.campaign} />
+              <TeamsOfAStructure structureId="Campaña" teams={filteredTeams.campaign} />
             }
             {
               (selectedStructures.includes("Gubernamental") || selectedStructures.length == 0)
               &&
-              <TeamsOfAStructure structureName="Gubernamental" teams={filteredTeams.gubernamental} />
+              <TeamsOfAStructure structureId="Gubernamental" teams={filteredTeams.gubernamental} />
             }
             {
               (selectedStructures.includes("Dia D") || selectedStructures.length == 0)
               &&
-              <TeamsOfAStructure structureName="Dia D" teams={filteredTeams.diaD} />
+              <TeamsOfAStructure structureId="Dia D" teams={filteredTeams.diaD} />
             }
+            {/* TODO: Corregir para adaptar a catalogos */}
+            {/* {ESTRUCTURAS.map((str) => {
+              if(selectedStructures.includes("Gubernamental") || selectedStructures.length == 0) return null;
+              return <TeamsOfAStructure key={str.id} structureId={str.nombre} teams={filteredTeams[str.id]} />;
+            })} */}
           </div>
         ) : (
           <div className="flex flex-1 justify-center items-center">

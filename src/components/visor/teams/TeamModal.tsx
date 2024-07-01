@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Tabs, Tab, Select, SelectItem, Autocomplete} from "@nextui-org/react";
-import { TIPOS_PUNTO, CONFIGURACIONES_GEOGRAFICAS } from "../../../configs/catalogs/visorCatalog";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Tabs, Tab, Select, SelectItem, Autocomplete } from "@nextui-org/react";
+import { TIPOS_PUNTO, CONFIGURACIONES_GEOGRAFICAS, ESTRUCTURAS } from "../../../configs/catalogs/visorCatalog";
 
 interface CoordinationAssistant {
   key: string;
@@ -23,10 +24,10 @@ interface GeographicValue {
 }
 
 interface TeamModalProps {
-  structureName: string;
+  structureId: string;
 }
 
-const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
+const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
   // Estados para manejar las distintas variables del modal
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("Jerarquia");
@@ -43,13 +44,14 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
   const [selectedGeographicLevel, setSelectedGeographicLevel] = useState<string>("");
   const [geographicValues, setGeographicValues] = useState<GeographicValue[]>([]);
 
+  const structureName = ESTRUCTURAS.find((str) => str.id === structureId)?.nombre;
   const tabs = ["Jerarquia", "Tipo de punto", "Participantes"];
 
   // useEffect para obtener los auxiliares de coordinación
   useEffect(() => {
     const fetchCoordinationAssistants = async () => {
       try {
-        const res = await fetch('/dashboard/api/visor/auxiliaries?estructura=territorial');
+        const res = await fetch(`/dashboard/api/visor/auxiliaries?estructura=${structureId}`);
         const result = await res.json();
         if (result.code === "OK") {
           const formattedData = result.data.map((item: any) => ({
@@ -72,7 +74,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
   useEffect(() => {
     const fetchCaminantes = async () => {
       try {
-        const res = await fetch('/dashboard/api/visor/caminantes?team=false');
+        const res = await fetch("/dashboard/api/visor/caminantes?team=false");
         const result = await res.json();
         if (result.code === "OK") {
           const formattedData = result.data.map((item: any) => ({
@@ -106,8 +108,11 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
   useEffect(() => {
     const fetchGeographicValues = async () => {
       if (selectedGeographicLevel === "") return;
-      
+
+      const currentAssistant = coordinationAssistants.find((assistant) => assistant.key === selectedAssistant);
+
       try {
+        // TODO: Obtener municipios del auxiliar de coordinación
         const res = await fetch(`/dashboard/api/visor/geographicConfiguration?geographicLevel=${selectedGeographicLevel}&municipios=667bcf8e6ae4f348d52a3af1`);
         const result = await res.json();
         if (result.code === "OK") {
@@ -217,7 +222,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
     //   console.error("Error creating team:", error);
     // }
     console.log(teamData);
-    
+
   };
 
   return (
@@ -256,7 +261,8 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
                     label="Nombre del equipo"
                     placeholder="Escribe el nombre del equipo"
                     isRequired
-                    onChange={(e) => setTeamName(e.target.value)}
+                    value={teamName}
+                    onValueChange={setTeamName}
                   />
                 </ModalBody>
               </Tab>
@@ -269,7 +275,8 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureName }) => {
                     selectionMode="multiple"
                     onSelectionChange={(_key) => handlePointTypeSelectionChange}
                   >
-                    {TIPOS_PUNTO.map((pointType) => (
+                    {TIPOS_PUNTO.filter((tp) => tp.estructuraId === structureId).map((pointType) => (
+                      // TODO: Filtrar tipos de punto por la estructura actual y aparte por los tipos de punto que tiene el coordinador
                       <SelectItem key={pointType.id} value={pointType.id}>
                         {pointType.nombre}
                       </SelectItem>
