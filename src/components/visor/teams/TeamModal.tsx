@@ -6,6 +6,7 @@ import { TIPOS_PUNTO, CONFIGURACIONES_GEOGRAFICAS, ESTRUCTURAS } from "../../../
 interface CoordinationAssistant {
   key: string;
   name: string;
+  municipiosIDs: string[];
 }
 
 interface Link {
@@ -28,7 +29,6 @@ interface TeamModalProps {
 }
 
 const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
-  // Estados para manejar las distintas variables del modal
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("Jerarquia");
   const [selectedGeographicValues, setSelectedGeographicValues] = useState<string[]>([]);
@@ -47,7 +47,6 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
   const structureName = ESTRUCTURAS.find((str) => str.id === structureId)?.nombre;
   const tabs = ["Jerarquia", "Tipo de punto", "Participantes"];
 
-  // useEffect para obtener los auxiliares de coordinación
   useEffect(() => {
     const fetchCoordinationAssistants = async () => {
       try {
@@ -68,9 +67,8 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     };
 
     fetchCoordinationAssistants();
-  }, []);
+  }, [structureId]);
 
-  // useEffect para obtener los caminantes
   useEffect(() => {
     const fetchCaminantes = async () => {
       try {
@@ -95,7 +93,6 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     fetchCaminantes();
   }, []);
 
-  // useEffect para filtrar los miembros en base al enlace seleccionado
   useEffect(() => {
     if (selectedLink) {
       setFilteredMembers(members.filter(member => member.key !== selectedLink));
@@ -104,7 +101,6 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     }
   }, [selectedLink, members]);
 
-  // useEffect para obtener los valores geográficos en base al nivel seleccionado
   useEffect(() => {
     const fetchGeographicValues = async () => {
       if (selectedGeographicLevel === "") return;
@@ -112,8 +108,10 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
       const currentAssistant = coordinationAssistants.find((assistant) => assistant.key === selectedAssistant);
 
       try {
-        // TODO: Obtener municipios del auxiliar de coordinación
-        const res = await fetch(`/dashboard/api/visor/geographicConfiguration?geographicLevel=${selectedGeographicLevel}&municipios=667bcf8e6ae4f348d52a3af1`);
+        // Suponiendo que el currentAssistant tiene una propiedad llamada municipios con los IDs de los municipios
+        const municipios = currentAssistant ? currentAssistant.municipiosIDs.join(",") : "667bd16c05c90de30f041144,667bd1aa05c90de30f04114f,667bd1ab05c90de30f04115";
+
+        const res = await fetch(`/dashboard/api/visor/geographicConfiguration?geographicLevel=${selectedGeographicLevel}&municipios=${municipios}`);
         const result = await res.json();
         if (result.code === "OK") {
           const formattedData = result.data.map((item: any) => ({
@@ -130,14 +128,12 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     };
 
     fetchGeographicValues();
-  }, [selectedGeographicLevel]);
+  }, [selectedGeographicLevel, selectedAssistant, coordinationAssistants]);
 
-  // Maneja el cambio de tab en el modal
   const handleTabChange = (key: React.Key) => {
     setActiveTab(key as string);
   };
 
-  // Maneja el botón de siguiente para cambiar de tab o enviar el formulario
   const handleNext = () => {
     const currentIndex = tabs.indexOf(activeTab);
     if (currentIndex < tabs.length - 1) {
@@ -147,21 +143,18 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     }
   };
 
-  // Maneja la selección de valores geográficos
   const handleGeographicValueSelectionChange = (key: React.Key) => {
     if (!selectedGeographicValues.includes(key as string)) {
       setSelectedGeographicValues([...selectedGeographicValues, key as string]);
     }
   };
 
-  // Maneja la selección de tipos de punto
   const handlePointTypeSelectionChange = (key: React.Key) => {
     if (!selectedPointTypes.includes(key as string)) {
       setSelectedPointTypes([...selectedPointTypes, key as string]);
     }
   };
 
-  // Maneja la selección de miembros del equipo
   const handleTeamMemberSelectionChange = (key: React.Key) => {
     const selectedMember = filteredMembers.find(member => member.key === key);
     if (selectedMember && !selectedTeamMembers.includes(selectedMember)) {
@@ -169,28 +162,23 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     }
   };
 
-  // Maneja la selección de enlace
   const handleLinkSelectionChange = (key: React.Key) => {
     setSelectedLink(key as string);
   };
 
-  // Maneja la selección de nivel geográfico
   const handleGeographicLevelSelectionChange = (key: React.Key) => {
     setSelectedGeographicLevel(key as string);
-    setSelectedGeographicValues([]); // Limpiar valores geográficos anteriores
+    setSelectedGeographicValues([]);
   };
 
-  // Elimina un valor geográfico seleccionado
   const handleRemoveGeographicValue = (key: string) => {
     setSelectedGeographicValues(selectedGeographicValues.filter((value) => value !== key));
   };
 
-  // Elimina un miembro del equipo seleccionado
   const handleRemoveTeamMember = (key: string) => {
     setSelectedTeamMembers(selectedTeamMembers.filter((member) => member.key !== key));
   };
 
-  // Maneja el envío del formulario para crear el equipo
   const handleSubmit = async () => {
     const teamData = {
       name: teamName,
@@ -203,6 +191,8 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
       linkId: selectedLink,
       caminantes: selectedTeamMembers.map(member => member.key),
     };
+
+    console.log(teamData);
 
     // try {
     //   const res = await fetch('/dashboard/api/visor/team', {
@@ -221,8 +211,6 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     // } catch (error) {
     //   console.error("Error creating team:", error);
     // }
-    console.log(teamData);
-
   };
 
   return (
@@ -276,7 +264,6 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
                     onSelectionChange={(_key) => handlePointTypeSelectionChange}
                   >
                     {TIPOS_PUNTO.filter((tp) => tp.estructuraId === structureId).map((pointType) => (
-                      // TODO: Filtrar tipos de punto por la estructura actual y aparte por los tipos de punto que tiene el coordinador
                       <SelectItem key={pointType.id} value={pointType.id}>
                         {pointType.nombre}
                       </SelectItem>
