@@ -2,6 +2,31 @@ import prisma from "@/configs/database";
 import { NextRequest, NextResponse } from "next/server";
 import { hasIncompleteFields } from "@/utils";
 
+// get coordinator
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const id = params.id;
+
+    const coordinator = await prisma.visor_structureCoordinator.findFirst({
+      where: { id, active: true },
+      include: {
+        Technical: true,
+        Attach: true,
+        VisorUser: true
+      }
+    });
+
+    if (!coordinator) {
+      return NextResponse.json({ code: "NOT_FOUND", message: "Coordinator not found" });
+    }
+
+    return NextResponse.json({ code: "OK", message: "Coordinator retrieved successfully", data: coordinator });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ code: "ERROR", message: "An error occurred" });
+  }
+}
+
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   interface reqBody {
     structureId: string;
