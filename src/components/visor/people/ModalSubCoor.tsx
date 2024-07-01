@@ -1,6 +1,7 @@
 "use client";
 import { ESTRUCTURAS, TIPOS_PUNTO } from "@/configs/catalogs/visorCatalog";
 import { fakeModuleSubCoor, fakeModuleUsers, fakePointTypes } from "@/utils/Fake";
+import { getSubCoors, getTechnicals } from "@/utils/requests/people";
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Selection } from "@nextui-org/react";
 import { Visor_User } from "@prisma/client";
 import { useEffect, useState } from "react";
@@ -32,23 +33,16 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
   const [subCoordinators, setsubCoordinators] = useState<Visor_User[]>([]);
   const [Technicals, setTechnicals] = useState<Visor_User[]>([]);
 
-
-  const getSubCoors = async () => {
-    const response = await fetch("/dashboard/api/visor/coordinators?onlyFree=true");
-    const body = await response.json();
-    setsubCoordinators(body.data as Visor_User[]);
-  };
-
-  const getTechnicals = async () => {
-    const response = await fetch("/dashboard/api/visor/technicals?onlyFree=true");
-    const body = await response.json();
-    setTechnicals(body.data as Visor_User[]);
+  const getData = async () => {
+    const subCoordinators = await getSubCoors(true);
+    const Technicals = await getTechnicals(true);
+    setsubCoordinators(subCoordinators);
+    setTechnicals(Technicals);
   };
 
   useEffect(() => {
     if (action === "Agregar") {
-      getSubCoors();
-      getTechnicals();
+      getData();
     }
 
     if (subCoordinatorName) setFormValues({
@@ -88,6 +82,8 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
     } else {
       alert("Error al agregar el subcoordinador");
     }
+
+    getData();
 
   };
 
