@@ -55,8 +55,9 @@ export async function GET(request: NextRequest) {
       where: {
         rol: "User",
         ...(team === "false" && {
-          Caminantes: { none: {} },
-          Links: { none: {} }
+          // Caminantes: { none: {} },
+          // Links: { none: {} }
+          title: null
         }),
         ...(team === "true" && {
           OR: [
