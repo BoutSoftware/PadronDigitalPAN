@@ -10,6 +10,7 @@ interface GeoConfig {
   geographicLevel: string
   values: string[]
 }
+
 interface Team {
   id: string
   name: string
@@ -18,12 +19,9 @@ interface Team {
   geographicConf: GeoConfig
 }
 
-// TODO: Use ids
+// Interfaz para almacenar los equipos por estructura, utilizando IDs dinámicos
 interface TeamsByStructure {
-  territorial: Team[]
-  gubernamental: Team[]
-  diaD: Team[]
-  campaign: Team[]
+  [key: string]: Team[]
 }
 
 interface Structure {
@@ -33,56 +31,60 @@ interface Structure {
 }
 
 export default function Teams() {
+  // Estado para almacenar los equipos por estructura
   const [teams, setTeams] = useState<TeamsByStructure | undefined>(undefined);
+  // Estado para almacenar los equipos filtrados por estructura
   const [filteredTeams, setFilteredTeams] = useState<TeamsByStructure | undefined>(undefined);
+  // Estado para el término de búsqueda del equipo
   const [teamSearched, setTeamSearched] = useState("");
+  // Estado para las claves de las estructuras seleccionadas
   const [selectedStructuresKeys, setSelectedStructuresKeys] = useState<string[]>([]);
 
-  const selectedStructures = useMemo(() => ((Array.from(selectedStructuresKeys).join(", ").replace("_", " "))), [selectedStructuresKeys]);
+  // Mapeo de los nombres de las estructuras seleccionadas a partir de sus claves
+  const selectedStructures = useMemo(() => (
+    selectedStructuresKeys.map(key => ESTRUCTURAS.find(str => str.id === key)?.nombre || "").join(", ")
+  ), [selectedStructuresKeys]);
 
+  // Función para obtener los equipos desde el servidor y configurarlos en el estado
   async function handleGetTeamsAndSetThem() {
     const resBody = await fetch("/dashboard/api/visor/teams")
       .then(res => res.json())
       .catch(err => console.log(err));
 
-    const teamsByStructure = {
-      ...teams,
-      // TODO: Use Ids
-      territorial: resBody.data.map((structure: Structure) => { if (structure.structureType == "Territorial") return structure.teams; })[0],
-      gubernamental: resBody.data.map((structure: Structure) => { if (structure.structureType == "Gubernamental") return structure.teams; })[0],
-      campaign: resBody.data.map((structure: Structure) => { if (structure.structureType == "Campaña") return structure.teams; })[0],
-      diaD: resBody.data.map((structure: Structure) => { if (structure.structureType == "Dia D") return structure.teams; })[0],
-    };
-
+    const teamsByStructure: TeamsByStructure = {};
+    resBody.data.forEach((structure: Structure) => {
+      teamsByStructure[structure.structureId] = structure.teams;
+    });
 
     setTeams(teamsByStructure);
     setFilteredTeams(teamsByStructure);
   }
 
+  // useEffect para obtener los equipos al cargar el componente
   useEffect(() => {
     handleGetTeamsAndSetThem();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // useEffect para imprimir los equipos filtrados y totales en la consola cuando cambian
   useEffect(() => {
     console.log({ filteredTeams, teams });
   }, [filteredTeams, teams]);
 
+  // useEffect para filtrar los equipos según el término de búsqueda
   useEffect(() => {
     if (!teams) return;
 
-    if (teamSearched == "") {
+    if (teamSearched === "") {
       setFilteredTeams(teams);
       return;
     }
 
-    // TODO: Use ids
-    setFilteredTeams({
-      territorial: teams.territorial?.filter(team => team.name.includes(teamSearched)),
-      campaign: teams.campaign?.filter(team => team.name.includes(teamSearched)),
-      diaD: teams.diaD?.filter(team => team.name.includes(teamSearched)),
-      gubernamental: teams.gubernamental?.filter(team => team.name.includes(teamSearched))
-    });
+    const newFilteredTeams: TeamsByStructure = {};
+    for (const key in teams) {
+      newFilteredTeams[key] = teams[key].filter(team => team.name.includes(teamSearched));
+    }
+
+    setFilteredTeams(newFilteredTeams);
   }, [teamSearched, teams]);
 
   return (
@@ -122,31 +124,15 @@ export default function Teams() {
       {
         filteredTeams ? (
           <div className="flex-1 flex flex-col gap-8">
-            {
-              (selectedStructures.includes("territorial") || selectedStructures.length == 0)
-              &&
-              <TeamsOfAStructure structureId="territorial" teams={filteredTeams.territorial} />
-            }
-            {
-              (selectedStructures.includes("Campaña") || selectedStructures.length == 0)
-              &&
-              <TeamsOfAStructure structureId="Campaña" teams={filteredTeams.campaign} />
-            }
-            {
-              (selectedStructures.includes("Gubernamental") || selectedStructures.length == 0)
-              &&
-              <TeamsOfAStructure structureId="Gubernamental" teams={filteredTeams.gubernamental} />
-            }
-            {
-              (selectedStructures.includes("Dia D") || selectedStructures.length == 0)
-              &&
-              <TeamsOfAStructure structureId="Dia D" teams={filteredTeams.diaD} />
-            }
-            {/* TODO: Corregir para adaptar a catalogos */}
-            {/* {ESTRUCTURAS.map((str) => {
-              if(selectedStructures.includes("Gubernamental") || selectedStructures.length == 0) return null;
-              return <TeamsOfAStructure key={str.id} structureId={str.nombre} teams={filteredTeams[str.id]} />;
-            })} */}
+            {/* Mapeo y renderizado de las estructuras seleccionadas */}
+            {ESTRUCTURAS.map((str) => {
+              if (selectedStructuresKeys.length === 0 || selectedStructuresKeys.includes(str.id)) {
+                return (
+                  <TeamsOfAStructure key={str.id} structureId={str.id} teams={filteredTeams[str.id]} />
+                );
+              }
+              return null;
+            })}
           </div>
         ) : (
           <div className="flex flex-1 justify-center items-center">
