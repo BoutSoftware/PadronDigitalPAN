@@ -1,98 +1,77 @@
 "use client";
 import { fakeModuleAdmins, fakeStructCoors, fakeModuleSubCoor, fakeModuleAux, fakeModuleUsers } from "@/utils/Fake";
-import { Divider, Avatar, Input } from "@nextui-org/react";
+import { Divider, Avatar, Input, Button } from "@nextui-org/react";
 import Header from "@/components/Header";
 import React, { useEffect, useState } from "react";
 import ModalStructCoor from "@/components/visor/people/ModalStructCoor";
 import ModalSubCoor from "@/components/visor/people/ModalSubCoor";
 import ModalAuxCoor from "@/components/visor/people/ModalAuxCoor";
-
+export interface Person {
+  name: string;
+  fatherLastName: string;
+  motherLastName: string;
+}
+interface User {
+  id: string;
+  rol: string;
+  active: boolean;
+  title: null | string;
+  User: {
+    Person: Person
+  };
+}
 interface users {
   userSearched?: string
-  admins: { name: string }[]
-  coors: {
-    Coordinators: null // No sé como viene la información
-    active: boolean
-    id: string
-    rol: string
-    title?: string
-    userId: string
-  }[]
-  technicals: {
-    Technicals: null // No sé como viene la información
-    active: true
-    id: string
-    rol: string
-    title?: string
-    userId: string
-  }[]
-  caminantes: {
-    User: {
-      Person: {
-        name: string
-        fatherLastName: string
-        motherLastName: string
-      }
-    }
-    active: boolean
-    id: string
-    rol: string
-    title?: string
-    userId: string
-  }
+  coordinators: User[];
+  subcoordinators: User[];
+  auxiliaries: User[];
+  users: User[];
+  admins: User[];
 }
 
 export default function Page() {
-  const [users, setUsers] = useState<users>({ admins: [], coors: [], subs: [], auxs: [], users: [] });
-  const [usersFiltered, setUsersFiltered] = useState<users>({ userSearched: "", admins: [], coors: [], subs: [], auxs: [], users: [] });
+  const [users, setUsers] = useState<users | null>(null);
+  const [usersFiltered, setUsersFiltered] = useState<users | null>();
 
   function handleSearchUser(userSearched: string) {
     setUsersFiltered({
       ...usersFiltered,
       userSearched,
-      admins: users?.admins.filter((admin) => admin.name.includes(userSearched)) || [],
-      coors: users?.coors.filter((coor) => coor.name.includes(userSearched)) || [],
-      subs: users?.subs.filter((sub) => sub.name.includes(userSearched)) || [],
-      auxs: users?.auxs.filter((aux) => aux.name.includes(userSearched)) || [],
-      users: users?.users.filter((user) => user.name.includes(userSearched)) || []
+      admins: users?.admins.filter((admin) => admin.User.Person.name.includes(userSearched)) || [],
+      coordinators: users?.coordinators.filter((coor) => coor.User.Person.name.includes(userSearched)) || [],
+      subcoordinators: users?.subcoordinators.filter((sub) => sub.User.Person.name.includes(userSearched)) || [],
+      auxiliaries: users?.auxiliaries.filter((aux) => aux.User.Person.name.includes(userSearched)) || [],
+      users: users?.users.filter((user) => user.User.Person.name.includes(userSearched)) || []
     });
   }
 
-  async function getPeople() {
-    const coordinatorsResponse = await fetch("/dashboard/api/visor/coordinators?onlyFree=true")
+  async function getVisorPeople() {
+
+    const resBody = await fetch("/dashboard/api/visor/users")
       .then(res => res.json())
       .catch(err => console.error(err));
-    const technicalsResponse = await fetch("/dashboard/api/visor/technicals?onlyFree=true")
-      .then(res => res.json())
-      .catch(err => console.log(err));
-    const caminantesResponse = await fetch("/dashboard/api/visor/caminantes?team=false")
-      .then(res => res.json())
-      .catch(err => console.error(err));
-    console.log(coordinatorsResponse);
-    console.log(technicalsResponse);
-    console.log(caminantesResponse);
 
+    if (resBody.code !== "OK") {
+      console.error(resBody.message);
 
+      return;
+    }
+
+    const { data } = resBody;
+    const formattedData: users = {
+      admins: data.Admins,
+      coordinators: data.Coordinators.filter((coor: User) => coor.title === "Coordinador de Estructura"),
+      subcoordinators: data.Coordinators.filter((coor: User) => coor.title === "Subcoordinador"),
+      auxiliaries: data.Coordinators.filter((coor: User) => coor.title === "Auxiliar de Coordinacion"),
+      users: data.Users
+    };
+
+    setUsers(formattedData);
+    setUsersFiltered(formattedData);
   }
 
   useEffect(() => {
-    getPeople();
-    setUsers({
-      admins: fakeModuleAdmins,
-      coors: fakeStructCoors,
-      subs: fakeModuleSubCoor,
-      auxs: fakeModuleAux,
-      users: fakeModuleUsers
-    });
-
-    setUsersFiltered({
-      userSearched: "",
-      admins: fakeModuleAdmins,
-      coors: fakeStructCoors,
-      subs: fakeModuleSubCoor,
-      auxs: fakeModuleAux,
-      users: fakeModuleUsers
-    });
+    getVisorPeople();
   }, []);
 
   return (
@@ -110,15 +89,15 @@ export default function Page() {
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
               <h2 className="text-xl">Administradores de módulo</h2>
-              <span className="text-zinc-400">{usersFiltered.admins.length}/{users.admins.length}</span>
+              <span className="text-zinc-400">{usersFiltered?.admins.length}/{users?.admins.length}</span>
             </div>
             {
-              usersFiltered?.admins?.length > 0 ? (
-                usersFiltered?.admins.map((admin, index, array) => (
+              usersFiltered?.admins ? (
+                usersFiltered.admins.map((admin, index, array) => (
                   <React.Fragment key={index}>
                     <div className="flex gap-2 items-center my-3">
-                      <Avatar showFallback name={admin.name} />
-                      <span className="font-light">{admin.name}</span>
+                      <Avatar showFallback name={admin.User.Person.name} />
+                      <span className="font-light">{admin.User.Person.name}</span>
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>
@@ -132,19 +111,19 @@ export default function Page() {
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
                 <h2 className="text-xl">Coordinador de estructura</h2>
-                <span className="text-zinc-400">{usersFiltered.coors.length}/{users.coors.length}</span>
+                <span className="text-zinc-400">{usersFiltered?.coordinators.length}/{users?.coordinators.length}</span>
               </div>
               <ModalStructCoor />
             </div>
             {
-              usersFiltered?.coors.length > 0 ? (
-                usersFiltered?.coors.map((coor, index, array) => (
+              usersFiltered?.coordinators ? (
+                usersFiltered.coordinators.map((coor, index, array) => (
                   <React.Fragment key={index}>
                     <div className="flex gap-2 justify-between items-center my-3">
                       <div className="flex gap-2 items-center">
-                        <Avatar showFallback name={coor.name} />
+                        <Avatar showFallback name={coor.User.Person.name} />
                         <div className="flex flex-col">
-                          <span className="font-light">{coor.name}</span>
+                          <span className="font-light">{coor.User.Person.name}</span>
                           <span className="font-light text-zinc-400 text-sm">Estructura a cargo</span>
                         </div>
                       </div>
@@ -162,23 +141,23 @@ export default function Page() {
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
                 <h2 className="text-xl">Sub Coordinador</h2>
-                <span className="text-zinc-400">{usersFiltered.subs.length}/{users.subs.length}</span>
+                <span className="text-zinc-400">{usersFiltered?.subcoordinators.length}/{users?.subcoordinators.length}</span>
               </div>
               <ModalSubCoor action="Agregar" />
             </div>
             {
-              usersFiltered?.subs.length > 0 ? (
-                usersFiltered?.subs.map((sub, index, array) => (
+              usersFiltered?.subcoordinators ? (
+                usersFiltered.subcoordinators.map((sub, index, array) => (
                   <React.Fragment key={index}>
                     <div className="flex gap-2 justify-between items-center my-3">
                       <div className="flex gap-2 items-center">
-                        <Avatar showFallback name={sub.name} />
+                        <Avatar showFallback name={sub.User.Person.name} />
                         <div className="flex flex-col">
-                          <span className="font-light">{sub.name}</span>
+                          <span className="font-light">{sub.User.Person.name}</span>
                           <span className="font-light text-zinc-400 text-sm">3 Tipos de puntos asignados</span>
                         </div>
                       </div>
-                      <ModalSubCoor action="Modificar" subCoordinatorName={sub.name} />
+                      <ModalSubCoor action="Modificar" subCoordinatorName={sub.User.Person.name} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>
@@ -192,23 +171,23 @@ export default function Page() {
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
                 <h2 className="text-xl">Auxiliar de coordinación</h2>
-                <span className="text-zinc-400">{usersFiltered.auxs.length}/{users.auxs.length}</span>
+                <span className="text-zinc-400">{usersFiltered?.auxiliaries.length}/{users?.auxiliaries.length}</span>
               </div>
               <ModalAuxCoor action="Agregar" />
             </div>
             {
-              usersFiltered?.auxs.length > 0 ? (
-                usersFiltered?.auxs.map((aux, index, array) => (
+              usersFiltered?.auxiliaries ? (
+                usersFiltered.auxiliaries.map((aux, index, array) => (
                   <React.Fragment key={index}>
                     <div key={index} className="flex gap-2 justify-between items-center my-3">
                       <div className="flex gap-2 items-center">
-                        <Avatar showFallback name={aux.name} />
+                        <Avatar showFallback name={aux.User.Person.name} />
                         <div className="flex flex-col">
-                          <span className="font-light">{aux.name}</span>
+                          <span className="font-light">{aux.User.Person.name}</span>
                           <span className="font-light text-zinc-400 text-sm">Querétaro, Corregidora, El Marqués</span>
                         </div>
                       </div>
-                      <ModalAuxCoor action="Modificar" auxCoordinatorName={aux.name} />
+                      <ModalAuxCoor action="Modificar" auxCoordinatorName={aux.User.Person.name} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>
@@ -222,15 +201,15 @@ export default function Page() {
         <div className="flex-1 flex flex-col">
           <div className="flex items-center gap-2">
             <h2 className="text-xl mb-2">Usuarios del módulo</h2>
-            <span className="text-zinc-400">{usersFiltered.users.length}/{users.users.length}</span>
+            <span className="text-zinc-400">{usersFiltered?.users.length}/{users?.users.length}</span>
           </div>
           {
-            usersFiltered?.users.length > 0 ? (
+            usersFiltered?.users ? (
               usersFiltered?.users.map((user, index, array) => (
                 <React.Fragment key={index}>
                   <div key={index} className="flex gap-2 items-center my-3">
-                    <Avatar showFallback name={user.name} />
-                    <span className="font-light">{user.name}</span>
+                    <Avatar showFallback name={user.User.Person.name} />
+                    <span className="font-light">{user.User.Person.name}</span>
                   </div>
                   {index !== (array.length - 1) && <Divider />}
                 </React.Fragment>
