@@ -55,9 +55,12 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
         if (result.code === "OK") {
           const formattedData = result.data.map((item: any) => ({
             key: item.id,
-            name: item.fullName
+            name: item.fullName,
+            municipiosIDs: item.municipiosIDs,
           }));
           setCoordinationAssistants(formattedData);
+          console.log(formattedData);
+          
         } else {
           console.error("Error fetching coordination assistants:", result.message);
         }
@@ -67,7 +70,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     };
 
     fetchCoordinationAssistants();
-  }, [structureId]);
+  }, []);
 
   useEffect(() => {
     const fetchCaminantes = async () => {
@@ -103,16 +106,30 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
 
   useEffect(() => {
     const fetchGeographicValues = async () => {
+      
+      
+
       if (selectedGeographicLevel === "") return;
 
       const currentAssistant = coordinationAssistants.find((assistant) => assistant.key === selectedAssistant);
-
+      
       try {
+        
         // Suponiendo que el currentAssistant tiene una propiedad llamada municipios con los IDs de los municipios
         const municipios = currentAssistant ? currentAssistant.municipiosIDs.join(",") : "667bd16c05c90de30f041144,667bd1aa05c90de30f04114f,667bd1ab05c90de30f04115";
+        
+        console.log(selectedGeographicLevel);
+        // console.log([...selectedGeographicLevel][0]);
+        
+        console.log(municipios);
+        
+        
 
         const res = await fetch(`/dashboard/api/visor/geographicConfiguration?geographicLevel=${selectedGeographicLevel}&municipios=${municipios}`);
         const result = await res.json();
+
+        console.log(result);
+        
         if (result.code === "OK") {
           const formattedData = result.data.map((item: any) => ({
             key: item.id,
@@ -166,8 +183,12 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     setSelectedLink(key as string);
   };
 
-  const handleGeographicLevelSelectionChange = (key: React.Key) => {
-    setSelectedGeographicLevel(key as string);
+  const handleGeographicLevelSelectionChange = (key: string) => {
+    // setSelectedGeographicLevel(key as string);
+    setSelectedGeographicLevel([...key][0]);
+    // key.toString() returns [object Set] instead of its value, please fix this
+
+
     setSelectedGeographicValues([]);
   };
 
@@ -194,23 +215,23 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
 
     console.log(teamData);
 
-    // try {
-    //   const res = await fetch('/dashboard/api/visor/team', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(teamData),
-    //   });
-    //   const result = await res.json();
-    //   if (result.code === "OK") {
-    //     console.log("Team created successfully:", result.data);
-    //   } else {
-    //     console.error("Error creating team:", result.message);
-    //   }
-    // } catch (error) {
-    //   console.error("Error creating team:", error);
-    // }
+    try {
+      const res = await fetch("/dashboard/api/visor/teams", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(teamData),
+      });
+      const result = await res.json();
+      if (result.code === "OK") {
+        console.log("Team created successfully:", result.data);
+      } else {
+        console.error("Error creating team:", result.message);
+      }
+    } catch (error) {
+      console.error("Error creating team:", error);
+    }
   };
 
   return (
@@ -274,7 +295,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
                     label="Nivel Geográfico"
                     placeholder="Selecciona el nivel geográfico"
                     isRequired
-                    onSelectionChange={(_key) => handleGeographicLevelSelectionChange}
+                    onSelectionChange={(_key) => handleGeographicLevelSelectionChange(_key as string)}
                   >
                     {CONFIGURACIONES_GEOGRAFICAS.map((level) => (
                       <SelectItem key={level.id} value={level.id}>
