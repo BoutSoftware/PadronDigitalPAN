@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Tabs, Tab, Select, SelectItem, Autocomplete } from "@nextui-org/react";
 import { TIPOS_PUNTO, CONFIGURACIONES_GEOGRAFICAS, ESTRUCTURAS } from "../../../configs/catalogs/visorCatalog";
+import { hasIncompleteFields } from "@/utils";
 
 interface CoordinationAssistant {
   key: string;
   name: string;
   municipiosIDs: string[];
+  pointTypes: string[]
 }
 
 interface Link {
@@ -50,24 +52,25 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
   const [geographicValues, setGeographicValues] = useState<GeographicValue[]>([]);
 
   const structureName = ESTRUCTURAS.find((str) => str.id === structureId)?.nombre;
+  const currentAssistant = useMemo(() => coordinationAssistants.find((asnt) => asnt.key === selectedAssistant), [coordinationAssistants, selectedAssistant]);
   const tabs = ["Jerarquia", "Tipo de punto", "Participantes"];
 
   useEffect(() => {
     const fetchCoordinationAssistants = async () => {
       try {
         const res = await fetch(`/dashboard/api/visor/auxiliaries?estructura=${structureId}`);
-        const result = await res.json();
-        if (result.code === "OK") {
-          const formattedData = result.data.map((item: any) => ({
+        const resBody = await res.json();
+
+        if (resBody.code === "OK") {
+          const formattedData: CoordinationAssistant[] = (resBody.data as any[]).map((item) => ({
             key: item.id,
             name: item.fullName,
             municipiosIDs: item.municipiosIDs,
+            pointTypes: item.pointTypes,
           }));
           setCoordinationAssistants(formattedData);
-          console.log(formattedData);
-
         } else {
-          console.error("Error fetching coordination assistants:", result.message);
+          console.error("Error fetching coordination assistants:", resBody.message);
         }
       } catch (error) {
         console.error("Error fetching coordination assistants:", error);
@@ -111,24 +114,11 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
 
   useEffect(() => {
     const fetchGeographicValues = async () => {
-
-
-
       if (selectedGeographicLevel === "") return;
-
-      const currentAssistant = coordinationAssistants.find((assistant) => assistant.key === selectedAssistant);
+      if (!currentAssistant) return;
 
       try {
-
-        // Suponiendo que el currentAssistant tiene una propiedad llamada municipios con los IDs de los municipios
-        const municipios = currentAssistant ? currentAssistant.municipiosIDs.join(",") : "667bd16c05c90de30f041144,667bd1aa05c90de30f04114f,667bd1ab05c90de30f04115";
-
-        console.log(selectedGeographicLevel);
-        // console.log([...selectedGeographicLevel][0]);
-
-        console.log(municipios);
-
-
+        const municipios = currentAssistant.municipiosIDs.join(",");
 
         const res = await fetch(`/dashboard/api/visor/geographicConfiguration?geographicLevel=${selectedGeographicLevel}&municipios=${municipios}`);
         const result = await res.json();
@@ -150,7 +140,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     };
 
     fetchGeographicValues();
-  }, [selectedGeographicLevel, selectedAssistant, coordinationAssistants]);
+  }, [selectedGeographicLevel, currentAssistant]);
 
   const handleTabChange = (key: React.Key) => {
     setActiveTab(key as string);
@@ -166,6 +156,8 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
   };
 
   const handleGeographicValueSelectionChange = (key: React.Key) => {
+    if (!key) return;
+
     if (!selectedGeographicValues.includes(key as string)) {
       setSelectedGeographicValues([...selectedGeographicValues, key as string]);
     }
@@ -214,7 +206,8 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
       caminantes: selectedTeamMembers.map(member => member.key),
     };
 
-    console.log(teamData);
+    if (hasIncompleteFields(teamData))
+      return alert("Favor de completar todos los campos");
 
     try {
       const res = await fetch("/dashboard/api/visor/teams", {
@@ -227,6 +220,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
       const result = await res.json();
       if (result.code === "OK") {
         console.log("Team created successfully:", result.data);
+        handleCloseModal();
       } else {
         console.error("Error creating team:", result.message);
       }
@@ -235,6 +229,25 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     }
   };
 
+  const handleCloseModal = () => {
+    // Close
+    setIsOpen(false);
+
+    // Reset Full Form
+    setActiveTab("Jerarquia");
+    setSelectedGeographicValues([]);
+    setSelectedPointTypes([]);
+    setSelectedAssistant("");
+    setSelectedTeamMembers([]);
+    setCoordinationAssistants([]);
+    setLinks([]);
+    setMembers([]);
+    setFilteredMembers([]);
+    setTeamName("");
+    setSelectedLink(null);
+    setSelectedGeographicLevel("");
+    setGeographicValues([]);
+  };
 
 
   const getGeographicValueName = (key: string) => {
@@ -254,7 +267,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
       >
         Agregar equipo
       </Button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} placement="top-center" size="xl">
+      <Modal isOpen={isOpen} onClose={handleCloseModal} placement="top-center" size="xl">
         <ModalContent>
           <>
             <ModalHeader className="flex flex-col gap-1">Agregando Equipo</ModalHeader>
@@ -292,7 +305,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
                     selectionMode="multiple"
                     onSelectionChange={(keys) => handlePointTypeSelectionChange(keys as Set<React.Key>)}
                   >
-                    {TIPOS_PUNTO.filter((tp) => tp.estructuraId === structureId).map((pointType) => (
+                    {TIPOS_PUNTO.filter((tp) => tp.estructuraId === structureId && currentAssistant?.pointTypes.includes(tp.id)).map((pointType) => (
                       <SelectItem key={pointType.id} value={pointType.id}>
                         {pointType.nombre}
                       </SelectItem>
@@ -359,7 +372,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
                       </SelectItem>
                     ))}
                   </Autocomplete>
-                  <div className={`mt-4 ${selectedTeamMembers.length > 4 ? "overflow-y-scroll h-24" : ""} px-8 flex flex-col gap-2`}>
+                  <div className={`${selectedTeamMembers.length > 4 ? "overflow-y-scroll h-24" : ""} px-8 flex flex-col gap-2`}>
                     {selectedTeamMembers.map((member) => (
                       <div key={member.key} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
                         <span>{member.name}</span>

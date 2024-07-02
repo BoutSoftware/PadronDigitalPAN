@@ -65,11 +65,6 @@ export default function Teams() {
     handleGetTeamsAndSetThem();
   }, []);
 
-  // useEffect para imprimir los equipos filtrados y totales en la consola cuando cambian
-  useEffect(() => {
-    console.log({ filteredTeams, teams });
-  }, [filteredTeams, teams]);
-
   // useEffect para filtrar los equipos según el término de búsqueda
   useEffect(() => {
     if (!teams) return;
@@ -81,7 +76,7 @@ export default function Teams() {
 
     const newFilteredTeams: TeamsByStructure = {};
     for (const key in teams) {
-      newFilteredTeams[key] = teams[key].filter(team => team.name.includes(teamSearched));
+      newFilteredTeams[key] = teams[key].filter(team => team.name.toLowerCase().includes(teamSearched.toLowerCase()));
     }
 
     setFilteredTeams(newFilteredTeams);
