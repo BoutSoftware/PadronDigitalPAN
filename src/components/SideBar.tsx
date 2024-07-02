@@ -20,7 +20,7 @@ export default function SideBar(props: SideBarProps) {
       color="secondary"
       aria-label={props.ariaLabel}
       onAction={props.onAction}
-      className={`flex items-center h-full px-2 py-4 max-w-60 bg-primary text-primary-foreground relative ${!isOpen && "w-4 p-0 hide-children"}`}
+      className={`flex items-center h-full px-2 py-4 max-w-60 bg-primary text-primary-foreground relative transition-all ${!isOpen && "w-4 p-0 hide-children"}`}
       classNames={{ list: "h-full" }}
       topContent={<>
         {props.topContent}

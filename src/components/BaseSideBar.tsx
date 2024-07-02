@@ -16,7 +16,7 @@ export default function BaseSideBar() {
       color="secondary"
       aria-label="Main Navigation"
       onAction={(key) => { router.push(String(key)); }}
-      className={`flex items-center h-full px-2 py-4 max-w-60 bg-primary text-primary-foreground relative ${!isOpen && "w-4 p-0 hide-children"}`}
+      className={`flex items-center h-full px-2 py-4 max-w-60 bg-primary text-primary-foreground relative transition-all ${!isOpen && "w-4 p-0 hide-children"}`}
       classNames={{ list: "h-full" }}
       topContent={
         <>
