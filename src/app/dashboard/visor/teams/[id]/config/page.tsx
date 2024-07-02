@@ -1,66 +1,104 @@
 "use client";
 import { Caminante } from "@/components/visor/individualTeam/Caminante";
-import { Avatar, Button, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
+import { Avatar, Button, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Selection } from "@nextui-org/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { CONFIGURACIONES_GEOGRAFICAS, TIPOS_PUNTO } from "@/configs/catalogs/visorCatalog";
 
+interface Structure {
+  id: string
+  nombre: string
+}
+interface Caminante {
+  id: string
+  name: string
+  active: boolean
+}
+interface Link {
+  id: string
+  active: boolean
+  name: string
+}
+interface Auxiliary {
+  id: string
+  active: boolean
+  name: string
+}
+interface TipoPunto {
+  id: string
+  nombre: string
+  icon: string
+  estructuraId: string
+}
+interface GeographicLevel {
+  id: string
+  nombre: string
+}
+interface GeographicLevelValue {
+  id: string
+  name: string
+}
 interface TeamResponse {
   id: string
   name: string
   active: boolean
-  Structure: {
-    id: string
-    nombre: string
-  }
-  Caminantes: {
-    id: string
-    name: string
-    active: boolean
-  }[]
-  Link: {
-    id: string
-    active: boolean
-    name: string
-  }
-  Auxiliary: {
-    id: string
-    active: boolean
-    name: string
-  }
-  TiposPunto: {
-    id: string
-    nombre: string
-    icon: string
-    estructuraId: string
-  }[]
+  Structure: Structure
+  Caminantes: Caminante[]
+  Link: Link
+  Auxiliary: Auxiliary
+  TiposPunto: TipoPunto[]
   geographicConf: {
-    geographicLevel: {
-      id: string
-      nombre: string
-    }
-    values: {
-      id: string
-      name: string
-    }[]
+    geographicLevel: GeographicLevel
+    values: GeographicLevelValue[]
   }
+}
+
+interface TeamKeys {
+  geographicKeys: Selection
+  pointTypesKeys: Selection
 }
 
 export default function Page() {
 
   const [membersAndConfig, setMembersAndConfig] = useState<TeamResponse | null>(null);
-  const { id } = useParams();
+  const [geographicConfKeys, setGeographicConfKeys] = useState<TeamKeys>({
+    geographicKeys: new Set([""]),
+    pointTypesKeys: new Set([""])
+  });
+  const { id: teamId } = useParams();
 
-  async function getAndSetTeamInfo() {
-    const resBody = await fetch(`/dashboard/api/visor/teams/${id}`)
+  async function handlePointTypeValue(key: Selection) {
+
+    const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}/pointTypes`, {
+      method: "PUT",
+      body: JSON.stringify({ pointTypesIDs: Array.from(geographicConfKeys.pointTypesKeys) })
+    })
       .then(res => res.json())
       .catch(err => console.error(err));
 
-    if (resBody.code == "ERROR") {
-      alert(resBody.message);
+    console.log(resBody);
+  }
+
+  async function getAndSetTeamInfo() {
+
+    const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}`)
+      .then(res => res.json())
+      .catch(err => console.error(err));
+
+    if (resBody.code !== "OK") {
+      console.error(resBody.message);
       return;
     }
 
-    setMembersAndConfig(resBody.data);
+    const { data } = resBody;
+
+    const initialGeographicConfKeys: TeamKeys = {
+      geographicKeys: new Set(data.geographicConf.values.map((geoConf: GeographicLevelValue) => geoConf.id)),
+      pointTypesKeys: new Set(data.TiposPunto.map((pointType: TipoPunto) => pointType.id))
+    };
+
+    setGeographicConfKeys(initialGeographicConfKeys);
+    setMembersAndConfig(data);
   }
 
   useEffect(() => {
@@ -114,10 +152,12 @@ export default function Page() {
                 <DropdownTrigger>
                   <Button>Nivel</Button>
                 </DropdownTrigger>
-                <DropdownMenu>
-                  <DropdownItem key="Colonias">Colonias</DropdownItem>
-                  <DropdownItem key="Colonias">Colonias</DropdownItem>
-                  <DropdownItem key="Colonias">Colonias</DropdownItem>
+                <DropdownMenu
+                  aria-label="Configuración geográfica"
+                >
+                  {
+                    CONFIGURACIONES_GEOGRAFICAS.map(conf => <DropdownItem key={conf.id}>{conf.nombre}</DropdownItem>)
+                  }
                 </DropdownMenu>
               </Dropdown>
               <Dropdown>
@@ -154,14 +194,22 @@ export default function Page() {
             </h2>
             <Dropdown>
               <DropdownTrigger>
-                <Button>{membersAndConfig?.TiposPunto.length} tipo{membersAndConfig?.TiposPunto.length > 1 && "s"} de punto</Button>
+                <Button>{membersAndConfig?.TiposPunto.length} tipo{(membersAndConfig?.TiposPunto.length || 0) > 1 && "s"} de punto</Button>
+                {/* Need to code "|| 2" in the line below by a typescript error */}
               </DropdownTrigger>
-              <DropdownMenu>
-                {membersAndConfig?.TiposPunto.map(({ id, nombre }) => (
-                  <DropdownItem key={id}>
-                    {nombre}
-                  </DropdownItem>
-                ))}
+              <DropdownMenu
+                aria-label="Tipos de punto"
+                selectedKeys={geographicConfKeys.pointTypesKeys}
+                selectionMode="single"
+                onSelectionChange={(key) => handlePointTypeValue(key)}>
+                {
+                  TIPOS_PUNTO
+                    .filter(pointType => pointType.estructuraId == membersAndConfig?.Structure.id)
+                    .map(pointType => (
+                      <DropdownItem key={pointType.id}>{pointType.nombre}</DropdownItem>
+                    ))
+                }
+                {/* Need to code " ? : " in the map below by a typescript error */}
               </DropdownMenu>
             </Dropdown>
           </div>
