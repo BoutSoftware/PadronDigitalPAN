@@ -28,6 +28,11 @@ interface TeamModalProps {
   structureId: string;
 }
 
+interface TypePoint {
+  key: string,
+  name: string,
+}
+
 const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("Jerarquia");
@@ -60,7 +65,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
           }));
           setCoordinationAssistants(formattedData);
           console.log(formattedData);
-          
+
         } else {
           console.error("Error fetching coordination assistants:", result.message);
         }
@@ -70,7 +75,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     };
 
     fetchCoordinationAssistants();
-  }, []);
+  }, [structureId]);
 
   useEffect(() => {
     const fetchCaminantes = async () => {
@@ -106,30 +111,30 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
 
   useEffect(() => {
     const fetchGeographicValues = async () => {
-      
-      
+
+
 
       if (selectedGeographicLevel === "") return;
 
       const currentAssistant = coordinationAssistants.find((assistant) => assistant.key === selectedAssistant);
-      
+
       try {
-        
+
         // Suponiendo que el currentAssistant tiene una propiedad llamada municipios con los IDs de los municipios
         const municipios = currentAssistant ? currentAssistant.municipiosIDs.join(",") : "667bd16c05c90de30f041144,667bd1aa05c90de30f04114f,667bd1ab05c90de30f04115";
-        
+
         console.log(selectedGeographicLevel);
         // console.log([...selectedGeographicLevel][0]);
-        
+
         console.log(municipios);
-        
-        
+
+
 
         const res = await fetch(`/dashboard/api/visor/geographicConfiguration?geographicLevel=${selectedGeographicLevel}&municipios=${municipios}`);
         const result = await res.json();
 
         console.log(result);
-        
+
         if (result.code === "OK") {
           const formattedData = result.data.map((item: any) => ({
             key: item.id,
@@ -166,11 +171,11 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     }
   };
 
-  const handlePointTypeSelectionChange = (key: React.Key) => {
-    if (!selectedPointTypes.includes(key as string)) {
-      setSelectedPointTypes([...selectedPointTypes, key as string]);
-    }
+  const handlePointTypeSelectionChange = (keys: Set<React.Key>) => {
+    const selectedKeysArray = Array.from(keys);
+    setSelectedPointTypes(selectedKeysArray.map(key => key as string));
   };
+
 
   const handleTeamMemberSelectionChange = (key: React.Key) => {
     const selectedMember = filteredMembers.find(member => member.key === key);
@@ -184,11 +189,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
   };
 
   const handleGeographicLevelSelectionChange = (key: string) => {
-    // setSelectedGeographicLevel(key as string);
     setSelectedGeographicLevel([...key][0]);
-    // key.toString() returns [object Set] instead of its value, please fix this
-
-
     setSelectedGeographicValues([]);
   };
 
@@ -232,6 +233,13 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
     } catch (error) {
       console.error("Error creating team:", error);
     }
+  };
+
+
+
+  const getGeographicValueName = (key: string) => {
+    const value = geographicValues.find(val => val.key === key);
+    return value ? value.name : key;
   };
 
   return (
@@ -282,7 +290,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
                     placeholder="Selecciona los tipos de punto"
                     isRequired
                     selectionMode="multiple"
-                    onSelectionChange={(_key) => handlePointTypeSelectionChange}
+                    onSelectionChange={(keys) => handlePointTypeSelectionChange(keys as Set<React.Key>)}
                   >
                     {TIPOS_PUNTO.filter((tp) => tp.estructuraId === structureId).map((pointType) => (
                       <SelectItem key={pointType.id} value={pointType.id}>
@@ -318,7 +326,7 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
                   <div className={`${selectedGeographicValues.length > 4 ? "overflow-y-scroll h-24" : ""} px-8 flex flex-col gap-2`}>
                     {selectedGeographicValues.map((value) => (
                       <div key={value} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
-                        <span className="text-sm">{value}</span>
+                        <span className="text-sm">{getGeographicValueName(value)}</span>
                         <Button isIconOnly className="material-symbols-outlined bg-transparent hover:bg-accent hover:text-white" size="sm" onClick={() => handleRemoveGeographicValue(value)}>close</Button>
                       </div>
                     ))}
