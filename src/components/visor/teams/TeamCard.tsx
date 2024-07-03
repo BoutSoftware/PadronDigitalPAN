@@ -23,7 +23,7 @@ export default function TeamCard({ id, team, enlace, puntos, geographicConf }: C
   };
 
   return (
-    <Card className="flex flex-col gap-4 w-full h-64 shadow rounded-md hover:cursor-pointer" onClick={() => handleNavigation("members")}>
+    <Card isPressable className="flex flex-col gap-4 w-full h-64 shadow rounded-md hover:cursor-pointer" onClick={() => handleNavigation("config")}>
       <h3 className="text-primary-600 text-xl font-bold pt-4 px-4">{team}</h3>
       <Divider />
       <div className="flex-1 px-4">

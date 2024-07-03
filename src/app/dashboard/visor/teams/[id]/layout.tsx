@@ -25,7 +25,7 @@ export default function LayoutTeam({ children }: { children: ReactNode }) {
   }, [params.id]);
 
   return (
-    <div className="flex-col h-screen items-stretch overflow-hidden flex-1">
+    <div className="flex flex-col flex-1 overflow-hidden">
       <div className="p-4">
         <Header title={team?.name} />
       </div>
