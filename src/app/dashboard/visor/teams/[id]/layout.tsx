@@ -3,6 +3,7 @@ import { ReactNode, useState, useEffect } from "react";
 import { Tabs, Tab } from "@nextui-org/react";
 import { useParams } from "next/navigation";
 import Header from "@/components/Header";
+import RoundsPage from "@/components/visor/teams/RoundsPage";
 
 interface Team {
   id: string,
@@ -77,7 +78,7 @@ function TeamTabs() {
         <Tab key="Tabla" title="Tabla"></Tab>
         <Tab key="Crear punto" title="Crear punto"></Tab>
         <Tab key="Visualizar mapa" title="Visualizar mapa"></Tab>
-        <Tab key="Rondas" title="Rondas"></Tab>
+        <Tab key="Rondas" title="Rondas"><RoundsPage/></Tab>
         <Tab key="Carga en campo" title="Carga en campo"></Tab>
       </Tabs>
     </div>
