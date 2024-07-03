@@ -61,7 +61,7 @@ interface TeamKeys {
 export default function Page() {
 
   const [membersAndConfig, setMembersAndConfig] = useState<TeamResponse | null>(null);
-  const [geographicConfKeys, setGeographicConfKeys] = useState<TeamKeys>({
+  const [dropdownsKeys, setDropdownsKeys] = useState<TeamKeys>({
     geographicKeys: new Set([""]),
     pointTypesKeys: new Set([""])
   });
@@ -71,7 +71,7 @@ export default function Page() {
 
     const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}/pointTypes`, {
       method: "PUT",
-      body: JSON.stringify({ pointTypesIDs: Array.from(geographicConfKeys.pointTypesKeys) })
+      body: JSON.stringify({ pointTypesIDs: Array.from(dropdownsKeys.pointTypesKeys) })
     })
       .then(res => res.json())
       .catch(err => console.error(err));
@@ -81,24 +81,44 @@ export default function Page() {
 
   async function getAndSetTeamInfo() {
 
-    const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}`)
+    const teamResBody = await fetch(`/dashboard/api/visor/teams/${teamId}`)
       .then(res => res.json())
       .catch(err => console.error(err));
 
-    if (resBody.code !== "OK") {
-      console.error(resBody.message);
+    if (teamResBody.code !== "OK") {
+      console.error(teamResBody.message);
       return;
     }
 
-    const { data } = resBody;
+    const { data: teamData } = teamResBody;
 
+    console.log(teamData);
+
+    const geographicLevelReqParams = `geographicLevel=${teamData.geographicConf.geographicLevel.id}&municipios=${teamData.Auxiliary.municipios.join(",")}`;
+
+    console.log(geographicLevelReqParams);
+
+    const geographicLevelResBody = await fetch(`/dashboard/api/visor/geographicConfiguration/?${geographicLevelReqParams}`)
+      .then(res => res.json())
+      .catch(err => console.error(err));
+
+    if (geographicLevelResBody.code !== "OK") {
+      console.error(geographicLevelResBody.message);
+      return;
+    }
+
+    const { data: geographicLevelData } = geographicLevelResBody;
+
+    // TODO: Think about using autocomplete from MUI to handle geographic config values
+
+    // Setear lo necesario
     const initialGeographicConfKeys: TeamKeys = {
-      geographicKeys: new Set(data.geographicConf.values.map((geoConf: GeographicLevelValue) => geoConf.id)),
-      pointTypesKeys: new Set(data.TiposPunto.map((pointType: TipoPunto) => pointType.id))
+      geographicKeys: new Set(teamData.geographicConf.values.map((geoConf: GeographicLevelValue) => geoConf.id)),
+      pointTypesKeys: new Set(teamData.TiposPunto.map((pointType: TipoPunto) => pointType.id))
     };
 
-    setGeographicConfKeys(initialGeographicConfKeys);
-    setMembersAndConfig(data);
+    setDropdownsKeys(initialGeographicConfKeys);
+    setMembersAndConfig(teamData);
   }
 
   useEffect(() => {
@@ -195,11 +215,11 @@ export default function Page() {
             <Dropdown>
               <DropdownTrigger>
                 <Button>{membersAndConfig?.TiposPunto.length} tipo{(membersAndConfig?.TiposPunto.length || 0) > 1 && "s"} de punto</Button>
-                {/* Need to code "|| 2" in the line below by a typescript error */}
+                {/* Need to code "|| 0" in the line below by a typescript error */}
               </DropdownTrigger>
               <DropdownMenu
                 aria-label="Tipos de punto"
-                selectedKeys={geographicConfKeys.pointTypesKeys}
+                selectedKeys={dropdownsKeys.pointTypesKeys}
                 selectionMode="single"
                 onSelectionChange={(key) => handlePointTypeValue(key)}>
                 {
@@ -209,7 +229,6 @@ export default function Page() {
                       <DropdownItem key={pointType.id}>{pointType.nombre}</DropdownItem>
                     ))
                 }
-                {/* Need to code " ? : " in the map below by a typescript error */}
               </DropdownMenu>
             </Dropdown>
           </div>
