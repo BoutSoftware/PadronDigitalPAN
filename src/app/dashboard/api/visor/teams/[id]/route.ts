@@ -31,6 +31,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           select: {
             id: true,
             active: true,
+            municipiosIDs: true,
             User: {
               select: {
                 fullname: true
@@ -79,6 +80,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         id: team?.Auxiliary?.id,
         active: team?.Auxiliary?.active,
         name: team?.Auxiliary?.User.fullname,
+        municipios: team?.Auxiliary.municipiosIDs,
       },
       Structure: team?.Auxiliary.SubCoordinator.structureId ? ESTRUCTURAS.find((s) => s.id === team?.Auxiliary.SubCoordinator.structureId) : null,
       ...(team?.pointTypesIDs && { TiposPunto: getTipoPuntos(team?.pointTypesIDs) }),
@@ -106,7 +108,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     const id = params.id;
     const team = await prisma.visor_Team.findUnique({ where: { id } });
-    
+
     if (!team) {
       return NextResponse.json({ code: "NOT_FOUND", message: "Team not found" });
     }
