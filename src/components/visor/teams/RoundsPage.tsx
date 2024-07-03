@@ -55,7 +55,7 @@ export default function RoundsPage() {
       {alertMessage && (
         <div className="alert alert-warning flex justify-between items-center p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg" role="alert">
           <span>{alertMessage}</span>
-          <Button isIconOnly className="bg-transparent" variant="faded" aria-label="Cerrar alerta" onPress={() => setAlertMessage(null)}>
+          <Button isIconOnly className="bg-transparent" aria-label="Cerrar alerta" onPress={() => setAlertMessage(null)}>
             <span className="material-symbols-outlined">close</span>
           </Button>
         </div>
