@@ -10,6 +10,7 @@ interface ModalAuxCoorProps {
 }
 
 interface FormValues {
+  auxiliaryId: string;  
   auxCoor: string;
   struct: string;
   subCoor: string;
@@ -52,71 +53,68 @@ interface FormOptions {
   technicals: Technical[];
 }
 
-export default function ModalAuxCoor({ action, auxCoordinatorName, subCoordinatorName }: ModalAuxCoorProps) {
+export default function ModalAuxCoor({ action, auxCoordinatorName }: ModalAuxCoorProps) {
+  const isModifying = action === "Modificar";
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formValues, setFormValues] = useState<FormValues>({
-    auxCoor: "",
-    struct: "",
-    subCoor: "",
-    municipios: [],
-    tecnical: "",
-  });
   const [formOptions, setFormOptions] = useState<FormOptions>({
     subCoordinators: [],
     structures: [],
     municipios: [],
     technicals: []
   });
-
+  const [formValues, setFormValues] = useState<FormValues>({
+    auxiliaryId: "",
+    auxCoor: "",
+    struct: "",
+    subCoor: "",
+    municipios: [],
+    tecnical: "",
+  });
+  
   useEffect(() => {
     if (auxCoordinatorName) setFormValues(prev => ({ ...prev, auxCoor: auxCoordinatorName }));
   }, [auxCoordinatorName]);
 
   useEffect(() => {
     if (isModalOpen) {
-      if (action === "Modificar") {
+      getStructures();
+      getSubCoordinators();
+      getMunicipios();
+      getTechnicals();
+      if (isModifying) {
         fetchAuxiliaryDetails();
       }
-      fetchFormOptions();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [action, isModalOpen]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isModalOpen, isModifying]);
 
-  const fetchAuxiliaryDetails = async () => {
-    const res = await fetch(`/dashboard/api/visor/auxiliaries/${formValues.auxCoor}`);
+  const getSubCoordinators = async () => {
+    const res = await fetch("/dashboard/api/visor/subcoordinators?estructura");
     const result = await res.json();
-    if (result.code === "OK") {
-      const { struct, subCoor, municipios, tecnical } = result.data;
-      setFormValues({ auxCoor: auxCoordinatorName!, struct, subCoor, municipios, tecnical });
-    }
+    setFormOptions((prevOptions) => ({
+      ...prevOptions,
+      subCoordinators: result.data
+    }));
   };
 
-  const fetchFormOptions = async () => {
-    const subCoordRes = await fetch("/dashboard/api/visor/subcoordinators?estructura=territorial");
-    const subCoordResult = await subCoordRes.json();
-
-    const muniRes = await fetch("/dashboard/api/visor/geographicConfiguration?geographicLevel=colonias");
-    const muniResult = await muniRes.json();
-
-    const techRes = await fetch("/dashboard/api/visor/technicals?onlyFree=false");
-    const techResult = await techRes.json();
-
-    // Llamamos a la función getStructures para obtener las estructuras
-    getStructures();
-
-    setFormOptions({
-      subCoordinators: subCoordResult.data,
-      municipios: muniResult.data,
-      technicals: techResult.data,
-      // Agregamos las estructuras al estado formOptions
-      structures: ESTRUCTURAS.map((structure) => ({
-        id: structure.id,
-        name: structure.nombre
-      }))
-    });
+  const getMunicipios = async () => {
+    const res = await fetch("/dashboard/api/visor/geographicConfiguration?geographicLevel=colonias");
+    const result = await res.json();
+    setFormOptions((prevOptions) => ({
+      ...prevOptions,
+      municipios: result.data
+    }));
   };
 
-  // Función para obtener las estructuras desde ESTRUCTURAS
+  const getTechnicals = async () => {
+    const res = await fetch("/dashboard/api/visor/technicals?onlyFree=false");
+    const result = await res.json();
+    setFormOptions((prevOptions) => ({
+      ...prevOptions,
+      technicals: result.data
+    }));
+  };
+
   const getStructures = () => {
     setFormOptions((prevOptions) => ({
       ...prevOptions,
@@ -127,10 +125,60 @@ export default function ModalAuxCoor({ action, auxCoordinatorName, subCoordinato
     }));
   };
 
+  const fetchAuxiliaryDetails = async () => {
+    try {
+      const res = await fetch("/dashboard/api/visor/auxiliaries");
+      const result = await res.json();
+      if (result.code === "OK") {
+        const { id, subCoordinator, municipiosIDs, technicalId } = result.data;
+        setFormValues({
+          auxiliaryId: id,
+          auxCoor: auxCoordinatorName!,
+          struct: "", // Asigna el valor correcto si está disponible
+          subCoor: subCoordinator,
+          municipios: municipiosIDs,
+          tecnical: technicalId
+        });
+        // Agregar el subCoor y tecnical actuales a las opciones
+        setFormOptions((value) => ({
+          ...value,
+          subCoordinators: [
+            ...value.subCoordinators,
+            {
+              id: subCoordinator,
+              createdAt: "",
+              active: true,
+              userId: "",
+              technicalId: "",
+              pointTypesIDs: [],
+              structureId: ""
+            }
+          ],
+          technicals: [
+            ...value.technicals,
+            {
+              id: technicalId,
+              createdAt: "",
+              active: true,
+              userId: "",
+              fullname: "",
+              title: "",
+              rol: ""
+            }
+          ]
+        }));
+      } else {
+        console.error("Error: Result code is not OK", result);
+      }
+    } catch (error) {
+      console.error("Error fetching auxiliary details:", error);
+    }
+  };
+      
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const url = action === "Agregar" ? "/dashboard/api/visor/auxiliaries" : `/dashboard/api/visor/auxiliaries/${formValues.auxCoor}`;
-    const method = action === "Agregar" ? "POST" : "PATCH";
+    const url = isModifying ? `/dashboard/api/visor/auxiliaries/${formValues.auxiliaryId}` : "/dashboard/api/visor/auxiliaries";
+    const method = isModifying ? "PATCH" : "POST";
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
@@ -138,10 +186,10 @@ export default function ModalAuxCoor({ action, auxCoordinatorName, subCoordinato
     });
     const result = await res.json();
     if (result.code === "OK") {
-      alert(`Auxiliar ${action === "Agregar" ? "agregado" : "modificado"} correctamente`);
+      alert(`Auxiliar ${isModifying ? "modificado" : "agregado"} correctamente`);
       setIsModalOpen(false);
     } else {
-      alert(`Error al ${action === "Agregar" ? "agregar" : "modificar"} el auxiliar`);
+      alert(`Error al ${isModifying ? "modificar" : "agregar"} el auxiliar`);
     }
   };
 
@@ -162,8 +210,8 @@ export default function ModalAuxCoor({ action, auxCoordinatorName, subCoordinato
     <>
       <Button
         onPress={() => setIsModalOpen(true)}
-        color={action === "Agregar" ? "primary" : "default"}
-        variant={action === "Agregar" ? "solid" : "light"}
+        color={isModifying ? "default" : "primary"}
+        variant={isModifying ? "light" : "solid"}
       >
         {action}
       </Button>
@@ -180,17 +228,12 @@ export default function ModalAuxCoor({ action, auxCoordinatorName, subCoordinato
                 placeholder="Seleccione un auxiliar de coordinación"
                 selectedKey={formValues.auxCoor}
                 onSelectionChange={(key) => setFormValues({ ...formValues, auxCoor: key as string })}
-                value={formValues.auxCoor}
-                isDisabled={action === "Modificar"}
+                isDisabled={isModifying}
                 isRequired
               >
-                {action === "Modificar" ? (
-                  <AutocompleteItem key={auxCoordinatorName!}>{auxCoordinatorName}</AutocompleteItem>
-                ) : (
-                  formOptions.subCoordinators.map((subCoor) => (
-                    <AutocompleteItem key={subCoor.id}>{subCoor.userId}</AutocompleteItem>
-                  ))
-                )}
+                {formOptions.subCoordinators.map((subCoor) => (
+                  <AutocompleteItem key={subCoor.id}>{subCoor.userId}</AutocompleteItem>
+                ))}
               </Autocomplete>
               <Select
                 label="Estructura"
@@ -211,17 +254,12 @@ export default function ModalAuxCoor({ action, auxCoordinatorName, subCoordinato
                 placeholder="Ingrese el sub coordinador"
                 selectedKey={formValues.subCoor}
                 onSelectionChange={(key) => setFormValues({ ...formValues, subCoor: key as string })}
-                value={formValues.subCoor}
-                isDisabled={action === "Modificar"}
+                isDisabled={isModifying}
                 isRequired
               >
-                {action === "Modificar" ? (
-                  <AutocompleteItem key={subCoordinatorName!}>{subCoordinatorName}</AutocompleteItem>
-                ) : (
-                  formOptions.subCoordinators.map((subCoor) => (
-                    <AutocompleteItem key={subCoor.id}>{subCoor.userId}</AutocompleteItem>
-                  ))
-                )}
+                {formOptions.subCoordinators.map((subCoor) => (
+                  <AutocompleteItem key={subCoor.id}>{subCoor.userId}</AutocompleteItem>
+                ))}
               </Autocomplete>
               <Select
                 label="Municipios"
@@ -240,7 +278,6 @@ export default function ModalAuxCoor({ action, auxCoordinatorName, subCoordinato
                 placeholder="Seleccione un técnico"
                 selectedKey={formValues.tecnical}
                 onSelectionChange={(key) => setFormValues({ ...formValues, tecnical: key as string })}
-                value={formValues.tecnical}
                 isRequired
               >
                 {formOptions.technicals.map((user) => (
@@ -248,8 +285,8 @@ export default function ModalAuxCoor({ action, auxCoordinatorName, subCoordinato
                 ))}
               </Autocomplete>
             </ModalBody>
-            <ModalFooter className={`flex ${action === "Modificar" ? "justify-between" : "justify-end"}`}>
-              {action === "Modificar" && (
+            <ModalFooter className={`flex ${isModifying ? "justify-between" : "justify-end"}`}>
+              {isModifying && (
                 <Button
                   color="danger"
                   onPress={() => {
@@ -261,7 +298,9 @@ export default function ModalAuxCoor({ action, auxCoordinatorName, subCoordinato
                   Eliminar
                 </Button>
               )}
-              <Button color="primary" type="submit">{action}</Button>
+              <Button color="primary" type="submit">
+                Guardar
+              </Button>
             </ModalFooter>
           </form>
         </ModalContent>
