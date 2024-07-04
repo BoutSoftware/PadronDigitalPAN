@@ -9,11 +9,11 @@ export default function RoundsCard({ id, status }: RoundsCardProps) {
   const getClassNames = () => {
     switch (status) {
       case "activo":
-        return "bg-blue-500 text-white";
+        return "bg-secondary text-primary-foreground";
       case "pausada":
-        return "bg-primary text-white";
+        return "bg-primary-200 text-primary-foreground";
       case "futuras":
-        return "bg-accent text-white";
+        return "bg-content2 text-content2-foreground";
       default:
         return "";
     }
@@ -26,23 +26,24 @@ export default function RoundsCard({ id, status }: RoundsCardProps) {
       </div>
       <div className="flex flex-row justify-between w-full items-center">
         <p className="text-sm">Publicidad, Necesidades</p>
-        <div className="flex flex-row gap-8">
+        <div className="flex flex-row gap-4">
+          {/* TODO: Activa se puede pausar */}
           {status === "pausada" && (
             <>
-              <Button isIconOnly className="bg-transparent text-white" aria-label="Detener">
+              <Button isIconOnly className="" aria-label="Detener" color="default" variant="light" size="md">
                 <span className="material-symbols-outlined">stop_circle</span>
               </Button>
-              <Button isIconOnly className="bg-transparent text-white" aria-label="Reproducir">
+              <Button isIconOnly className="" aria-label="Reproducir" color="default" variant="light" size="md">
                 <span className="material-symbols-outlined">play_arrow</span>
               </Button>
             </>
           )}
           {status === "futuras" && (
             <>
-              <Button isIconOnly className="bg-transparent text-white" aria-label="Eliminar">
+              <Button isIconOnly className="" aria-label="Eliminar" color="danger" variant="light" size="md">
                 <span className="material-symbols-outlined">delete</span>
               </Button>
-              <Button isIconOnly className="bg-transparent text-white" aria-label="Editar">
+              <Button isIconOnly className="" aria-label="Editar" color="default" variant="light" size="md">
                 <span className="material-symbols-outlined">edit</span>
               </Button>
             </>
