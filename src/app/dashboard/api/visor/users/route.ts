@@ -17,6 +17,7 @@ export async function GET() {
                 name: true,
                 fatherLastName: true,
                 motherLastName: true,
+                photoURL: true
               }
             }
           }
