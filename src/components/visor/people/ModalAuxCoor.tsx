@@ -26,7 +26,6 @@ interface AuxInfoProps {
 
 interface FormValues {
   auxiliaryId: string;
-  auxCoor: string;
   structure: string;
   subCoordinatorId: string;
   municipios: string[];
@@ -63,7 +62,7 @@ interface Technical {
 }
 
 interface FormOptions {
-  coordinators: { id: string, name: string }[];
+  coordinators: { id: string, fullname: string }[];
   subCoordinators: SubCoordinator[];
   structures: { id: string, name: string }[],
   municipios: Municipio[];
@@ -81,7 +80,6 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
   });
   const [formValues, setFormValues] = useState<FormValues>({
     auxiliaryId: "",
-    auxCoor: "",
     structure: "",
     subCoordinatorId: "",
     municipios: [],
@@ -92,13 +90,13 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
   const currentSubCoordinator = useMemo(() => formOptions.subCoordinators.find((subCoor) => formValues.subCoordinatorId === subCoor.id), [formOptions, formValues]);
 
   useEffect(() => {
-    if (currentAuxiliary?.name) setFormValues(prev => ({ ...prev, auxCoor: currentAuxiliary?.name }));
-  }, [currentAuxiliary?.name]);
+    if (currentAuxiliary?.id) setFormValues(prev => ({ ...prev, auxiliaryId: currentAuxiliary?.id }));
+  }, [currentAuxiliary?.id]);
 
   useEffect(() => {
     if (isModalOpen) {
       getStructures();
-      // getSubCoordinators();
+      getCoordinators();
       getMunicipios();
       getTechnicals();
       if (isModifying) {
@@ -112,7 +110,20 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
     getSubCoordinators();
   }, [formValues.structure]);
 
-  // TODO: Agregar función de getCoordinatorsBucket
+  const getCoordinators = async () => {
+    const resBody = await fetch("/dashboard/api/visor/coordinators?onlyFree=true")
+      .then((res) => res.json())
+      .catch((e) => console.log("Error: ", e));
+
+    if (resBody.code === "OK") {
+      setFormOptions((prevOptions) => ({
+        ...prevOptions,
+        coordinators: resBody.data
+      }));
+    } else {
+      console.log(resBody);
+    }
+  };
 
   const getSubCoordinators = async () => {
     const resBody = await fetch(`/dashboard/api/visor/subcoordinators?estructura=${formValues.structure}`)
@@ -170,14 +181,12 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
 
         setFormValues({
           auxiliaryId: currentAuxiliary.id,
-          auxCoor: currentAuxiliary.name,
           structure: currAuxInfo.structureId,
           subCoordinatorId: currAuxInfo.subCoordinator,
           municipios: currAuxInfo.municipiosIDs,
           technicalId: currAuxInfo.technical.id
         });
 
-        // Agregar el subCoor y tecnical actuales a las opciones
         setFormOptions((value) => ({
           ...value,
           technicals: [
@@ -219,7 +228,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
   };
 
   const deleteAuxiliaryCoordinator = async () => {
-    const res = await fetch(`/dashboard/api/visor/auxiliaries/${formValues.auxCoor}`, {
+    const res = await fetch(`/dashboard/api/visor/auxiliaries/${formValues.auxiliaryId}`, {
       method: "DELETE"
     });
     const result = await res.json();
@@ -251,13 +260,13 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
               <Autocomplete
                 label="Auxiliar de coordinación"
                 placeholder="Seleccione un auxiliar de coordinación"
-                selectedKey={formValues.auxCoor}
-                onSelectionChange={(key) => setFormValues({ ...formValues, auxCoor: key as string })}
+                selectedKey={formValues.auxiliaryId}
+                onSelectionChange={(key) => setFormValues({ ...formValues, auxiliaryId: key as string })}
                 isDisabled={isModifying}
                 isRequired
               >
-                {formOptions.subCoordinators.map((subCoor) => (
-                  <AutocompleteItem key={subCoor.id}>{subCoor.userId}</AutocompleteItem>
+                {formOptions.coordinators.map((coordinator) => (
+                  <AutocompleteItem key={coordinator.id}>{coordinator.fullname}</AutocompleteItem>
                 ))}
               </Autocomplete>
               <Select
@@ -271,7 +280,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
                 isRequired
               >
                 {formOptions.structures.map((structure) => (
-                  <AutocompleteItem key={structure.id}>{structure.name}</AutocompleteItem>
+                  <SelectItem key={structure.id}>{structure.name}</SelectItem>
                 ))}
               </Select>
               <Autocomplete
