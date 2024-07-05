@@ -6,6 +6,7 @@ interface MarkerProps {
   position: { lat: number; lng: number };
   title?: string;
   image?: { src: string; width: number };
+  // TODO: hasOffset or offset (default: false | centro )
 }
 
 interface MarkerContext {
@@ -37,6 +38,7 @@ export default function Marker({ children, position, title, image }: MarkerProps
 
     const { AdvancedMarkerElement } = await loader.importLibrary("marker");
 
+    // TODO: offset de creacion del marker
     const marker = new AdvancedMarkerElement({
       position: position,
       map: map,

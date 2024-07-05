@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 "use client";
 import { GCP_API_KEY } from "@/configs";
 import { Loader } from "@googlemaps/js-api-loader";
@@ -16,7 +15,7 @@ interface Props {
   center?: { lat: number, lng: number },
   zoom?: number,
   className?: string
-  onClick?: Function
+  onClick?: (e: google.maps.MapMouseEvent) => void
 }
 
 export const mapContext = createContext<MapContext>({
@@ -52,9 +51,6 @@ export default function Map({
         mapTypeControl: false,
         streetViewControl: false
       });
-      if (onClick) {
-        console.log(onClick);
-      }
       initListeners(myMap);
       setLoader(loader);
       setMap(myMap);
@@ -64,8 +60,9 @@ export default function Map({
   }, [center, zoom]);
 
   const initListeners = (myMap: google.maps.Map | null) => {
-    if (onClick) myMap?.addListener("click", (e: MouseEvent) => onClick(e));
+    if (onClick) myMap?.addListener("click", (e: google.maps.MapMouseEvent) => onClick(e));
   };
+
   return (
     <>
       <div id="map" className={className} ref={mapRef} />
