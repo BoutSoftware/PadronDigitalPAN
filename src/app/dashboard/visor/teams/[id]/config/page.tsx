@@ -80,45 +80,43 @@ export default function Page() {
   }
 
   async function getAndSetTeamInfo() {
-
+    // Get team information
     const teamResBody = await fetch(`/dashboard/api/visor/teams/${teamId}`)
       .then(res => res.json())
       .catch(err => console.error(err));
-
     if (teamResBody.code !== "OK") {
       console.error(teamResBody.message);
       return;
     }
-
     const { data: teamData } = teamResBody;
 
-    console.log(teamData);
+    // Get geographic level values
+    const geographicLevelId = teamData.geographicConf.geographicLevel.id; // Argument for function
+    const municipios = teamData.Auxiliary.municipios; // Argument for function
+    const geographicLevelData = await getGeographicLevelValues(geographicLevelId, municipios);
 
-    const geographicLevelReqParams = `geographicLevel=${teamData.geographicConf.geographicLevel.id}&municipios=${teamData.Auxiliary.municipios.join(",")}`;
-
-    console.log(geographicLevelReqParams);
-
-    const geographicLevelResBody = await fetch(`/dashboard/api/visor/geographicConfiguration/?${geographicLevelReqParams}`)
-      .then(res => res.json())
-      .catch(err => console.error(err));
-
-    if (geographicLevelResBody.code !== "OK") {
-      console.error(geographicLevelResBody.message);
-      return;
-    }
-
-    const { data: geographicLevelData } = geographicLevelResBody;
-
-    // TODO: Think about using autocomplete from MUI to handle geographic config values
-
-    // Setear lo necesario
+    // Setting keys state 
     const initialGeographicConfKeys: TeamKeys = {
       geographicKeys: new Set(teamData.geographicConf.values.map((geoConf: GeographicLevelValue) => geoConf.id)),
       pointTypesKeys: new Set(teamData.TiposPunto.map((pointType: TipoPunto) => pointType.id))
     };
-
     setDropdownsKeys(initialGeographicConfKeys);
     setMembersAndConfig(teamData);
+  }
+
+  async function getGeographicLevelValues(geographicLevelId: string, municipios: string[]) {
+
+    const params = `geographicLevel=${geographicLevelId}&municipios=${municipios.join(",")}`;
+    const resBody = await fetch(`/dashboard/api/visor/geographicConfiguration/?${params}`)
+      .then(res => res.json())
+      .catch(err => console.error(err));
+
+    if (resBody.code !== "OK") {
+      console.error(resBody.message);
+      return;
+    }
+
+    return resBody.data;
   }
 
   useEffect(() => {
