@@ -1,27 +1,25 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-"use client";
 import { useEffect, useState, FormEvent, useMemo } from "react";
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react";
 import { ESTRUCTURAS } from "@/configs/catalogs/visorCatalog";
 
 interface ModalAuxCoorProps {
   auxiliary?: {
-    id: string,
-    name: string
-  }
+    id: string;
+    name: string;
+  };
 }
 
 interface AuxInfoProps {
   structureId: string;
   SubCoordinator: undefined;
-  id?: string | undefined;
-  createdAt?: Date | undefined;
-  active?: boolean | undefined;
-  userId?: string | undefined;
+  id?: string;
+  createdAt?: Date;
+  active?: boolean;
+  userId?: string;
   technicalId: string;
   subCoordinator: string;
   municipiosIDs: string[];
-  technical: Technical
+  technical: Technical;
 }
 
 interface FormValues {
@@ -30,6 +28,16 @@ interface FormValues {
   subCoordinatorId: string;
   municipios: string[];
   technicalId: string;
+}
+
+interface Coordinator {
+  id: string;
+  createdAt: string;
+  active: boolean;
+  userId: string;
+  fullname: string;
+  title: string | null;
+  rol: string;
 }
 
 interface SubCoordinator {
@@ -62,9 +70,9 @@ interface Technical {
 }
 
 interface FormOptions {
-  coordinators: { id: string, fullname: string }[];
+  coordinators: Coordinator[];
   subCoordinators: SubCoordinator[];
-  structures: { id: string, name: string }[],
+  structures: { id: string; name: string }[];
   municipios: Municipio[];
   technicals: Technical[];
 }
@@ -76,7 +84,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
     structures: [],
     subCoordinators: [],
     municipios: [],
-    technicals: []
+    technicals: [],
   });
   const [formValues, setFormValues] = useState<FormValues>({
     auxiliaryId: "",
@@ -90,7 +98,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
   const currentSubCoordinator = useMemo(() => formOptions.subCoordinators.find((subCoor) => formValues.subCoordinatorId === subCoor.id), [formOptions, formValues]);
 
   useEffect(() => {
-    if (currentAuxiliary?.id) setFormValues(prev => ({ ...prev, auxiliaryId: currentAuxiliary?.id }));
+    if (currentAuxiliary?.id) setFormValues((prev) => ({ ...prev, auxiliaryId: currentAuxiliary?.id }));
   }, [currentAuxiliary?.id]);
 
   useEffect(() => {
@@ -108,55 +116,68 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
 
   useEffect(() => {
     getSubCoordinators();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues.structure]);
 
   const getCoordinators = async () => {
-    const resBody = await fetch("/dashboard/api/visor/coordinators?onlyFree=true")
-      .then((res) => res.json())
-      .catch((e) => console.log("Error: ", e));
+    try {
+      const resBody = await fetch("/dashboard/api/visor/coordinators?onlyFree=true").then((res) => res.json());
 
-    if (resBody.code === "OK") {
-      setFormOptions((prevOptions) => ({
-        ...prevOptions,
-        coordinators: resBody.data
-      }));
-    } else {
-      console.log(resBody);
+      if (resBody.code === "OK") {
+        setFormOptions((prevOptions) => ({
+          ...prevOptions,
+          coordinators: resBody.data,
+        }));
+      } else {
+        console.log(resBody);
+      }
+    } catch (e) {
+      console.log("Error: ", e);
     }
   };
 
   const getSubCoordinators = async () => {
-    const resBody = await fetch(`/dashboard/api/visor/subcoordinators?estructura=${formValues.structure}`)
-      .then((res) => res.json())
-      .catch((e) => console.log("Error: ", e));
+    try {
+      const resBody = await fetch(`/dashboard/api/visor/subcoordinators?estructura=${formValues.structure}`).then((res) => res.json());
 
-    if (resBody.code === "OK") {
-      setFormOptions((prevOptions) => ({
-        ...prevOptions,
-        subCoordinators: resBody.data
-      }));
-    } else {
-      console.log(resBody);
+      if (resBody.code === "OK") {
+        setFormOptions((prevOptions) => ({
+          ...prevOptions,
+          subCoordinators: resBody.data,
+        }));
+      } else {
+        console.log(resBody);
+      }
+    } catch (e) {
+      console.log("Error: ", e);
     }
   };
 
   const getMunicipios = async () => {
-    const res = await fetch("/dashboard/api/visor/geographicConfiguration?geographicLevel=municipios");
-    const result = await res.json();
+    try {
+      const res = await fetch("/dashboard/api/visor/geographicConfiguration?geographicLevel=municipios");
+      const result = await res.json();
 
-    setFormOptions((prevOptions) => ({
-      ...prevOptions,
-      municipios: result.data
-    }));
+      setFormOptions((prevOptions) => ({
+        ...prevOptions,
+        municipios: result.data,
+      }));
+    } catch (e) {
+      console.log("Error: ", e);
+    }
   };
 
   const getTechnicals = async () => {
-    const res = await fetch("/dashboard/api/visor/technicals?onlyFree=true");
-    const result = await res.json();
-    setFormOptions((prevOptions) => ({
-      ...prevOptions,
-      technicals: result.data
-    }));
+    try {
+      const res = await fetch("/dashboard/api/visor/technicals?onlyFree=true");
+      const result = await res.json();
+      setFormOptions((prevOptions) => ({
+        ...prevOptions,
+        technicals: result.data,
+      }));
+    } catch (e) {
+      console.log("Error: ", e);
+    }
   };
 
   const getStructures = () => {
@@ -164,8 +185,8 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
       ...prevOptions,
       structures: ESTRUCTURAS.map((structure) => ({
         id: structure.id,
-        name: structure.nombre
-      }))
+        name: structure.nombre,
+      })),
     }));
   };
 
@@ -184,7 +205,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
           structure: currAuxInfo.structureId,
           subCoordinatorId: currAuxInfo.subCoordinator,
           municipios: currAuxInfo.municipiosIDs,
-          technicalId: currAuxInfo.technical.id
+          technicalId: currAuxInfo.technical.id,
         });
 
         setFormOptions((value) => ({
@@ -198,9 +219,9 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
               active: true,
               userId: "",
               title: "",
-              rol: ""
-            }
-          ]
+              rol: "",
+            },
+          ],
         }));
       } else {
         console.error("Error: Result code is not OK", result);
@@ -214,39 +235,55 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
     e.preventDefault();
     const url = isModifying ? `/dashboard/api/visor/auxiliaries/${formValues.auxiliaryId}` : "/dashboard/api/visor/auxiliaries";
     const method = isModifying ? "PATCH" : "POST";
-    const res = await fetch(url, {
-      method,
-      body: JSON.stringify(formValues)
-    });
-    const result = await res.json();
-    if (result.code === "OK") {
-      alert(`Auxiliar ${isModifying ? "modificado" : "agregado"} correctamente`);
-      setIsModalOpen(false);
-    } else {
-      alert(`Error al ${isModifying ? "modificar" : "agregar"} el auxiliar`);
+  
+    try {
+      console.log("Formulario enviado con los siguientes valores:", formValues);
+  
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formValues),
+      });
+  
+      const result = await res.json();
+  
+      if (result.code === "OK") {
+        alert(`Auxiliar ${isModifying ? "modificado" : "agregado"} correctamente`);
+        setIsModalOpen(false);
+      } else {
+        alert(`Error al ${isModifying ? "modificar" : "agregar"} el auxiliar: ${result.message}`);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Error al enviar el formulario. Revisa la consola para más detalles.");
     }
   };
+  
 
   const deleteAuxiliaryCoordinator = async () => {
-    const res = await fetch(`/dashboard/api/visor/auxiliaries/${formValues.auxiliaryId}`, {
-      method: "DELETE"
-    });
-    const result = await res.json();
-    if (result.code === "OK") {
-      alert("Auxiliar eliminado correctamente");
-      setIsModalOpen(false);
-    } else {
-      alert("Error al eliminar el auxiliar");
+    try {
+      const res = await fetch(`/dashboard/api/visor/auxiliaries/${formValues.auxiliaryId}`, {
+        method: "DELETE",
+      });
+      const result = await res.json();
+
+      if (result.code === "OK") {
+        alert("Auxiliar eliminado correctamente");
+        setIsModalOpen(false);
+      } else {
+        alert("Error al eliminar el auxiliar");
+      }
+    } catch (error) {
+      console.error("Error deleting auxiliary coordinator:", error);
+      alert("Error al eliminar el auxiliar. Revisa la consola para más detalles.");
     }
   };
 
   return (
     <>
-      <Button
-        onPress={() => setIsModalOpen(true)}
-        color={isModifying ? "default" : "primary"}
-        variant={isModifying ? "light" : "solid"}
-      >
+      <Button onPress={() => setIsModalOpen(true)} color={isModifying ? "default" : "primary"} variant={isModifying ? "light" : "solid"}>
         {isModifying ? "Modificar" : "Agregar"}
       </Button>
 
