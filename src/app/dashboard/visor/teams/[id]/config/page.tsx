@@ -1,9 +1,10 @@
 "use client";
 import { Caminante } from "@/components/visor/individualTeam/Caminante";
-import { Avatar, Button, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Selection } from "@nextui-org/react";
+import { Input, Avatar, Button, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Selection, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Select, SelectItem, Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CONFIGURACIONES_GEOGRAFICAS, TIPOS_PUNTO } from "@/configs/catalogs/visorCatalog";
+import { ModalModifyGeographicArea } from "@/components/visor/individualTeam/ModalModifyGeographicArea";
 
 interface Structure {
   id: string
@@ -54,24 +55,29 @@ interface TeamResponse {
 }
 
 interface TeamKeys {
-  geographicKeys: Selection
+  geographicLevelKey: Selection
   pointTypesKeys: Selection
 }
 
 export default function Page() {
 
   const [membersAndConfig, setMembersAndConfig] = useState<TeamResponse | null>(null);
-  const [dropdownsKeys, setDropdownsKeys] = useState<TeamKeys>({
-    geographicKeys: new Set([""]),
+  const [teamKeys, setTeamKeys] = useState<TeamKeys>({
+    geographicLevelKey: new Set(""),
     pointTypesKeys: new Set([""])
   });
+  const [geographicValues, setGeographicValues] = useState({
+    values: [],
+    selectedValues: []
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { id: teamId } = useParams();
 
   async function handlePointTypeValue(key: Selection) {
 
     const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}/pointTypes`, {
       method: "PUT",
-      body: JSON.stringify({ pointTypesIDs: Array.from(dropdownsKeys.pointTypesKeys) })
+      body: JSON.stringify({ pointTypesIDs: Array.from(teamKeys.pointTypesKeys) })
     })
       .then(res => res.json())
       .catch(err => console.error(err));
@@ -89,23 +95,28 @@ export default function Page() {
       return;
     }
     const { data: teamData } = teamResBody;
+    console.log(teamData);
 
     // Get geographic level values
     const geographicLevelId = teamData.geographicConf.geographicLevel.id; // Argument for function
     const municipios = teamData.Auxiliary.municipios; // Argument for function
     const geographicLevelData = await getGeographicLevelValues(geographicLevelId, municipios);
+    console.log(geographicLevelData);
+    setGeographicValues({
+      values: geographicLevelData,
+      selectedValues: teamData.geographicConf.values
+    });
 
-    // Setting keys state 
+    // Setting keys state
     const initialGeographicConfKeys: TeamKeys = {
-      geographicKeys: new Set(teamData.geographicConf.values.map((geoConf: GeographicLevelValue) => geoConf.id)),
+      geographicLevelKey: new Set([geographicLevelId]),
       pointTypesKeys: new Set(teamData.TiposPunto.map((pointType: TipoPunto) => pointType.id))
     };
-    setDropdownsKeys(initialGeographicConfKeys);
+    setTeamKeys(initialGeographicConfKeys);
     setMembersAndConfig(teamData);
   }
 
   async function getGeographicLevelValues(geographicLevelId: string, municipios: string[]) {
-
     const params = `geographicLevel=${geographicLevelId}&municipios=${municipios.join(",")}`;
     const resBody = await fetch(`/dashboard/api/visor/geographicConfiguration/?${params}`)
       .then(res => res.json())
@@ -115,9 +126,23 @@ export default function Page() {
       console.error(resBody.message);
       return;
     }
-
     return resBody.data;
   }
+
+  async function handleGeographicValueChange(key: Selection) {
+
+    const geographicLevelId = Array.from(key)[0];
+    if (!geographicLevelId) return;
+
+    const municipios = membersAndConfig?.Auxiliary.municipios;
+    const newGeographicValues = await getGeographicLevelValues(geographicLevelId.toString(), municipios);
+
+    // setGeographicValues();
+  }
+
+  useEffect(() => {
+    console.log(teamKeys.geographicLevelKey);
+  }, [teamKeys.geographicLevelKey]);
 
   useEffect(() => {
     getAndSetTeamInfo();
@@ -165,30 +190,78 @@ export default function Page() {
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl">Área geográfica</h2>
-            <div className="flex gap-2">
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button>Nivel</Button>
-                </DropdownTrigger>
-                <DropdownMenu
-                  aria-label="Configuración geográfica"
-                >
-                  {
-                    CONFIGURACIONES_GEOGRAFICAS.map(conf => <DropdownItem key={conf.id}>{conf.nombre}</DropdownItem>)
-                  }
-                </DropdownMenu>
-              </Dropdown>
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button>Valores</Button>
-                </DropdownTrigger>
-                <DropdownMenu>
-                  <DropdownItem key="Colonias">Valor</DropdownItem>
-                  <DropdownItem key="Colonias">Valor</DropdownItem>
-                  <DropdownItem key="Colonias">Valor</DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
+            <Button onPress={() => setIsModalOpen(true)}>Modificar área geográfica</Button>
+
+            <Modal isOpen={isModalOpen} size="5xl">
+              <ModalContent>
+                <ModalHeader>
+                  Modificando área geográfica
+                </ModalHeader>
+                <ModalBody>
+                  <div className="flex gap-4">
+                    <div className="flex flex-col gap-4">
+                      <Select
+                        label="Selecciona un nivel geográfico"
+                        selectedKeys={teamKeys.geographicLevelKey}
+                        onSelectionChange={handleGeographicValueChange}
+                        selectionMode="single"
+                      >
+                        {
+                          CONFIGURACIONES_GEOGRAFICAS.map(conf => <SelectItem key={conf.id}>{conf.nombre}</SelectItem>)
+                        }
+                      </Select>
+                      <Autocomplete
+                        label="Agrega valores"
+                        shouldCloseOnBlur
+                        menuTrigger="input"
+                      >
+                        {
+                          geographicValues.values.map((value) => (
+                            <AutocompleteItem
+                              key={value.id}
+                              onPress={() => setGeographicValues({
+                                ...geographicValues,
+                                selectedValues: [...geographicValues.selectedValues, value]
+                              })}
+                            >
+                              {value.name}
+                            </AutocompleteItem>
+                          ))
+                        }
+                      </Autocomplete>
+                    </div>
+                    <div className="flex flex-col flex-1 max-h-[400px] overflow-auto">
+                      <h4 className="text-xl text-foreground-700">Valores actuales</h4>
+                      {
+                        geographicValues.selectedValues.map((selectedValue: { id: string, name: string }, index) => (
+                          <React.Fragment key={selectedValue.id}>
+                            <div className="flex justify-between items-center w-full p-4">
+                              <span>{selectedValue.name}</span>
+                              <Button
+                                size="sm"
+                                radius="full"
+                                variant="light"
+                                isIconOnly
+                                onPress={() => setGeographicValues({
+                                  ...geographicValues,
+                                  selectedValues: geographicValues.selectedValues.filter(val => val.id != selectedValue.id)
+                                })}>
+                                <span className="material-symbols-outlined">close</span>
+                              </Button>
+                            </div>
+                            {(index + 1) !== geographicValues.selectedValues.length && <Divider />}
+                          </React.Fragment>
+                        ))
+                      }
+                    </div>
+                  </div>
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" onPress={() => setIsModalOpen(false)}>Cancelar</Button>
+                  <Button color="primary" onPress={() => { }}>Modificar</Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </div>
           <Divider />
           <div className="flex flex-col gap-4">
@@ -217,7 +290,7 @@ export default function Page() {
               </DropdownTrigger>
               <DropdownMenu
                 aria-label="Tipos de punto"
-                selectedKeys={dropdownsKeys.pointTypesKeys}
+                selectedKeys={teamKeys.pointTypesKeys}
                 selectionMode="single"
                 onSelectionChange={(key) => handlePointTypeValue(key)}>
                 {
