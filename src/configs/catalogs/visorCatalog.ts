@@ -26,6 +26,11 @@ export interface StatusNecesidades {
   color: "danger" | "warning" | "success"
 }
 
+export interface Titulos {
+  id: string,
+  nombre: string
+}
+
 export const ESTRUCTURAS = [
   {
     id: "territorial",
@@ -184,9 +189,56 @@ export const STATUS_NECESIDADES: StatusNecesidades[] = [
   }
 ];
 
+export const TITULOS: Titulos[] = [
+  {
+    id: "admin",
+    nombre: "Administrador",
+  },
+  {
+    id: "coordinador",
+    nombre: "Coordinador de estructura",
+  },
+  {
+    id: "tecCoordinador",
+    nombre: "Técnico de coordinador"
+  },
+  {
+    id: "adjCoordinador",
+    nombre: "Adjunto de coordinador"
+  },
+  {
+    id: "subcoordinador",
+    nombre: "Subcoordinador de estructura",
+  },
+  {
+    id: "tecSubcoordinador",
+    nombre: "Técnico de subcoordinador"
+  },
+  {
+    id: "axuiliar",
+    nombre: "Auxiliar de estructura"
+  },
+  {
+    id: "tecAuxiliar",
+    nombre: "Técnico de auxiliar"
+  },
+  {
+    id: "enlace",
+    nombre: "Enlace de equipo",
+  },
+  {
+    id: "caminate",
+    nombre: "Caminate",
+  }
+];
+
 // Aqui se manda una lista de ids (lo que se va a almacenar en subcooridnadores, equipos, rondas, etc..) y te regresa los tipos de punto
 export const getTipoPuntos = (ids: string[]) => {
   return TIPOS_PUNTO.filter(tipo => ids.includes(tipo.id));
+};
+
+export const getTitulo = (id: string) => {
+  return TITULOS.find(titulo => titulo.id === id);
 };
 
 
