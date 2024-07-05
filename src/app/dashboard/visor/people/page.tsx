@@ -6,7 +6,8 @@ import React, { useEffect, useState } from "react";
 import ModalStructCoor from "@/components/visor/people/ModalStructCoor";
 import ModalSubCoor from "@/components/visor/people/ModalSubCoor";
 import ModalAuxCoor from "@/components/visor/people/ModalAuxCoor";
-import { getSubCoors, getTechnicals } from "@/utils/requests/people";
+import { Visor_User } from "@prisma/client";
+// import { getSubCoors, getTechnicals } from "@/utils/requests/people";
 
 interface admin {
   name: string
@@ -56,15 +57,30 @@ export default function Page() {
     });
   }
 
+
+  const getSubCoors = async (onlyFree?: boolean) => {
+    const url = onlyFree ? `/dashboard/api/visor/coordinators?onlyFree=${onlyFree}` : "/dashboard/api/visor/coordinators";
+    const response = await fetch(url);
+    const body = await response.json();
+    return (body.data as Visor_User[]);
+  };
+  
+  const getTechnicals = async (onlyFree?: boolean) => {
+    const url = onlyFree ? `/dashboard/api/visor/technicals?onlyFree=${onlyFree}` : "/dashboard/api/visor/technicals";
+    const response = await fetch(url);
+    const body = await response.json();
+    return (body.data as Visor_User[]);
+  };
+
   const getData = async () => {
     const subCoordinators = await getSubCoors();
     const Technicals = await getTechnicals();
 
-    setUsers({
-      ...users,
-      subs: subCoordinators,
-      auxs: Technicals
-    });
+    // setUsers({
+    //   ...users,
+    //   subs: subCoordinators,
+    //   auxs: Technicals
+    // });
   };
 
   useEffect(() => {
@@ -156,7 +172,7 @@ export default function Page() {
                 <h2 className="text-xl">Sub Coordinador</h2>
                 <span className="text-zinc-400">{usersFiltered.subs.length}/{users.subs.length}</span>
               </div>
-              <ModalSubCoor action="Agregar" />
+              <ModalSubCoor />
             </div>
             {
               usersFiltered?.subs.length > 0 ? (
@@ -170,7 +186,7 @@ export default function Page() {
                           <span className="font-light text-zinc-400 text-sm">3 Tipos de puntos asignados</span>
                         </div>
                       </div>
-                      <ModalSubCoor action="Modificar" subCoordinatorName={sub.name} />
+                      <ModalSubCoor subCoordinatorName={sub.name} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>

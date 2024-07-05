@@ -1,7 +1,7 @@
 "use client";
 import { ESTRUCTURAS, TIPOS_PUNTO } from "@/configs/catalogs/visorCatalog";
 import { fakeModuleSubCoor, fakeModuleUsers, fakePointTypes } from "@/utils/Fake";
-import { getSubCoors, getTechnicals } from "@/utils/requests/people";
+// import { getSubCoors, getTechnicals } from "@/utils/requests/people";
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Selection } from "@nextui-org/react";
 import { Visor_User } from "@prisma/client";
 import { useEffect, useState } from "react";
@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 
 
 interface ModalSubCoorProps {
-  action: "Modificar" | "Agregar";
   subCoordinatorName?: string;
 }
 
@@ -21,7 +20,8 @@ interface formValues {
   pointTypes: Selection
 }
 
-export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoorProps) {
+export default function ModalSubCoor({ subCoordinatorName }: ModalSubCoorProps) {
+  const isModifying = !!subCoordinatorName;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formValues, setFormValues] = useState<formValues>({
     subCoor: "",
@@ -33,6 +33,20 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
   const [subCoordinators, setsubCoordinators] = useState<Visor_User[]>([]);
   const [Technicals, setTechnicals] = useState<Visor_User[]>([]);
 
+  const getSubCoors = async (onlyFree?: boolean) => {
+    const url = onlyFree ? `/dashboard/api/visor/coordinators?onlyFree=${onlyFree}` : "/dashboard/api/visor/coordinators";
+    const response = await fetch(url);
+    const body = await response.json();
+    return (body.data as Visor_User[]);
+  };
+  
+  const getTechnicals = async (onlyFree?: boolean) => {
+    const url = onlyFree ? `/dashboard/api/visor/technicals?onlyFree=${onlyFree}` : "/dashboard/api/visor/technicals";
+    const response = await fetch(url);
+    const body = await response.json();
+    return (body.data as Visor_User[]);
+  };
+
   const getData = async () => {
     const subCoordinators = await getSubCoors(true);
     const Technicals = await getTechnicals(true);
@@ -41,7 +55,7 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
   };
 
   useEffect(() => {
-    if (action === "Agregar") {
+    if (!isModifying) {
       getData();
     }
 
@@ -95,14 +109,14 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
     <>
       <Button
         onPress={() => setIsModalOpen(true)}
-        color={action === "Agregar" ? "primary" : "default"}
-        variant={action === "Agregar" ? "solid" : "light"}
-      >{action}</Button>
+        color={!isModifying ? "primary" : "default"}
+        variant={!isModifying ? "solid" : "light"}
+      >{isModifying ? "Modificar" : "Agregar"}</Button>
 
       <Modal size="lg" isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(!isModalOpen)}>
         <ModalContent>
           <ModalHeader>
-            <h3>{action} Subcoordinador</h3>
+            <h3>{isModifying ? "Modificar" : "Agregar"} Subcoordinador</h3>
           </ModalHeader>
           <ModalBody>
             <Autocomplete
@@ -113,10 +127,10 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
                 setFormValues({ ...formValues, subCoor: key as string });
               }}
               value={formValues.subCoor}
-              isDisabled={action === "Modificar"}
+              isDisabled={isModifying}
               isRequired>
               {
-                action == "Modificar" ? (
+                isModifying ? (
                   <AutocompleteItem key={subCoordinatorName!}>{subCoordinatorName}</AutocompleteItem>
                 ) : (
                   subCoordinators.map((subCoor) => (
@@ -170,9 +184,9 @@ export default function ModalSubCoor({ action, subCoordinatorName }: ModalSubCoo
               }
             </Select>
           </ModalBody>
-          <ModalFooter className={`flex ${action === "Modificar" ? "justify-between" : "justify-end"}`}>
-            <Button color="danger" className={`${action === "Agregar" ? "hidden" : ""}`}>Eliminar</Button>
-            <Button color="primary" type="submit" onClick={handleSubmit}>{action}</Button>
+          <ModalFooter className={`flex ${isModifying ? "justify-between" : "justify-end"}`}>
+            <Button color="danger" className={`${!isModifying ? "hidden" : ""}`}>Eliminar</Button>
+            <Button color="primary" type="submit" onClick={handleSubmit}>{isModifying ? "Modificar" : "Agregar"}</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
