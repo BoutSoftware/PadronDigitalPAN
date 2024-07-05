@@ -73,7 +73,7 @@ function TeamTabs() {
 
   return (
     <div className="flex w-full flex-col p-4">
-      <Tabs aria-label="Options" classNames={{ panel: "mt-4" }}>
+      <Tabs aria-label="Options" classNames={{ panel: "mt-8" }}>
         <Tab key="Configuración" title="Configuración"></Tab>
         <Tab key="Tabla" title="Tabla"></Tab>
         <Tab key="Crear punto" title="Crear punto"></Tab>

@@ -27,7 +27,13 @@ export default function RoundsCard({ id, status }: RoundsCardProps) {
       <div className="flex flex-row justify-between w-full items-center">
         <p className="text-sm">Publicidad, Necesidades</p>
         <div className="flex flex-row gap-4">
-          {/* TODO: Activa se puede pausar */}
+          {status === "activo" && (
+            <>
+              <Button isIconOnly className="" aria-label="Detener" color="default" variant="light" size="md">
+                <span className="material-symbols-outlined text-white">pause</span>
+              </Button>
+            </>
+          )}
           {status === "pausada" && (
             <>
               <Button isIconOnly className="" aria-label="Detener" color="default" variant="light" size="md">

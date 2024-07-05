@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button } from "@nextui-org/react";
+import { Button, Divider } from "@nextui-org/react";
 import RoundsCard from "./RoundsCard";
 
 interface Round {
@@ -8,8 +8,8 @@ interface Round {
 }
 
 const initialRounds: Round[] = [
-  // { id: "1", status: "activo" },
-  { id: "2", status: "pausada" },
+  { id: "1", status: "activo" },
+  // { id: "2", status: "pausada" },
   { id: "3", status: "futuras" },
   { id: "4", status: "futuras" },
   { id: "5", status: "futuras" },
@@ -51,7 +51,7 @@ export default function RoundsPage() {
   const futureRounds = rounds.filter((round) => round.status === "futuras");
 
   return (
-    <div className="flex flex-col items-stretch px-4 gap-8">
+    <div className="flex flex-col px-4 gap-8">
       {alertMessage && (
         <div className="alert alert-warning flex justify-between items-center p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg" role="alert">
           <span>{alertMessage}</span>
@@ -60,31 +60,38 @@ export default function RoundsPage() {
           </Button>
         </div>
       )}
-      <div className="flex w-full justify-end">
-        <Button color="primary">Añadir nueva ronda</Button>
-      </div>
-      {/* TODO: No mostrar Seccion si no hay nada */}
-      <div className="flex flex-col gap-4 w-full -mt-4">
-        <h1 className="text-3xl">Ronda Activa</h1>
-        <div className="w-full">
-          {activeRound && <RoundsCard id={activeRound.id} status={activeRound.status} />}
+      {activeRound && (
+        <div className="flex flex-col gap-4 w-full -mt-4">
+          <h1 className="text-3xl">Ronda Activa</h1>
+          <div className="w-full">
+            <RoundsCard id={activeRound.id} status={activeRound.status} />
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col gap-4 w-full">
-        <h1 className="text-3xl">Ronda Pausada</h1>
-        <div>
-          {pausedRound && <RoundsCard id={pausedRound.id} status={pausedRound.status} />}
+      )}
+      {pausedRound && (
+        <div className="flex flex-col gap-4 w-full">
+          <h1 className="text-3xl">Ronda Pausada</h1>
+          <div>
+            <RoundsCard id={pausedRound.id} status={pausedRound.status} />
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col gap-4 w-full">
-        {/* TODO: Poner el botón de Agregar nueva */}
-        <h1 className="text-3xl">Futuras Rondas</h1>
-        <div className="flex flex-col gap-4">
-          {futureRounds.map((round) => (
-            <RoundsCard key={round.id} id={round.id} status={round.status} />
-          ))}
-        </div>
-      </div>
+      )}
+      {futureRounds.length > 0 && (
+        <>
+          <Divider />
+          <div className="flex flex-col gap-4 w-full">
+            <div className="flex flex-row justify-between">
+              <h1 className="text-3xl">Futuras Rondas</h1>
+              <Button color="primary">Añadir nueva ronda</Button>
+            </div>
+            <div className="flex flex-col gap-4">
+              {futureRounds.map((round) => (
+                <RoundsCard key={round.id} id={round.id} status={round.status} />
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
