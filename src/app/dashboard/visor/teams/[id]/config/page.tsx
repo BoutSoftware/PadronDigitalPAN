@@ -86,6 +86,9 @@ export default function Page() {
   }
 
   async function getAndSetTeamInfo() {
+
+    // TODO: Refactor this
+
     // Get team information
     const teamResBody = await fetch(`/dashboard/api/visor/teams/${teamId}`)
       .then(res => res.json())
