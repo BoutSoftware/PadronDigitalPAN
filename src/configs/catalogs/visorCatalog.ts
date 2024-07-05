@@ -189,10 +189,10 @@ export const STATUS_NECESIDADES: StatusNecesidades[] = [
   }
 ];
 
-export const TITULOS: Titulos[] = [
+export const TITULOS = [
   {
     id: "admin",
-    nombre: "Administrador",
+    nombre: "Administrador"
   },
   {
     id: "coordinador",
@@ -230,7 +230,7 @@ export const TITULOS: Titulos[] = [
     id: "caminate",
     nombre: "Caminate",
   }
-];
+] as const;
 
 // Aqui se manda una lista de ids (lo que se va a almacenar en subcooridnadores, equipos, rondas, etc..) y te regresa los tipos de punto
 export const getTipoPuntos = (ids: string[]) => {
