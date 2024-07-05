@@ -2,6 +2,7 @@ import prisma from "@/configs/database";
 import { NextRequest, NextResponse } from "next/server";
 import { hasIncompleteFields } from "@/utils";
 import { STATUS_RONDAS } from "@/configs/catalogs/visorCatalog";
+import { Visor_CheckPoint } from "@prisma/client";
 
 // Create a round
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
@@ -46,8 +47,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         teamId: id,
         // If the round starts at the moment, the status that comes from the front is assigned
         status: status ? status :
-        // If it is not started at the moment, the status of not started is added to the catalogs
-        STATUS_RONDAS.map((status) => status.id).find((id) => id === "noiniciada")!,
+          // If it is not started at the moment, the status of not started is added to the catalogs
+          STATUS_RONDAS.map((status) => status.id).find((id) => id === "noiniciada")!,
         // If the round starts at the moment, the date received is set, otherwise it is set to null
         startedAt: startedAt ? startedAt : null,
         pointTypesIDs,
@@ -67,6 +68,70 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     });
 
     return NextResponse.json({ code: "OK", message: "Round created successfully", data: round });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ code: "ERROR", message: "An error occurred" });
+  }
+}
+
+// Get paused rounds, active and no started rounds by team
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  type Round = {
+    id: string;
+    active: boolean;
+    name: string;
+    startedAt: Date | null;
+    status: string;
+    pointTypesIDs: string[];
+    CheckPoints: Visor_CheckPoint[];
+  };
+  interface TeamRounds {
+    active: Round[];
+    paused: Round[];
+    noStarted: Round[];
+  }
+
+  try {
+    const { id } = params;
+
+    // Verify if team exists and is active
+    const teamExists = await prisma.visor_Team.findFirst({ where: { id, active: true } });
+
+    if (!teamExists) {
+      return NextResponse.json({ code: "TEAM_NOT_FOUND", message: "Team not found" });
+    }
+
+    // Get paused rounds, active and no started rounds by team
+    const rounds = await prisma.visor_Round.findMany({
+      where: {
+        teamId: id,
+        active: true,
+        status: {
+          in: STATUS_RONDAS.map((status) => status.id).filter((id) => id !== "terminada")
+        }
+      },
+      select: {
+        id: true,
+        name: true,
+        active: true,
+        startedAt: true,
+        status: true,
+        pointTypesIDs: true,
+        CheckPoints: true
+      }
+    });
+
+    if (!rounds.length) {
+      return NextResponse.json({ code: "NOT_FOUND", message: "No rounds found" });
+    }
+
+    const teamRounds: TeamRounds = {
+      active: rounds.filter((round) => round.status === "activa"),
+      paused: rounds.filter((round) => round.status === "pausada"),
+      noStarted: rounds.filter((round) => round.status === "noiniciada")
+    };
+
+    return NextResponse.json({ code: "OK", message: "Rounds retrieved successfully", data: teamRounds });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ code: "ERROR", message: "An error occurred" });
