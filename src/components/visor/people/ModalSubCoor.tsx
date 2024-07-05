@@ -1,13 +1,8 @@
 "use client";
 import { ESTRUCTURAS, TIPOS_PUNTO } from "@/configs/catalogs/visorCatalog";
-import { fakeModuleSubCoor, fakeModuleUsers, fakePointTypes } from "@/utils/Fake";
-// import { getSubCoors, getTechnicals } from "@/utils/requests/people";
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Selection } from "@nextui-org/react";
 import { Visor_User } from "@prisma/client";
 import { useEffect, useState } from "react";
-
-
-
 
 interface ModalSubCoorProps {
   subCoordinatorName?: string;
@@ -73,6 +68,8 @@ export default function ModalSubCoor({ subCoordinatorName }: ModalSubCoorProps) 
       structureId: [...formValues.struct][0],
       pointTypesIDs: Array.from(formValues.pointTypes),
     };
+
+
     
     const response = await fetch("/dashboard/api/visor/subcoordinators", {
       method: "POST",
