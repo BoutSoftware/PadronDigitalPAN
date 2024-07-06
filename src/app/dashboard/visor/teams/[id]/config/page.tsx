@@ -23,6 +23,7 @@ interface Auxiliary {
   id: string
   active: boolean
   name: string
+  municipios: string[]
 }
 interface TipoPunto {
   id: string
@@ -33,6 +34,10 @@ interface TipoPunto {
 interface GeographicLevel {
   id: string
   nombre: string
+}
+interface GeographicValue {
+  id: string
+  name: string
 }
 interface Team {
   id: string
@@ -45,10 +50,7 @@ interface Team {
   TiposPunto: TipoPunto[]
   geographicConf: {
     geographicLevel: GeographicLevel
-    values: {
-      id: string
-      name: string
-    }[]
+    values: GeographicValue[]
   }
 }
 interface InputKeys {
@@ -56,8 +58,8 @@ interface InputKeys {
   pointTypesKeys: Selection
 }
 interface GeographicValues {
-  values: string[]
-  selectedValues: any[]
+  values: GeographicValue[]
+  selectedValues: GeographicValue[]
 }
 
 export default function Page() {
@@ -132,7 +134,7 @@ export default function Page() {
     console.log(resBody);
   }
 
-  async function getGeographicLevelValues(geographicLevelId: string, municipios: string[]): Promise<void | string[]> {
+  async function getGeographicLevelValues(geographicLevelId: string, municipios: string[]): Promise<void | GeographicValue[]> {
     const params = `geographicLevel=${geographicLevelId}&municipios=${municipios.join(",")}`;
     const resBody = await fetch(`/dashboard/api/visor/geographicConfiguration/?${params}`)
       .then(res => res.json())
@@ -151,6 +153,7 @@ export default function Page() {
     if (!geographicLevelId) return;
 
     const municipios = team?.Auxiliary.municipios;
+    if (!municipios) return;
     const newGeographicValues = await getGeographicLevelValues(geographicLevelId.toString(), municipios);
 
     if (!newGeographicValues) return;
