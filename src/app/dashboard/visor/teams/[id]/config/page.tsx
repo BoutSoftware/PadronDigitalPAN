@@ -77,12 +77,6 @@ export default function Page() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    console.log({ inputKeys: inputKeys });
-    console.log({ geographicValues: geographicValues });
-    console.log({ team: team });
-  }, [inputKeys, geographicValues, team]);
-
   async function getAndSetTeamInfo() {
 
     // General team info
@@ -90,9 +84,8 @@ export default function Page() {
     setTeam(teamData);
 
     // Get geographic level values
-    const geoLevelId: string = teamData.geographicConf.geographicLevel.id; // Argument for function
-    const municipios: string[] = teamData.Auxiliary.municipios; // Argument for function
-
+    const geoLevelId: string = teamData.geographicConf.geographicLevel.id;
+    const municipios: string[] = teamData.Auxiliary.municipios;
     const geoLevelValues = await getGeographicLevelValues(geoLevelId, municipios);
     if (geoLevelValues) {
       setGeographicValues({
@@ -120,7 +113,7 @@ export default function Page() {
     return resBody.data;
   }
 
-  async function handlePointTypeValue(key: Selection) {
+  async function handlePointTypeValue() {
     const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}/pointTypes`, {
       method: "PUT",
       body: JSON.stringify({ pointTypesIDs: Array.from(inputKeys.pointTypesKeys) })
@@ -148,17 +141,48 @@ export default function Page() {
   }
 
   async function handleGeographicValueChange(key: Selection) {
-
     const geographicLevelId = Array.from(key)[0];
     if (!geographicLevelId) return;
 
     const municipios = team?.Auxiliary.municipios;
     if (!municipios) return;
-    const newGeographicValues = await getGeographicLevelValues(geographicLevelId.toString(), municipios);
 
+    const newGeographicValues = await getGeographicLevelValues(geographicLevelId.toString(), municipios);
     if (!newGeographicValues) return;
 
     setGeographicValues({ ...geographicValues, values: newGeographicValues });
+  }
+
+  async function handleModifyGeoConfig() {
+    const geographicLevelId = Array.from(inputKeys.geographicLevelKey)[0];
+    const geographicValuesId = geographicValues.selectedValues.map(selectedValue => selectedValue.id);
+
+    const modifiedData = await modifyGeoConfig(geographicLevelId.toString(), geographicValuesId);
+    if (!modifiedData) return;
+    /*
+      getTeamInfo() used because modified data came without geographicValuesName.
+      It only came with geographicValuesId, so names don´t render.
+
+      getTeamInfo() return information type as is needed.
+    */
+    const updatedTeam = await getTeamInfo();
+    setTeam(updatedTeam);
+
+    setIsModalOpen(false);
+  }
+
+  async function modifyGeoConfig(geoLevel: string, geoValues: string[]) {
+    const reqBody = { geographicLevel: geoLevel, values: geoValues };
+    const resBody = await fetch("/dashboard/api/visor/teams/667ef0fe356c04cf3b02af11/geoConf", {
+      method: "PUT",
+      body: JSON.stringify(reqBody)
+    })
+      .then(res => res.json())
+      .catch(err => console.error(err));
+
+    if (resBody.code !== "OK") return;
+
+    return resBody.data;
   }
 
   return (
@@ -272,7 +296,7 @@ export default function Page() {
                 </ModalBody>
                 <ModalFooter>
                   <Button color="danger" onPress={() => setIsModalOpen(false)}>Cancelar</Button>
-                  <Button color="primary" onPress={() => { }}>Modificar</Button>
+                  <Button color="primary" onPress={handleModifyGeoConfig}>Modificar</Button>
                 </ModalFooter>
               </ModalContent>
             </Modal>
@@ -306,7 +330,7 @@ export default function Page() {
                 aria-label="Tipos de punto"
                 selectedKeys={inputKeys.pointTypesKeys}
                 selectionMode="single"
-                onSelectionChange={(key) => handlePointTypeValue(key)}>
+                onSelectionChange={handlePointTypeValue}>
                 {
                   TIPOS_PUNTO
                     .filter(pointType => pointType.estructuraId == team?.Structure.id)
