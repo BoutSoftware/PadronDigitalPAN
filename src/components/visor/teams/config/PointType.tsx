@@ -21,7 +21,14 @@ export function PointType({ team, teamId }: Props) {
 
   const [pointTypeKeys, setPointTypeKeys] = useState<Selection>(new Set([""]));
 
+  // TODO: End this
+
   async function handlePointTypeValue() {
+    const resBody = await modifyPointType();
+    console.log(resBody);
+  }
+
+  async function modifyPointType() {
     const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}/pointTypes`, {
       method: "PUT",
       body: JSON.stringify({ pointTypesIDs: Array.from(pointTypeKeys) })
@@ -32,7 +39,7 @@ export function PointType({ team, teamId }: Props) {
       console.error(resBody.message);
       return;
     }
-    console.log(resBody);
+    return resBody;
   }
 
   return (
