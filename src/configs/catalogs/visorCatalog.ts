@@ -215,7 +215,7 @@ export const TITULOS = [
     nombre: "Técnico de subcoordinador"
   },
   {
-    id: "axuiliar",
+    id: "auxiliar",
     nombre: "Auxiliar de estructura"
   },
   {
@@ -227,7 +227,7 @@ export const TITULOS = [
     nombre: "Enlace de equipo",
   },
   {
-    id: "caminate",
+    id: "caminante",
     nombre: "Caminate",
   }
 ] as const;
