@@ -14,13 +14,13 @@ export const subcoordinadorsGroup: typeof TITULOS[number]["id"][] = [
 ];
 
 export const axiliariyGroup: typeof TITULOS[number]["id"][] = [
-  "axuiliar",
+  "auxiliar",
   "tecAuxiliar"
 ];
 
 export const teamMembersGroup: typeof TITULOS[number]["id"][] = [
   "enlace",
-  "caminate"
+  "caminante"
 ];
 
 
@@ -51,7 +51,7 @@ export const isEnlace = (id: typeof TITULOS[number]["id"]) => {
 
 export const isCaminate = (id: typeof TITULOS[number]["id"]) => {
   if ( id === "admin") return true;
-  return id === "caminate";
+  return id === "caminante";
 };
 
 export const isCoordinadorWaterFall = (id: typeof TITULOS[number]["id"]) => {
@@ -83,7 +83,7 @@ export const isEnlaceWaterFall = (id: typeof TITULOS[number]["id"]) => {
 };
 
 export const isCaminateWaterFall = (id: typeof TITULOS[number]["id"]) => {
-  const index = TITULOS.findIndex(title => title.id === "caminate");
+  const index = TITULOS.findIndex(title => title.id === "caminante");
   const validTitulos = TITULOS.slice(0, index + 1).map(title => title.id);
 
   return validTitulos.includes(id);
@@ -92,9 +92,9 @@ export const isCaminateWaterFall = (id: typeof TITULOS[number]["id"]) => {
 const titlesFunctions = {
   "coordinador": isCoordinador,
   "subcoordinador": isSubcoordinador,
-  "axuiliar": isAuxiliar,
+  "auxiliar": isAuxiliar,
   "enlace": isEnlace,
-  "caminate": isCaminate
+  "caminante": isCaminate
 };
 
 export const isValid = ({ id, include, exclude }: {
