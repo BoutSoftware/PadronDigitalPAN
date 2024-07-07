@@ -5,7 +5,7 @@ import { STATUS_RONDAS } from "@/configs/catalogs/visorCatalog";
 import { Visor_CheckPoint } from "@prisma/client";
 
 // Get rounds by team
-export async function getRoundsByTeam(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { id } = params;
 
