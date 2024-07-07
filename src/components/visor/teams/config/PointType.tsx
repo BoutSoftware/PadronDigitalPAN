@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TIPOS_PUNTO } from "@/configs/catalogs/visorCatalog";
 import { TeamInterface } from "@/utils/VisorInterfaces";
 import {
@@ -15,30 +15,45 @@ import {
 interface Props {
   team: TeamInterface
   teamId: string
+  loadTeam: () => void
 }
 
-export function PointType({ team, teamId }: Props) {
+export function PointType({ team, teamId, loadTeam }: Props) {
 
-  const [pointTypeKeys, setPointTypeKeys] = useState<Selection>(new Set([""]));
+  const [pointTypeKeys, setPointTypeKeys] = useState<Selection>(new Set());
 
   // TODO: End this
 
-  async function handlePointTypeValue() {
-    const resBody = await modifyPointType();
-    console.log(resBody);
+  useEffect(() => {
+    const initialKeys: Selection = new Set(team.TiposPunto.map(pointType => pointType.id));
+
+    setPointTypeKeys(initialKeys);
+  }, []);
+
+  async function handlePointTypeValue(keys: Selection) {
+    console.log(keys);
+    const pointIdArray: string[] = Array.from(keys).map(key => key.toString());
+
+    const resBody = await modifyPointType(pointIdArray);
+    if (!resBody) return;
+
+
+    setPointTypeKeys(keys);
   }
 
-  async function modifyPointType() {
+  async function modifyPointType(pointIds: string[]) {
     const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}/pointTypes`, {
       method: "PUT",
-      body: JSON.stringify({ pointTypesIDs: Array.from(pointTypeKeys) })
+      body: JSON.stringify({ pointTypesIDs: pointIds })
     })
       .then(res => res.json())
       .catch(err => console.error(err));
+    console.log(resBody);
     if (resBody.code !== "OK") {
       console.error(resBody.message);
       return;
     }
+    await loadTeam();
     return resBody;
   }
 
@@ -56,8 +71,8 @@ export function PointType({ team, teamId }: Props) {
           <DropdownMenu
             aria-label="Tipos de punto"
             selectedKeys={pointTypeKeys}
-            selectionMode="single"
-            onSelectionChange={handlePointTypeValue}>
+            selectionMode="multiple"
+            onSelectionChange={(keys) => handlePointTypeValue(keys)}>
             {
               TIPOS_PUNTO
                 .filter(pointType => pointType.estructuraId == team?.Structure.id)

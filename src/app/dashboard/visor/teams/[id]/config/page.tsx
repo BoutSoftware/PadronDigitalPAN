@@ -10,16 +10,17 @@ export default function Page() {
   const { id: teamId } = useParams();
 
   useEffect(() => {
-    setTeamInfo();
+    laodTeam();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function setTeamInfo() {
-    const teamData = await getTeamInfo();
+  async function laodTeam() {
+    const teamData = await getUpdatedTeam();
+    console.log(teamData);
     setTeam(teamData);
   }
 
-  async function getTeamInfo() {
+  async function getUpdatedTeam() {
     const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}`)
       .then(res => res.json())
       .catch(err => console.error(err));
@@ -48,9 +49,9 @@ export default function Page() {
 
       <div className="flex flex-col flex-1 gap-4">
 
-        {team && <GeoArea team={team} setTeam={setTeam} teamId={teamId.toString()} />}
+        {team && <GeoArea team={team} loadTeam={laodTeam} teamId={teamId.toString()} />}
 
-        {team && <PointType team={team} teamId={teamId.toString()} />}
+        {team && <PointType team={team} loadTeam={laodTeam} teamId={teamId.toString()} />}
 
       </div>
     </div>

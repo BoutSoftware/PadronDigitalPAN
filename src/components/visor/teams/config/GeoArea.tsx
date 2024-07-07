@@ -29,12 +29,12 @@ interface GeographicValues {
 }
 
 interface Props {
-  setTeam: React.Dispatch<React.SetStateAction<TeamInterface>>
+  loadTeam: () => void
   team: TeamInterface
   teamId: string
 }
 
-export function GeoArea({ team, setTeam, teamId }: Props) {
+export function GeoArea({ team, loadTeam, teamId }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [geographicValues, setGeographicValues] = useState<GeographicValues>({ values: [], selectedValues: [] });
   const [geoLevelKey, setGeoLevelKey] = useState<Selection>(new Set(""));
@@ -75,9 +75,7 @@ export function GeoArea({ team, setTeam, teamId }: Props) {
     const modifiedData = await modifyGeoConfig(geographicLevelId.toString(), geographicValuesId);
     if (!modifiedData) return;
 
-    const updatedTeam = await getTeamInfo();
-    setTeam(updatedTeam);
-
+    await loadTeam();
     setIsModalOpen(false);
   }
 
