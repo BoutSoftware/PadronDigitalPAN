@@ -12,7 +12,7 @@ interface ModalAuxCoorProps {
 interface AuxInfoProps {
   structureId: string;
   SubCoordinator: undefined;
-  id?: string;
+  id: string;
   createdAt?: Date;
   active?: boolean;
   userId?: string;
@@ -20,13 +20,14 @@ interface AuxInfoProps {
   subCoordinator: string;
   municipiosIDs: string[];
   technical: Technical;
+  fullName: string;
 }
 
 interface FormValues {
-  auxiliaryId: string;
-  structure: string;
+  userId: string;
+  structureId: string;
   subCoordinatorId: string;
-  municipios: string[];
+  municipioIDs: string[];
   technicalId: string;
 }
 
@@ -87,19 +88,16 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
     technicals: [],
   });
   const [formValues, setFormValues] = useState<FormValues>({
-    auxiliaryId: "",
-    structure: "",
+    userId: "",
+    structureId: "",
     subCoordinatorId: "",
-    municipios: [],
+    municipioIDs: [],
     technicalId: "",
   });
 
   const isModifying = useMemo(() => !!currentAuxiliary, [currentAuxiliary]);
   const currentSubCoordinator = useMemo(() => formOptions.subCoordinators.find((subCoor) => formValues.subCoordinatorId === subCoor.id), [formOptions, formValues]);
 
-  useEffect(() => {
-    if (currentAuxiliary?.id) setFormValues((prev) => ({ ...prev, auxiliaryId: currentAuxiliary?.id }));
-  }, [currentAuxiliary?.id]);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -107,8 +105,9 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
       getCoordinators();
       getMunicipios();
       getTechnicals();
+
       if (isModifying) {
-        fetchAuxiliaryDetails();
+        getAuxiliaryDetails();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -116,8 +115,8 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
 
   useEffect(() => {
     getSubCoordinators();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formValues.structure]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formValues.structureId]);
 
   const getCoordinators = async () => {
     try {
@@ -138,7 +137,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
 
   const getSubCoordinators = async () => {
     try {
-      const resBody = await fetch(`/dashboard/api/visor/subcoordinators?estructura=${formValues.structure}`).then((res) => res.json());
+      const resBody = await fetch(`/dashboard/api/visor/subcoordinators?estructura=${formValues.structureId}`).then((res) => res.json());
 
       if (resBody.code === "OK") {
         setFormOptions((prevOptions) => ({
@@ -190,7 +189,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
     }));
   };
 
-  const fetchAuxiliaryDetails = async () => {
+  const getAuxiliaryDetails = async () => {
     if (!currentAuxiliary) return;
 
     try {
@@ -201,10 +200,10 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
         const currAuxInfo: AuxInfoProps = result.data;
 
         setFormValues({
-          auxiliaryId: currentAuxiliary.id,
-          structure: currAuxInfo.structureId,
+          userId: currentAuxiliary.id,
+          structureId: currAuxInfo.structureId,
           subCoordinatorId: currAuxInfo.subCoordinator,
-          municipios: currAuxInfo.municipiosIDs,
+          municipioIDs: currAuxInfo.municipiosIDs,
           technicalId: currAuxInfo.technical.id,
         });
 
@@ -222,6 +221,18 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
               rol: "",
             },
           ],
+          coordinators: [
+            ...value.coordinators,
+            {
+              active: true,
+              createdAt: "",
+              fullname: currAuxInfo.fullName,
+              id: currAuxInfo.id,
+              rol: "",
+              title: "",
+              userId: ""
+            }
+          ]
         }));
       } else {
         console.error("Error: Result code is not OK", result);
@@ -231,14 +242,25 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
     }
   };
 
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setFormValues({
+      userId: "",
+      structureId: "",
+      subCoordinatorId: "",
+      municipioIDs: [],
+      technicalId: "",
+    });
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const url = isModifying ? `/dashboard/api/visor/auxiliaries/${formValues.auxiliaryId}` : "/dashboard/api/visor/auxiliaries";
+    const url = isModifying ? `/dashboard/api/visor/auxiliaries/${formValues.userId}` : "/dashboard/api/visor/auxiliaries";
     const method = isModifying ? "PATCH" : "POST";
-  
+
     try {
       console.log("Formulario enviado con los siguientes valores:", formValues);
-  
+
       const res = await fetch(url, {
         method,
         headers: {
@@ -246,25 +268,24 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
         },
         body: JSON.stringify(formValues),
       });
-  
-      const result = await res.json();
-  
-      if (result.code === "OK") {
+
+      const resBody = await res.json();
+
+      if (resBody.code === "OK") {
         alert(`Auxiliar ${isModifying ? "modificado" : "agregado"} correctamente`);
-        setIsModalOpen(false);
+        handleClose();
       } else {
-        alert(`Error al ${isModifying ? "modificar" : "agregar"} el auxiliar: ${result.message}`);
+        alert(`Error al ${isModifying ? "modificar" : "agregar"} el auxiliar: ${resBody.message}`);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Error al enviar el formulario. Revisa la consola para más detalles.");
     }
   };
-  
 
-  const deleteAuxiliaryCoordinator = async () => {
+  const handleDeleteAuxiliary = async () => {
     try {
-      const res = await fetch(`/dashboard/api/visor/auxiliaries/${formValues.auxiliaryId}`, {
+      const res = await fetch(`/dashboard/api/visor/auxiliaries/${formValues.userId}`, {
         method: "DELETE",
       });
       const result = await res.json();
@@ -287,7 +308,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
         {isModifying ? "Modificar" : "Agregar"}
       </Button>
 
-      <Modal size="lg" isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(!isModalOpen)}>
+      <Modal size="lg" isOpen={isModalOpen} onClose={handleClose}>
         <ModalContent>
           <form onSubmit={handleSubmit}>
             <ModalHeader>
@@ -297,8 +318,8 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
               <Autocomplete
                 label="Auxiliar de coordinación"
                 placeholder="Seleccione un auxiliar de coordinación"
-                selectedKey={formValues.auxiliaryId}
-                onSelectionChange={(key) => setFormValues({ ...formValues, auxiliaryId: key as string })}
+                selectedKey={formValues.userId}
+                onSelectionChange={(key) => setFormValues({ ...formValues, userId: key as string })}
                 isDisabled={isModifying}
                 isRequired
               >
@@ -309,10 +330,10 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
               <Select
                 label="Estructura"
                 placeholder="Selecciona una estructura"
-                selectedKeys={formValues.structure ? [formValues.structure] : []}
+                selectedKeys={formValues.structureId ? [formValues.structureId] : []}
                 onSelectionChange={(selection) => {
                   if (selection === "all") return;
-                  setFormValues({ ...formValues, structure: [...selection][0] as string });
+                  setFormValues({ ...formValues, structureId: [...selection][0] as string });
                 }}
                 isRequired
               >
@@ -336,8 +357,8 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
                 label="Municipios"
                 placeholder="Seleccione los municipios"
                 selectionMode="multiple"
-                selectedKeys={formValues.municipios}
-                onSelectionChange={(keys) => setFormValues({ ...formValues, municipios: [...keys] as string[] })}
+                selectedKeys={formValues.municipioIDs}
+                onSelectionChange={(keys) => setFormValues({ ...formValues, municipioIDs: [...keys] as string[] })}
                 isRequired
               >
                 {formOptions.municipios.map((municipio) => (
@@ -362,7 +383,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
                   color="danger"
                   onPress={() => {
                     if (confirm("¿Estás seguro que deseas eliminar este auxiliar?")) {
-                      deleteAuxiliaryCoordinator();
+                      handleDeleteAuxiliary();
                     }
                   }}
                 >

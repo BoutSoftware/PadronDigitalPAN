@@ -54,7 +54,8 @@ export async function GET(request: NextRequest, { params }: { params: { auxiliar
       where: { id: auxiliaryId },
       include: {
         SubCoordinator: { select: { structureId: true } },
-        Technical: { select: { fullname: true, id: true } }
+        Technical: { select: { fullname: true, id: true } },
+        User: { select: { fullname: true } }
       }
     });
 
@@ -62,7 +63,8 @@ export async function GET(request: NextRequest, { params }: { params: { auxiliar
       ...currentAuxiliary,
       structureId: currentAuxiliary?.SubCoordinator.structureId,
       SubCoordinator: undefined,
-      technical: currentAuxiliary?.Technical
+      technical: currentAuxiliary?.Technical,
+      fullName: currentAuxiliary?.User.fullname
     };
 
     return NextResponse.json({ code: "OK", message: "Auxiliary retrieved successfully", data });
