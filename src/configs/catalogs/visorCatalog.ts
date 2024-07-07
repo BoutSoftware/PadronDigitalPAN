@@ -85,7 +85,7 @@ export const STATUS_RONDAS = [
     nombre: "NO INICIADA",
     color: "blanco",
   },
-];
+] as const;
 
 
 export const TIPOS_PUNTO: TiposPunto[] = [
@@ -106,6 +106,12 @@ export const TIPOS_PUNTO: TiposPunto[] = [
     nombre: "Encuestas",
     icon: "inocoEncuesta",
     estructuraId: "politica"
+  },
+  {
+    id: "rondas",
+    nombre: "Rondas",
+    icon: "iconoRonda",
+    estructuraId: "gobierno"
   }
 ];
 
