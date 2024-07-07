@@ -87,13 +87,15 @@ export const fakeModuleSubCoor = [
 
 export const fakeModuleAux = [
   {
-    "name": "Sofía Beatriz Torres Jiménez",
+    id: "667cff822c59d249686e598e",
+    "name": "Noel",
     "estructura": "Gubernamental",
     "subCoor": "Alejandro Luis Gómez Fernández",
     "municipios": ["Ciudad de México", "Naucalpan", "Toluca"],
     "tecnico": "Laura Patricia Hernández García"
   },
   {
+    id: "1",
     "name": "Diego Alejandro Ramírez Martínez",
     "estructura": "Campaña",
     "subCoor": "Isabel Cristina Hernández López",
@@ -101,6 +103,7 @@ export const fakeModuleAux = [
     "tecnico": "Carlos Eduardo Fernández Pérez"
   },
   {
+    id: "2",
     "name": "Lucía Fernanda Gómez Morales",
     "estructura": "Día E",
     "subCoor": "Raúl Ernesto García Morales",
@@ -108,6 +111,7 @@ export const fakeModuleAux = [
     "tecnico": "María José Sánchez Ruiz"
   },
   {
+    id: "3",
     "name": "Andrés Felipe Martínez Torres",
     "estructura": "Político",
     "subCoor": "Carmen Teresa Martínez Santos",
@@ -115,6 +119,7 @@ export const fakeModuleAux = [
     "tecnico": "José Manuel Pérez Ramírez"
   },
   {
+    id: "4",
     "name": "Valeria Sofía González Ramírez",
     "estructura": "Gubernamental",
     "subCoor": "Gabriel Antonio López Ramírez",
