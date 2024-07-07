@@ -4,30 +4,50 @@ import RoundsCard from "./RoundsCard";
 
 interface Round {
   id: string;
-  status: "activo" | "pausada" | "futuras";
+  name: string;
+  status: "activa" | "pausada" | "noiniciada";
+  pointTypesIDs: string[];
 }
 
-const initialRounds: Round[] = [
-  { id: "1", status: "activo" },
-  // { id: "2", status: "pausada" },
-  { id: "3", status: "futuras" },
-  { id: "4", status: "futuras" },
-  { id: "5", status: "futuras" },
-];
-
 export default function RoundsPage() {
-  const [rounds, setRounds] = useState<Round[]>(initialRounds);
+  const [rounds, setRounds] = useState<Round[]>([]);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const activeRounds = rounds.filter((round) => round.status === "activo");
+    const fetchRounds = async () => {
+      try {
+        const response = await fetch("/dashboard/api/visor/teams/668480d222ca715fe6174dc0/rounds");
+        const data = await response.json();
+        console.log("API response:", data);
+        if (data.code === "OK" && data.data) {
+          // Aplanar los datos recibidos
+          const flattenedRounds = [
+            ...data.data.active,
+            ...data.data.paused,
+            ...data.data.noStarted
+          ];
+          setRounds(flattenedRounds);
+        } else {
+          console.error(data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching rounds:", error);
+      }
+    };
+
+    fetchRounds();
+  }, []);
+
+  useEffect(() => {
+    console.log("Rounds state updated:", rounds);
+    const activeRounds = rounds.filter((round) => round.status === "activa");
     const pausedRounds = rounds.filter((round) => round.status === "pausada");
 
     if (activeRounds.length > 1) {
       setAlertMessage("Sólo puede haber una ronda activa. Ajustando las rondas...");
       const adjustedRounds = rounds.map((round, index) => {
-        if (round.status === "activo" && index > 0) {
-          return { ...round, status: "futuras" };
+        if (round.status === "activa" && index > 0) {
+          return { ...round, status: "noiniciada" };
         }
         return round;
       });
@@ -38,7 +58,7 @@ export default function RoundsPage() {
       setAlertMessage("Sólo puede haber una ronda pausada. Ajustando las rondas...");
       const adjustedRounds = rounds.map((round, index) => {
         if (round.status === "pausada" && index > 0) {
-          return { ...round, status: "futuras" };
+          return { ...round, status: "noiniciada" };
         }
         return round;
       });
@@ -46,9 +66,21 @@ export default function RoundsPage() {
     }
   }, [rounds]);
 
-  const activeRound = rounds.find((round) => round.status === "activo");
+  const handleStatusChange = (id: string, newStatus: "activa" | "pausada" | "noiniciada") => {
+    setRounds((prevRounds) =>
+      prevRounds.map((round) =>
+        round.id === id ? { ...round, status: newStatus } : round
+      )
+    );
+  };
+
+  const activeRound = rounds.find((round) => round.status === "activa");
   const pausedRound = rounds.find((round) => round.status === "pausada");
-  const futureRounds = rounds.filter((round) => round.status === "futuras");
+  const futureRounds = rounds.filter((round) => round.status === "noiniciada");
+
+  console.log("Active Round:", activeRound);
+  console.log("Paused Round:", pausedRound);
+  console.log("Future Rounds:", futureRounds);
 
   return (
     <div className="flex flex-col px-4 gap-8">
@@ -64,7 +96,13 @@ export default function RoundsPage() {
         <div className="flex flex-col gap-4 w-full -mt-4">
           <h1 className="text-3xl">Ronda Activa</h1>
           <div className="w-full">
-            <RoundsCard id={activeRound.id} status={activeRound.status} />
+            <RoundsCard
+              id={activeRound.id}
+              name={activeRound.name}
+              status={activeRound.status}
+              pointTypesIDs={activeRound.pointTypesIDs}
+              onStatusChange={handleStatusChange}
+            />
           </div>
         </div>
       )}
@@ -72,7 +110,13 @@ export default function RoundsPage() {
         <div className="flex flex-col gap-4 w-full">
           <h1 className="text-3xl">Ronda Pausada</h1>
           <div>
-            <RoundsCard id={pausedRound.id} status={pausedRound.status} />
+            <RoundsCard
+              id={pausedRound.id}
+              name={pausedRound.name}
+              status={pausedRound.status}
+              pointTypesIDs={pausedRound.pointTypesIDs}
+              onStatusChange={handleStatusChange}
+            />
           </div>
         </div>
       )}
@@ -86,7 +130,14 @@ export default function RoundsPage() {
             </div>
             <div className="flex flex-col gap-4">
               {futureRounds.map((round) => (
-                <RoundsCard key={round.id} id={round.id} status={round.status} />
+                <RoundsCard
+                  key={round.id}
+                  id={round.id}
+                  name={round.name}
+                  status={round.status}
+                  pointTypesIDs={round.pointTypesIDs}
+                  onStatusChange={handleStatusChange}
+                />
               ))}
             </div>
           </div>

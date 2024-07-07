@@ -4,12 +4,9 @@ import { hasIncompleteFields } from "@/utils";
 import { STATUS_RONDAS } from "@/configs/catalogs/visorCatalog";
 import { Visor_CheckPoint } from "@prisma/client";
 
-
-
-export async function GET( request: NextRequest, { params }: { params: { id: string } } ) {
+// Get rounds by team
+export async function getRoundsByTeam(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-
-
     const { id } = params;
 
     const team = await prisma.visor_Team.findUnique({ where: { id } });
@@ -23,7 +20,7 @@ export async function GET( request: NextRequest, { params }: { params: { id: str
         teamId: id,
         active: true,
         status: { 
-          in: ["activa", "noiniciada", "pausada" ] as typeof STATUS_RONDAS[number]["id"][]
+          in: ["activa", "noiniciada", "pausada"] as typeof STATUS_RONDAS[number]["id"][]
         }
       },
       select: {
@@ -41,7 +38,7 @@ export async function GET( request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ code: "OK", message: "Rounds retrieved successfully", data: rounds });
   } catch (error) {
     console.log(error);
-    return NextResponse.json({ code: "ERROR", message: "An error ocurred" });
+    return NextResponse.json({ code: "ERROR", message: "An error occurred" });
   }
 }
 
