@@ -1,7 +1,7 @@
 
 "use client";
 import { Select, SelectItem, Input, Button } from "@nextui-org/react";
-import { Dispatch, MouseEvent, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Map from "@/components/visor/maps/Map";
 import Marker from "@/components/visor/maps/Marker";
 import PopUp from "@/components/visor/maps/PopUp";
@@ -26,7 +26,7 @@ export default function CreateRoundPage() {
       [
         ...prevPoints,
         {
-          id: (prevPoints.length).toString(),
+          id: crypto.randomUUID(),
           lat: e.latLng!.lat(),
           lng: e.latLng!.lng()
         }
@@ -114,14 +114,12 @@ interface Props {
 function PointDescription({ index, lat, lng, setPoints, points }: Props) {
 
   function handleDeletePoint(i: number) {
-    const newPoints = [...points];
-    // setPoints(prevPoints => ({
-    //   ...prevPoints,
-    // }));
+    const newPoints = [...points].filter((point, index) => index != i);
+    setPoints(newPoints);
   }
 
   return (
-    <div className="flex flex-col w-64 p-4 rounded-md bg-foreground-50">
+    <div className="flex flex-col w-full p-4 rounded-md bg-foreground-50">
       <div className="flex flex-1 justify-between items-center mb-4">
         <span className="text-foreground-700">Punto {index + 1}</span>
         <Button
