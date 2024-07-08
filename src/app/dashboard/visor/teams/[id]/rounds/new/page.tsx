@@ -27,16 +27,30 @@ export default function CreateRoundPage() {
   const { currentUser } = useAuth();
   const { id: teamId } = useParams();
 
+  /*
+    TODO: Solve this
+
+    !Problem with current user.
+
+    Current User is undefinded. So I can´t access to currentUser.id
+    
+    By the way. I tried to make fetch with "66184825fa95c423182a0894", which is
+    an ID that is returned when in AuthContext.jsx:62 as a result of the login
+    in the APP.
+
+    The API route /dashboard/api/visor/teams/${teamId}/rounds response "USER_NOT_FOUND"
+  */
+
   useEffect(() => {
+    console.log(currentUser);
     console.log(currentUser?.id);
-    setForm({ ...form, createdBy: currentUser?.id || "" });
+    setForm({ ...form, createdBy: currentUser?.id || "66184825fa95c423182a0894" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleCreateRound(e: FormEvent) {
+
     e.preventDefault();
-    console.log(formHasEmptyFields());
-    console.log(form);
     if (formHasEmptyFields()) return;
 
     const roundName = form.name;
