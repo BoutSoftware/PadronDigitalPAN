@@ -66,9 +66,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId, technicalId, subCoordinator, municipiosIDs } = await request.json() as Visor_Auxiliaries;
+    const { userId, technicalId, subCoordinatorId, municipioIDs } = await request.json();
 
-    if (hasIncompleteFields({ userId, technicalId, subCoordinator })) {
+    if (hasIncompleteFields({ userId, technicalId, subCoordinatorId })) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
     }
 
@@ -76,8 +76,8 @@ export async function POST(request: NextRequest) {
       data: {
         userId,
         technicalId,
-        subCoordinator,
-        municipiosIDs
+        subCoordinator: subCoordinatorId,
+        municipiosIDs: municipioIDs
       }
     });
 

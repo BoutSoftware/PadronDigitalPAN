@@ -50,19 +50,30 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const estructura = searchParams.get("estructura") as string;
-
-    if (!estructura) {
-      return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
-    }
+    const estructura = searchParams.get("estructura");
 
     const subCooridnadores = await prisma.visor_SubCoordinator.findMany({
       where: {
-        structureId: estructura
+        structureId: estructura || undefined
+      },
+      include: {
+        User: {
+          select: {
+            fullname: true
+          }
+        }
       }
     });
 
-    return NextResponse.json({ code: "OK", message: "Subcoordinators found", data: subCooridnadores });
+    const data = subCooridnadores.map((subCoor) => {
+      return {
+        ...subCoor,
+        fullName: subCoor.User.fullname,
+        User: undefined
+      };
+    });
+
+    return NextResponse.json({ code: "OK", message: "Subcoordinators found", data });
 
   } catch (error) {
     console.log(error);
