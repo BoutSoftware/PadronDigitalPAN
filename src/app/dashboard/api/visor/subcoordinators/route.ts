@@ -61,7 +61,15 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    return NextResponse.json({ code: "OK", message: "Subcoordinators found", data: subCooridnadores });
+    const data = subCooridnadores.map((subCoor) => {
+      return {
+        ...subCoor,
+        fullName: subCoor.User.fullname,
+        User: undefined
+      };
+    });
+
+    return NextResponse.json({ code: "OK", message: "Subcoordinators found", data });
 
   } catch (error) {
     console.log(error);

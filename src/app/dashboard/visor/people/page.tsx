@@ -32,6 +32,7 @@ interface usersInterface {
   }[]
   subs: subCoordinator[]
   auxs: {
+    id: string
     name: string
     estructura: string
     subCoor: string
@@ -202,7 +203,7 @@ export default function Page() {
                 <h2 className="text-xl">Auxiliar de coordinación</h2>
                 <span className="text-zinc-400">{usersFiltered.auxs.length}/{users.auxs.length}</span>
               </div>
-              <ModalAuxCoor action="Agregar" />
+              <ModalAuxCoor />
             </div>
             {
               usersFiltered?.auxs.length > 0 ? (
@@ -216,7 +217,7 @@ export default function Page() {
                           <span className="font-light text-zinc-400 text-sm">Querétaro, Corregidora, El Marqués</span>
                         </div>
                       </div>
-                      <ModalAuxCoor action="Modificar" auxCoordinatorName={aux.name} />
+                      <ModalAuxCoor auxiliary={{ id: aux.id, name: aux.name }} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>
