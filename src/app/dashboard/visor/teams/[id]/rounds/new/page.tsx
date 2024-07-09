@@ -1,13 +1,11 @@
-
 "use client";
 import { Select, SelectItem, Input, Button, Selection } from "@nextui-org/react";
-import { Dispatch, FormEvent, SetStateAction, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { TIPOS_PUNTO } from "@/configs/catalogs/visorCatalog";
 import { useParams } from "next/navigation";
 import Map from "@/components/visor/maps/Map";
-import Marker from "@/components/visor/maps/Marker";
-import PopUp from "@/components/visor/maps/PopUp";
+import Circle from "@/components/visor/maps/Circle";
 
 interface Form {
   name: string
@@ -30,9 +28,9 @@ export default function CreateRoundPage() {
   /*
     TODO: Solve this
 
-    !Problem with current user.
+    !Problem creating round.
 
-    Current User is undefinded. So I can´t access to currentUser.id
+    Current User is undefinded. So I can´t access to currentUser.id (I need it to create a round)
     
     By the way. I tried to make fetch with "66184825fa95c423182a0894", which is
     an ID that is returned when in AuthContext.jsx:62 as a result of the login
@@ -47,6 +45,10 @@ export default function CreateRoundPage() {
     setForm({ ...form, createdBy: currentUser?.id || "66184825fa95c423182a0894" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    console.log(form.checkPoints);
+  }, [form.checkPoints]);
 
   async function handleCreateRound(e: FormEvent) {
 
@@ -81,6 +83,9 @@ export default function CreateRoundPage() {
   }
 
   function handleDeleteCheckPoint(i: number) {
+    // TODO: Make this work
+    // I think this isn´t working because I am retiring the points of the state, but not the points in the MAP.
+
     const newCheckPoints = [...form.checkPoints].filter((point, index) => index != i);
     setForm({ ...form, checkPoints: newCheckPoints });
   }
@@ -161,23 +166,16 @@ export default function CreateRoundPage() {
         className="flex flex-1"
         onClick={handleClick}>
         {
-          form.checkPoints.map(({ id, lat, lng }, index) => (
-            <Marker
-              key={id}
-              position={{ lat, lng }}
-              title={`Punto ${index + 1}`}
-              image={{
-                src: "https://map-visor.vercel.app/api/figures?figure=circulo&color=00000033",
-                width: 30,
-              }}
-
-            >
-              <PopUp>
-                <h3 className="text-lg font-semibold">Punto {index + 1}</h3>
-                <p>Descripción del punto</p>
-              </PopUp>
-            </Marker>
-          ))
+          form.checkPoints.map(({ id, lat, lng }, index) => {
+            console.log(id, lat, lng);
+            return (
+              <Circle
+                key={id}
+                center={{ lat, lng }}
+                radius={5}
+              />
+            );
+          })
         }
       </Map>
     </div>
