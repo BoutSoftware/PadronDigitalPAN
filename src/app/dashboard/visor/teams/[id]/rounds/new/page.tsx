@@ -46,10 +46,6 @@ export default function CreateRoundPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    console.log(form.checkPoints);
-  }, [form.checkPoints]);
-
   async function handleCreateRound(e: FormEvent) {
 
     e.preventDefault();
