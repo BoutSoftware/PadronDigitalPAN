@@ -151,12 +151,12 @@ async function getCoordinatorInfo(visorUserId: string, userContext: UserContext)
   userContext.pointTypesIDs = userInfo.pointTypesIDs;
 }
 
-async function getSubCoordinatorInfo(userId: string, userContext: UserContext) {
+async function getSubCoordinatorInfo(visorUserId: string, userContext: UserContext) {
   const structure = await prisma.visor_SubCoordinator.findFirst({
     where: {
       OR: [
-        { userId: userId },
-        { technicalId: userId },
+        { userId: visorUserId },
+        { technicalId: visorUserId },
       ],
       active: true
     },
@@ -180,12 +180,12 @@ async function getSubCoordinatorInfo(userId: string, userContext: UserContext) {
   userContext.pointTypesIDs = structure.pointTypesIDs;
 }
 
-async function getAuxiliaryInfo(userId: string, userContext: UserContext) {
+async function getAuxiliaryInfo(visorUserId: string, userContext: UserContext) {
   const auxiliary = await prisma.visor_Auxiliaries.findFirst({
     where: {
       OR: [
-        { userId: userId },
-        { technicalId: userId },
+        { userId: visorUserId },
+        { technicalId: visorUserId },
       ],
       active: true
     },
@@ -211,15 +211,15 @@ async function getAuxiliaryInfo(userId: string, userContext: UserContext) {
   };
 }
 
-async function getTeamMemberInfo(userId: string, userContext: UserContext) {
+async function getTeamMemberInfo(visorUserId: string, userContext: UserContext) {
   const userInfo = await prisma.visor_Team.findFirst({
     where: {
       OR: [
-        { linkId: userId },
+        { linkId: visorUserId },
         {
           Caminantes: {
             some: {
-              userId: userId,
+              userId: visorUserId,
               active: true
             }
           }
