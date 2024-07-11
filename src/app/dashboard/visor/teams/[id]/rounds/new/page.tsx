@@ -37,6 +37,19 @@ export default function CreateRoundPage() {
     in the APP.
 
     The API route /dashboard/api/visor/teams/${teamId}/rounds response "USER_NOT_FOUND"
+
+    !Problem removing circles in the map.
+
+    Circles can be drawed in the map. And they also are collected in the form state, the problem
+    is removing their from the map. They do it in the state, but the circles still watching in the map
+
+    This is because, the map conserves the circles. They need to be removed by using circle.setMap(null)
+
+    Something I think can work (i didn´t try it before) is:
+
+    useEffect return a callback, for each circle, we can delete it with circle.setMap(null). So, every
+    time the form.checkpoints change we desmount the state (and execute circle.setMap(null)). And then
+    we draw all the current form.checkpoints
   */
 
   useEffect(() => {
