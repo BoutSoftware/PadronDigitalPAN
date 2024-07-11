@@ -13,10 +13,10 @@ type UserContext = {
   id: string;
   title: visUserTitle;
   isAdmin: boolean;
-  structureId: userStructure;
-  geographicConf: VisGeoConf;
-  pointTypesIDs: string[];
-  teams: team[] | team;
+  structureId?: userStructure;
+  geographicConf?: VisGeoConf;
+  pointTypesIDs?: string[];
+  team?: team;
 }
 
 // isCoordiantorGroup("miTitulo")
@@ -28,7 +28,7 @@ type UserContext = {
 // 
 
 type visUserTitle = typeof TITULOS[number]["id"];
-type userStructure = typeof ESTRUCTURAS[number]["id"] | null;
+type userStructure = typeof ESTRUCTURAS[number]["id"];
 
 const coordinatorTitles: visUserTitle[] = [
   "coordinador",
@@ -53,10 +53,10 @@ const teamMemberTitles: visUserTitle[] = [
 
 export async function POST(request: NextRequest) {
   try {
-    const { id } = await request.json();
-    const user = await prisma.visor_User.findFirst({
+    const { userId } = await request.json();
+    const visorUser = await prisma.visor_User.findFirst({
       where: {
-        userId: id,
+        userId,
         active: true
       },
       select: {
@@ -65,41 +65,38 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    if (!user) {
+    if (!visorUser) {
       return NextResponse.json({ code: "NOT_FOUND", message: "User not found" });
     }
 
     // if title is null is no a define user visor
-    if (user.title === null) {
+    if (visorUser.title === null) {
       return NextResponse.json({ code: "NO_TITLE", message: "User without define role in visor" });
     }
 
     const userContext: UserContext = {
-      id: user.id,
-      title: user.title as visUserTitle,
-      isAdmin: user.title === "admin" as visUserTitle,
-      structureId: null,
-      geographicConf: {
-        geographicLevel: "",
-        values: []
-      },
-      pointTypesIDs: [],
-      teams: []
+      id: visorUser.id,
+      title: visorUser.title as visUserTitle,
+      isAdmin: visorUser.title === "admin" as visUserTitle,
+      structureId: undefined,
+      geographicConf: undefined,
+      pointTypesIDs: undefined,
+      team: undefined
     };
 
-    const userTitle = user.title as visUserTitle;
+    const userTitle = visorUser.title as visUserTitle;
 
     if (coordinatorTitles.includes(userTitle)) {
-      await getCoordinatorInfo(user.id, userContext);
+      await getCoordinatorInfo(visorUser.id, userContext);
     }
     else if (subcoordinatorTitles.includes(userTitle)) {
-      await getSubCoordinatorInfo(user.id, userContext);
+      await getSubCoordinatorInfo(visorUser.id, userContext);
     }
     else if (auxiliarTitles.includes(userTitle)) {
-      await getAuxiliaryInfo(user.id, userContext);
+      await getAuxiliaryInfo(visorUser.id, userContext);
     }
     else if (teamMemberTitles.includes(userTitle)) {
-      await getEnlaceInfo(user.id, userContext);
+      await getTeamMemberInfo(visorUser.id, userContext);
     }
 
     return NextResponse.json({ code: "OK", message: "User context", data: userContext });
@@ -110,13 +107,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function getCoordinatorInfo(userId: string, userContext: UserContext) {
+async function getCoordinatorInfo(visorUserId: string, userContext: UserContext) {
   const structure = await prisma.visor_structureCoordinator.findFirst({
     where: {
       OR: [
-        { visorUserId: userId },
-        { technicalId: userId },
-        { attachId: userId }
+        { visorUserId: visorUserId },
+        { technicalId: visorUserId },
+        { attachId: visorUserId }
       ],
       active: true
     },
@@ -141,18 +138,6 @@ async function getCoordinatorInfo(userId: string, userContext: UserContext) {
         where: {
           active: true
         },
-        include: {
-          Teams: {
-            where: {
-              active: true
-            },
-            select: {
-              id: true,
-              pointTypesIDs: true,
-              geographicConf: true
-            }
-          }
-        }
       }
     }
   });
@@ -161,20 +146,9 @@ async function getCoordinatorInfo(userId: string, userContext: UserContext) {
     return NextResponse.json({ code: "NOT_FOUND", message: "Information user not found" });
   }
 
-  // Add pointTypes, gooConf and teams info
+  // Si no tiene un subcoordinador asignado no tiene tipos de punto asiganados pr lo tanto será undefined
+  //TODO: Definir si se va a enviar como undefined o lista vacia
   userContext.pointTypesIDs = userInfo.pointTypesIDs;
-
-  // Add geographic configuration
-  const municipios = userInfo.Auxiliaries.map(aux => aux.municipiosIDs);
-  const values = municipios.reduce((acc, val) => acc.concat(val), []);
-  userContext.geographicConf = {
-    geographicLevel: "municipios" as typeof CONFIGURACIONES_GEOGRAFICAS[number]["id"],
-    values: Array.from(new Set(values))
-  };
-
-  // Add teams info
-  const teams = userInfo.Auxiliaries.flatMap(aux => aux.Teams);
-  userContext.teams = teams;
 }
 
 async function getSubCoordinatorInfo(userId: string, userContext: UserContext) {
@@ -191,18 +165,6 @@ async function getSubCoordinatorInfo(userId: string, userContext: UserContext) {
         where: {
           active: true
         },
-        include: {
-          Teams: {
-            where: {
-              active: true
-            },
-            select: {
-              id: true,
-              pointTypesIDs: true,
-              geographicConf: true
-            }
-          }
-        }
       }
     }
   });
@@ -214,20 +176,8 @@ async function getSubCoordinatorInfo(userId: string, userContext: UserContext) {
   // Add strcture info to context
   userContext.structureId = structure.structureId as userStructure;
 
-  // Add pointTypes, gooConf and teams info
+  // Add pointTypes
   userContext.pointTypesIDs = structure.pointTypesIDs;
-
-  // Add geographic configuration
-  const municipios = structure.Auxiliaries.map(aux => aux.municipiosIDs);
-  const values = municipios.reduce((acc, val) => acc.concat(val), []);
-  userContext.geographicConf = {
-    geographicLevel: "municipios" as typeof CONFIGURACIONES_GEOGRAFICAS[number]["id"],
-    values: Array.from(new Set(values))
-  };
-
-  // Add teams info
-  const teams = structure.Auxiliaries.flatMap(aux => aux.Teams);
-  userContext.teams = teams;
 }
 
 async function getAuxiliaryInfo(userId: string, userContext: UserContext) {
@@ -240,16 +190,6 @@ async function getAuxiliaryInfo(userId: string, userContext: UserContext) {
       active: true
     },
     include: {
-      Teams: {
-        where: {
-          active: true
-        },
-        select: {
-          id: true,
-          pointTypesIDs: true,
-          geographicConf: true
-        }
-      },
       SubCoordinator: true
     }
   });
@@ -269,12 +209,9 @@ async function getAuxiliaryInfo(userId: string, userContext: UserContext) {
     geographicLevel: "municipios" as typeof CONFIGURACIONES_GEOGRAFICAS[number]["id"],
     values: auxiliary.municipiosIDs
   };
-
-  // Add teams info
-  userContext.teams = auxiliary.Teams;
 }
 
-async function getEnlaceInfo(userId: string, userContext: UserContext) {
+async function getTeamMemberInfo(userId: string, userContext: UserContext) {
   const userInfo = await prisma.visor_Team.findFirst({
     where: {
       OR: [
@@ -316,7 +253,7 @@ async function getEnlaceInfo(userId: string, userContext: UserContext) {
   userContext.geographicConf = userInfo.geographicConf;
 
   // Add info only their team
-  userContext.teams = {
+  userContext.team = {
     id: userInfo.id,
     pointTypesIDs: userInfo.pointTypesIDs,
     geographicConf: userInfo.geographicConf
