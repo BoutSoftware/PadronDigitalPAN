@@ -41,7 +41,6 @@ export default function Circle({ center, children, fillColor, fillOpacity, radiu
       strokeOpacity: strokeOpacity,
       strokePosition: strokePosition,
       strokeWeight: strokeWeight,
-      map: map
     });
 
     setCircle(circle);
@@ -51,9 +50,17 @@ export default function Circle({ center, children, fillColor, fillOpacity, radiu
     if (!circle) return;
 
     circle.setCenter(center);
-    // If circles are or will be editable. Then add all the props to
-    // the dependences of the useEffect(). 
-  }, [center]);
+  }, [center, circle]);
+
+  useEffect(() => {
+    if (!circle) return;
+
+    circle.setMap(map);
+
+    return () => {
+      circle.setMap(null);
+    };
+  }, [circle, map]);
 
   return (
     <circleContext.Provider value={{ circle: circle }}>

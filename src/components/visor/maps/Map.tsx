@@ -51,6 +51,7 @@ export default function Map({
         mapTypeControl: false,
         streetViewControl: false
       });
+
       initListeners(myMap);
       setLoader(loader);
       setMap(myMap);
