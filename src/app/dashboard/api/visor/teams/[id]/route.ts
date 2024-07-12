@@ -105,7 +105,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
   try {
 
     const id = params.id;
-    const team = await prisma.visor_Team.findUnique({ where: { id } });
+    const team = await prisma.visor_Team.findUnique({ where: { id, active: true } });
     
     if (!team) {
       return NextResponse.json({ code: "NOT_FOUND", message: "Team not found" });
@@ -115,7 +115,8 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       where: {
         Caminantes: {
           some: {
-            teamId: id
+            teamId: id,
+            active: true
           }
         }
       },
@@ -137,6 +138,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
           updateMany: {
             where: {
               teamId: id,
+              active: true
             },
             data: {
               active: false,
@@ -147,6 +149,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
           updateMany: {
             where: {
               teamId: id,
+              active: true
             },
             data: {
               active: false,
@@ -157,6 +160,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
           updateMany: {
             where: {
               teamId: id,
+              active: true
             },
             data: {
               active: false,
