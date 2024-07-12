@@ -142,6 +142,26 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
               active: false,
             }
           }
+        },
+        Rounds: {
+          updateMany: {
+            where: {
+              teamId: id,
+            },
+            data: {
+              active: false,
+            }
+          }
+        },
+        Batchs: {
+          updateMany: {
+            where: {
+              teamId: id,
+            },
+            data: {
+              active: false,
+            }
+          }
         }
       },
     });
