@@ -25,10 +25,19 @@ export function PointType({ team, teamId, loadTeam }: Props) {
   // TODO: End this
 
   useEffect(() => {
-    const initialKeys: Selection = new Set(team.TiposPunto.map(pointType => pointType.id));
+    const keys: Selection = new Set(team.TiposPunto.map(pointType => pointType.id));
+    setPointTypeKeys(keys);
+  }, [team.TiposPunto]);
 
-    setPointTypeKeys(initialKeys);
-  }, []);
+  async function handleRemovePoint(id: string) {
+    console.log("id: ", id);
+    const pointIdArray: string[] = Array.from(pointTypeKeys).map(key => key.toString()).filter(key => key !== id);
+
+    const resBody = await modifyPointType(pointIdArray);
+    if (resBody.code !== "OK") {
+      alert(resBody.message);
+    }
+  }
 
   async function handlePointTypeValue(keys: Selection) {
     console.log(keys);
@@ -36,7 +45,6 @@ export function PointType({ team, teamId, loadTeam }: Props) {
 
     const resBody = await modifyPointType(pointIdArray);
     if (!resBody) return;
-
 
     setPointTypeKeys(keys);
   }
@@ -89,7 +97,7 @@ export function PointType({ team, teamId, loadTeam }: Props) {
           team?.TiposPunto.map(({ id, nombre }) => (
             <div key={id} className="flex justify-between items-center">
               <span>{nombre}</span>
-              <Button>Quitar</Button>
+              <Button onPress={() => handleRemovePoint(id)}>Quitar</Button>
             </div>
           ))
         }
