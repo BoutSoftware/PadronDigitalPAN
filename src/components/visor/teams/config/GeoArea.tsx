@@ -1,20 +1,21 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Key } from "react";
 import { CONFIGURACIONES_GEOGRAFICAS } from "@/configs/catalogs/visorCatalog";
 import { TeamInterface } from "@/utils/VisorInterfaces";
 import {
-  Autocomplete,
-  AutocompleteItem,
   Button,
+  Checkbox,
+  CheckboxGroup,
   Divider,
+  Input,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   Select,
+  Selection,
   SelectItem,
-  Selection
 } from "@nextui-org/react";
 
 interface GeographicValues {
@@ -38,20 +39,17 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [geographicValues, setGeographicValues] = useState<GeographicValues>({ values: [], selectedValues: [] });
   const [geoLevelKey, setGeoLevelKey] = useState<Selection>(new Set([team.geographicConf.geographicLevel.id]));
+  const [valueSearched, setValueSearched] = useState("");
+  const [geographicValuesIds, setGeographicValuesIds] = useState<string[]>(team.geographicConf.values.map(val => val.id));
 
   useEffect(() => {
     getGeographicValues();
   }, []);
 
-  useEffect(() => {
-    console.log(geographicValues);
-  }, [geographicValues]);
-
   async function handleSubmit() {
     const geographicLevelId = Array.from(geoLevelKey)[0];
-    const geographicValuesId = geographicValues.selectedValues.map(selectedValue => selectedValue.id);
 
-    const modifiedData = await updateTeamGeographicConfig(geographicLevelId.toString(), geographicValuesId);
+    const modifiedData = await updateTeamGeographicConfig(geographicLevelId.toString(), geographicValuesIds);
     if (!modifiedData) return;
 
     await loadTeam();
@@ -69,6 +67,13 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
     const newGeographicValues = await getGeographicLevelValues(newGeographicLevelId.toString(), municipios);
     if (!newGeographicValues) return;
 
+    if (newGeographicLevelId == team.geographicConf.geographicLevel.id) {
+      setGeographicValuesIds(team.geographicConf.values.map(val => val.id));
+    } else {
+      setGeographicValuesIds([]);
+    }
+
+    setValueSearched("");
     setGeoLevelKey(key);
     setGeographicValues({ ...geographicValues, values: newGeographicValues, selectedValues: [] });
   }
@@ -109,21 +114,9 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
     })
       .then(res => res.json())
       .catch(err => console.error(err));
-
+    console.log(resBody);
     if (resBody.code !== "OK") return;
 
-    return resBody.data;
-  }
-
-
-  async function getTeamInfo() {
-    const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}`)
-      .then(res => res.json())
-      .catch(err => console.error(err));
-    if (resBody.code !== "OK") {
-      console.error(resBody.message);
-      return;
-    }
     return resBody.data;
   }
 
@@ -134,70 +127,37 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
         <h2 className="text-2xl">Área geográfica</h2>
         <Button onPress={() => setIsModalOpen(true)}>Modificar área geográfica</Button>
 
-        <Modal isOpen={isModalOpen} size="5xl">
+        <Modal isOpen={isModalOpen}>
           <ModalContent>
             <ModalHeader>
               Modificando área geográfica
             </ModalHeader>
             <ModalBody>
-              <div className="flex gap-4">
-                <div className="flex flex-col gap-4">
-                  <Select
-                    label="Selecciona un nivel geográfico"
-                    selectedKeys={geoLevelKey}
-                    onSelectionChange={handleGeographicLevelChange}
-                    selectionMode="single"
-                  >
-                    {
-                      CONFIGURACIONES_GEOGRAFICAS.map(conf => <SelectItem key={conf.id}>{conf.nombre}</SelectItem>)
-                    }
-                  </Select>
-                  <Autocomplete
-                    label="Agrega valores"
-                    shouldCloseOnBlur
-                    menuTrigger="input"
-                    defaultItems={geographicValues.values}
-                    disabledKeys={geographicValues.selectedValues.map(val => val.id)}
-                  >
-                    {
-                      ((item) => (
-                        <AutocompleteItem
-                          key={item.id}
-                          onPress={() => setGeographicValues(previousValues => ({
-                            ...previousValues,
-                            selectedValues: [...geographicValues.selectedValues, item]
-                          }))}
-                        >
-                          {item.name}
-                        </AutocompleteItem>
-                      ))
-                    }
-                  </Autocomplete>
-                </div>
-                <div className="flex flex-col flex-1 max-h-[400px] overflow-auto">
-                  <h4 className="text-xl text-foreground-700">Valores actuales</h4>
+              <div className="flex flex-col gap-4">
+                <Select
+                  label="Selecciona un nivel geográfico"
+                  selectedKeys={geoLevelKey}
+                  onSelectionChange={handleGeographicLevelChange}
+                  selectionMode="single"
+                >
                   {
-                    geographicValues.selectedValues.map((selectedValue, index) => (
-                      <React.Fragment key={selectedValue.id}>
-                        <div className="flex justify-between items-center w-full p-4">
-                          <span>{selectedValue.name}</span>
-                          <Button
-                            size="sm"
-                            radius="full"
-                            variant="light"
-                            isIconOnly
-                            onPress={() => setGeographicValues({
-                              ...geographicValues,
-                              selectedValues: geographicValues.selectedValues.filter(val => val.id != selectedValue.id)
-                            })}>
-                            <span className="material-symbols-outlined">close</span>
-                          </Button>
-                        </div>
-                        {(index + 1) !== geographicValues.selectedValues.length && <Divider />}
-                      </React.Fragment>
-                    ))
+                    CONFIGURACIONES_GEOGRAFICAS.map(conf => <SelectItem key={conf.id}>{conf.nombre}</SelectItem>)
                   }
-                </div>
+                </Select>
+                <Input
+                  label="Valor geográfico"
+                  placeholder="Busca un valor geográfico"
+                  value={valueSearched}
+                  onValueChange={setValueSearched}
+                />
+                <CheckboxGroup
+                  label="Valores geográficos"
+                  value={geographicValuesIds}
+                  onValueChange={setGeographicValuesIds}
+                  className="min-h-[150px] max-h-[250px] overflow-auto"
+                >
+                  {geographicValues.values.filter((val) => val.name.toUpperCase().includes(valueSearched.toUpperCase())).map(({ id, name }) => <Checkbox key={id} value={id}>{name}</Checkbox>)}
+                </CheckboxGroup>
               </div>
             </ModalBody>
             <ModalFooter>
