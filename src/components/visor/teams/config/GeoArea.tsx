@@ -37,11 +37,42 @@ interface Props {
 export function GeoArea({ team, loadTeam, teamId }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [geographicValues, setGeographicValues] = useState<GeographicValues>({ values: [], selectedValues: [] });
-  const [geoLevelKey, setGeoLevelKey] = useState<Selection>(new Set(""));
+  const [geoLevelKey, setGeoLevelKey] = useState<Selection>(new Set([team.geographicConf.geographicLevel.id]));
 
   useEffect(() => {
     getGeographicValues();
   }, []);
+
+  useEffect(() => {
+    console.log(geographicValues);
+  }, [geographicValues]);
+
+  async function handleSubmit() {
+    const geographicLevelId = Array.from(geoLevelKey)[0];
+    const geographicValuesId = geographicValues.selectedValues.map(selectedValue => selectedValue.id);
+
+    const modifiedData = await updateTeamGeographicConfig(geographicLevelId.toString(), geographicValuesId);
+    if (!modifiedData) return;
+
+    await loadTeam();
+    setIsModalOpen(false);
+  }
+
+
+  async function handleGeographicLevelChange(key: Selection) {
+    const newGeographicLevelId = Array.from(key)[0];
+    if (!newGeographicLevelId) return;
+
+    const municipios = team?.Auxiliary.municipios;
+    if (!municipios) return;
+
+    const newGeographicValues = await getGeographicLevelValues(newGeographicLevelId.toString(), municipios);
+    if (!newGeographicValues) return;
+
+    setGeoLevelKey(key);
+    setGeographicValues({ ...geographicValues, values: newGeographicValues, selectedValues: [] });
+  }
+
 
   async function getGeographicValues() {
     const geoLevelId: string = team.geographicConf.geographicLevel.id;
@@ -54,6 +85,7 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
       });
     }
   }
+
 
   async function getGeographicLevelValues(geographicLevelId: string, municipios: string[]): Promise<void | { id: string, name: string }[]> {
     const params = `geographicLevel=${geographicLevelId}&municipios=${municipios.join(",")}`;
@@ -68,32 +100,8 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
     return resBody.data;
   }
 
-  async function handleModifyGeoConfig() {
-    const geographicLevelId = Array.from(geoLevelKey)[0];
-    const geographicValuesId = geographicValues.selectedValues.map(selectedValue => selectedValue.id);
 
-    const modifiedData = await modifyGeoConfig(geographicLevelId.toString(), geographicValuesId);
-    if (!modifiedData) return;
-
-    await loadTeam();
-    setIsModalOpen(false);
-  }
-
-  async function handleGeographicValueChange(key: Selection) {
-    const geographicLevelId = Array.from(key)[0];
-    if (!geographicLevelId) return;
-
-    const municipios = team?.Auxiliary.municipios;
-    if (!municipios) return;
-
-    const newGeographicValues = await getGeographicLevelValues(geographicLevelId.toString(), municipios);
-    if (!newGeographicValues) return;
-
-    setGeoLevelKey(key);
-    setGeographicValues({ ...geographicValues, values: newGeographicValues });
-  }
-
-  async function modifyGeoConfig(geoLevel: string, geoValues: string[]) {
+  async function updateTeamGeographicConfig(geoLevel: string, geoValues: string[]) {
     const reqBody = { geographicLevel: geoLevel, values: geoValues };
     const resBody = await fetch("/dashboard/api/visor/teams/667ef0fe356c04cf3b02af11/geoConf", {
       method: "PUT",
@@ -107,6 +115,7 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
     return resBody.data;
   }
 
+
   async function getTeamInfo() {
     const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}`)
       .then(res => res.json())
@@ -117,6 +126,7 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
     }
     return resBody.data;
   }
+
 
   return (
     <div className="flex flex-col gap-2">
@@ -135,7 +145,7 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
                   <Select
                     label="Selecciona un nivel geográfico"
                     selectedKeys={geoLevelKey}
-                    onSelectionChange={handleGeographicValueChange}
+                    onSelectionChange={handleGeographicLevelChange}
                     selectionMode="single"
                   >
                     {
@@ -153,10 +163,10 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
                       ((item) => (
                         <AutocompleteItem
                           key={item.id}
-                          onPress={() => setGeographicValues({
-                            ...geographicValues,
+                          onPress={() => setGeographicValues(previousValues => ({
+                            ...previousValues,
                             selectedValues: [...geographicValues.selectedValues, item]
-                          })}
+                          }))}
                         >
                           {item.name}
                         </AutocompleteItem>
@@ -192,7 +202,7 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
             </ModalBody>
             <ModalFooter>
               <Button color="danger" onPress={() => setIsModalOpen(false)}>Cancelar</Button>
-              <Button color="primary" onPress={handleModifyGeoConfig}>Modificar</Button>
+              <Button color="primary" onPress={handleSubmit}>Modificar</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
