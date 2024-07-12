@@ -67,7 +67,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const formatedTeam = {
       ...team,
       Caminantes: team?.Caminantes?.map((caminante) => ({
-        id: id,
+        id: caminante.id,
         name: caminante.User.fullname,
         active: caminante.active
       })),

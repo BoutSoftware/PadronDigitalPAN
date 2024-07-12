@@ -33,7 +33,7 @@ export default function Page() {
 
 
   return (
-    <div className="p-4 flex gap-4">
+    <div className="p-4 px-8 flex gap-8">
 
       <div className="flex flex-col flex-1 gap-4">
 
