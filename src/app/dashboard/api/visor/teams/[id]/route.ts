@@ -153,6 +153,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
             },
             data: {
               active: false,
+              status: "terminada"
             }
           }
         },
@@ -160,7 +161,8 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
           updateMany: {
             where: {
               teamId: id,
-              active: true
+              active: true,
+              // TODO: Create status of batch in catalog and update bd
             },
             data: {
               active: false,
