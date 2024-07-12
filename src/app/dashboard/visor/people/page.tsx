@@ -13,6 +13,7 @@ interface admin {
   name: string
 }
 interface subCoordinator {
+  id: string
   name: string
   estructura: string
   tecnico: string
@@ -65,7 +66,7 @@ export default function Page() {
     const body = await response.json();
     return (body.data as Visor_User[]);
   };
-  
+
   const getTechnicals = async (onlyFree?: boolean) => {
     const url = onlyFree ? `/dashboard/api/visor/technicals?onlyFree=${onlyFree}` : "/dashboard/api/visor/technicals";
     const response = await fetch(url);
@@ -187,7 +188,7 @@ export default function Page() {
                           <span className="font-light text-zinc-400 text-sm">3 Tipos de puntos asignados</span>
                         </div>
                       </div>
-                      <ModalSubCoor subCoordinatorName={sub.name} />
+                      <ModalSubCoor subCoordinatorId={sub.id} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>

@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 
 interface ModalSubCoorProps {
   subCoordinatorId?: string;
-  subCoordinatorName?: string;
 }
 
 interface values {
@@ -17,9 +16,11 @@ interface values {
   pointTypes: string[]
 }
 
-export default function ModalSubCoor({ subCoordinatorId, subCoordinatorName }: ModalSubCoorProps) {
-  const isModifying = !!subCoordinatorName;
+export default function ModalSubCoor({ subCoordinatorId }: ModalSubCoorProps) {
+  const isModifying = !!subCoordinatorId;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [subCoordinators, setSubCoordinators] = useState<Visor_User[]>([]);
+  const [Technicals, setTechnicals] = useState<Visor_User[]>([]);
   const [formValues, setFormValues] = useState<values>({
     subCoor: "",
     struct: "",
@@ -27,39 +28,35 @@ export default function ModalSubCoor({ subCoordinatorId, subCoordinatorName }: M
     pointTypes: [],
   });
 
+  const getSubCoors = async () => {
+    const resBody = await fetch("/dashboard/api/visor/coordinators?onlyFree=true").then(res => res.json());
 
-  const [subCoordinators, setsubCoordinators] = useState<Visor_User[]>([]);
-  const [Technicals, setTechnicals] = useState<Visor_User[]>([]);
+    if (resBody.code !== "OK") {
+      console.log(resBody);
+      alert("Error al obtener Coordinadores");
+      return;
+    }
 
-  const getSubCoors = async (onlyFree?: boolean) => {
-    const url = onlyFree ? `/dashboard/api/visor/coordinators?onlyFree=${onlyFree}` : "/dashboard/api/visor/coordinators";
-    const response = await fetch(url);
-    const body = await response.json();
-    return (body.data as Visor_User[]);
+    setSubCoordinators(resBody.data);
   };
 
-  const getTechnicals = async (onlyFree?: boolean) => {
-    const url = onlyFree ? `/dashboard/api/visor/technicals?onlyFree=${onlyFree}` : "/dashboard/api/visor/technicals";
-    const response = await fetch(url);
-    const body = await response.json();
-    return (body.data as Visor_User[]);
+  const getTechnicals = async () => {
+    const resBody = await fetch("/dashboard/api/visor/technicals?onlyFree=true").then(res => res.json());
+
+    if (resBody.code !== "OK")
+      return alert("Error al obtener Tecnicos");
+
+    setTechnicals(resBody.data);
   };
 
   const getSubCoordData = async () => {
-    const subCoordinator = await (await fetch(`/dashboard/api/visor/subcoordinators/${subCoordinatorId}`)).json();
-    return (subCoordinator.data as resBody_getSubcoordinatorid);
-  };
+    const resBody = await (await fetch(`/dashboard/api/visor/subcoordinators/${subCoordinatorId}`)).json();
 
-  const getData = async () => {
-    const subCoordinators = await getSubCoors(true);
-    const Technicals = await getTechnicals(true);
-    setsubCoordinators(subCoordinators);
-    setTechnicals(Technicals);
-  };
+    if (resBody.code !== "OK")
+      return alert("Error al obtener el Coordinador");
 
-  const setData = async () => {
-    await getData();
-    const subCoordinator = await getSubCoordData();
+    const subCoordinator = resBody.data;
+
     setFormValues({
       subCoor: subCoordinator.id,
       struct: subCoordinator.structureId,
@@ -67,23 +64,35 @@ export default function ModalSubCoor({ subCoordinatorId, subCoordinatorName }: M
       pointTypes: subCoordinator.pointTypesIDs
     });
 
-    // add subCoordinator.technicalId to Technicals
-    setTechnicals([...Technicals, subCoordinator.Technical]);
+    setSubCoordinators(prev => [
+      ...prev,
+      {
+        ...subCoordinator,
+        id: subCoordinatorId,
+        fullname: subCoordinator.fullName,
+      }
+    ]);
+
+    setTechnicals(prev => [
+      ...prev,
+      {
+        ...subCoordinator.Technical,
+        id: subCoordinator.Technical.id,
+        name: subCoordinator.Technical.fullname,
+      }
+    ]);
   };
 
   useEffect(() => {
+    if (isModalOpen) {
+      getSubCoors();
+      getTechnicals();
 
-    if (!isModifying) {
-      getData();
-
+      if (isModifying) {
+        getSubCoordData();
+      }
     }
-
-    if (isModifying) {
-      setData();
-    }
-
-
-  }, []);
+  }, [isModalOpen, isModifying]);
 
   const handleSubmit = async () => {
 
@@ -114,20 +123,23 @@ export default function ModalSubCoor({ subCoordinatorId, subCoordinatorName }: M
         technicalId: "",
         pointTypes: []
       });
-      setIsModalOpen(false);
+
+      handleClose();
     } else {
       alert("Error al agregar el subcoordinador");
     }
-
-    getData();
-
   };
 
-  useEffect(() => {
-    console.log(formValues);
-    // console.log(Technicals);
+  const handleClose = () => {
+    setIsModalOpen(false);
 
-  }, [formValues]);
+    setFormValues({
+      subCoor: "",
+      struct: "",
+      technicalId: "",
+      pointTypes: [],
+    });
+  };
 
   return (
     <>
@@ -138,7 +150,7 @@ export default function ModalSubCoor({ subCoordinatorId, subCoordinatorName }: M
           variant={!isModifying ? "solid" : "light"}
         >{isModifying ? "Modificar" : "Agregar"}</Button>
 
-        <Modal size="lg" isOpen={isModalOpen} onOpenChange={() => setIsModalOpen(!isModalOpen)}>
+        <Modal size="lg" isOpen={isModalOpen} onClose={handleClose}>
           <ModalContent>
             <ModalHeader>
               <h3>{isModifying ? "Modificar" : "Agregar"} Subcoordinador</h3>
@@ -150,19 +162,13 @@ export default function ModalSubCoor({ subCoordinatorId, subCoordinatorName }: M
                 onChange={(e) => {
                   setFormValues({ ...formValues, subCoor: e.target.value });
                 }}
-                value={formValues.subCoor}
-                defaultSelectedKey={formValues.subCoor}
-                isDisabled={isModifying}
-                isRequired>
-                {
-                  isModifying ? (
-                    <AutocompleteItem key={subCoordinatorId!}>{subCoordinatorName}</AutocompleteItem>
-                  ) : (
-                    subCoordinators.map((subCoor) => (
-                      <AutocompleteItem key={subCoor.id}>{subCoor.fullname}</AutocompleteItem>
-                    ))
-                  )
-                }
+                selectedKey={formValues.subCoor}
+                // isDisabled={isModifying}
+                isRequired
+              >
+                {subCoordinators.map((subCoor) => (
+                  <AutocompleteItem key={subCoor.id}>{subCoor.fullname}</AutocompleteItem>
+                ))}
               </Autocomplete>
               <Select
                 label="Estructura"
@@ -170,7 +176,7 @@ export default function ModalSubCoor({ subCoordinatorId, subCoordinatorName }: M
                 onChange={(e) => {
                   setFormValues({ ...formValues, struct: e.target.value, pointTypes: [] });
                 }}
-                selectedKeys={[formValues.struct]}
+                selectedKeys={formValues.struct ? [formValues.struct] : []}
                 isRequired>
                 {
                   ESTRUCTURAS.map((struct) => (

@@ -71,7 +71,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   try {
     const id = params.id;
 
-    const subcoordinator = await prisma.visor_SubCoordinator.findFirst({ 
+    const subcoordinator = await prisma.visor_SubCoordinator.findFirst({
       where: { id },
       select: {
         id: true,
@@ -87,16 +87,22 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             createdAt: true,
             userId: true
           }
+        },
+        User: {
+          select: {
+            fullname: true
+          }
         }
-      } 
+      }
     });
 
     if (!subcoordinator) {
       return NextResponse.json({ code: "NOT_FOUND", message: "Subcoordinator not found" });
     }
 
-    const formattedData: resBody_getSubcoordinatorid = {
+    const formattedData = {
       id: subcoordinator.id,
+      fullName: subcoordinator.User.fullname,
       pointTypesIDs: subcoordinator.pointTypesIDs,
       structureId: subcoordinator.structureId,
       Technical: {
