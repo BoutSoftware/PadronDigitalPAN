@@ -20,7 +20,8 @@ export interface TeamInterface {
         id: string
         active: boolean
         name: string
-        municipios: string[]
+        municipios: string[],
+        pointTypes: string[]
     }
     TiposPunto: {
         id: string

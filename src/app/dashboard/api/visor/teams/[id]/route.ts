@@ -39,7 +39,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             },
             SubCoordinator: {
               select: {
-                structureId: true
+                structureId: true,
+                pointTypesIDs: true
               }
             }
           }
@@ -52,6 +53,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       geographicLevel: CONFIGURACIONES_GEOGRAFICAS.find((val) => val.id === geoLevel)!,
       values: [] as { id: string, name: string }[],
     };
+
     if (geoLevel === "colonias") {
       geographicConf.values = (await prisma.colonia.findMany({ where: { id: { in: team?.geographicConf.values } } })).map((val) => ({ id: val.id, name: val.name }));
     } else if (geoLevel === "delegaciones") {
@@ -81,6 +83,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         active: team?.Auxiliary?.active,
         name: team?.Auxiliary?.User.fullname,
         municipios: team?.Auxiliary.municipiosIDs,
+        pointTypes: team?.Auxiliary.SubCoordinator.pointTypesIDs
       },
       Structure: team?.Auxiliary.SubCoordinator.structureId ? ESTRUCTURAS.find((s) => s.id === team?.Auxiliary.SubCoordinator.structureId) : null,
       ...(team?.pointTypesIDs && { TiposPunto: getTipoPuntos(team?.pointTypesIDs) }),

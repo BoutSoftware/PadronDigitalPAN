@@ -20,7 +20,6 @@ interface Props {
 
 export function PointType({ team, teamId, loadTeam }: Props) {
   const [pointTypeKeys, setPointTypeKeys] = useState<Selection>(new Set());
-  const [currentAuxiliary, setCurrentAuxiliary] = useState<{ pointTypeIDs: string[] }>();
 
   useEffect(() => {
     const keys: Selection = new Set(team.TiposPunto.map(pointType => pointType.id));
@@ -63,18 +62,6 @@ export function PointType({ team, teamId, loadTeam }: Props) {
     return resBody;
   }
 
-  async function getAuxiliaryDetails(auxId: string) {
-    const resBody = await fetch(`/dashboard/api/visor/auxiliaries/${auxId}`)
-      .then(res => res.json())
-      .catch(console.log);
-
-    setCurrentAuxiliary(resBody.data);
-  }
-
-  useEffect(() => {
-    getAuxiliaryDetails(team.Auxiliary.id);
-  }, []);
-
   return (
     <div className="flex flex-col gap-2">
       <div className="justify-between flex">
@@ -91,7 +78,7 @@ export function PointType({ team, teamId, loadTeam }: Props) {
             selectedKeys={pointTypeKeys}
             selectionMode="multiple"
             onSelectionChange={(keys) => handlePointTypeValue(keys)}>
-            {TIPOS_PUNTO.filter((pointType) => pointType.estructuraId === team.Structure.id && currentAuxiliary?.pointTypeIDs.includes(pointType.id)).map((pointType) => (
+            {TIPOS_PUNTO.filter((pointType) => pointType.estructuraId === team.Structure.id && team.Auxiliary.pointTypes.includes(pointType.id)).map((pointType) => (
               <DropdownItem key={pointType.id} value={pointType.id}>
                 {pointType.nombre}
               </DropdownItem>
