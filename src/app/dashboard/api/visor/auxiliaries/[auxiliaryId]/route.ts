@@ -53,7 +53,7 @@ export async function GET(request: NextRequest, { params }: { params: { auxiliar
     const currentAuxiliary = await prisma.visor_Auxiliaries.findFirst({
       where: { id: auxiliaryId },
       include: {
-        SubCoordinator: { select: { structureId: true } },
+        SubCoordinator: { select: { structureId: true, pointTypesIDs: true } },
         Technical: { select: { fullname: true, id: true } },
         User: { select: { fullname: true } }
       }
@@ -64,7 +64,8 @@ export async function GET(request: NextRequest, { params }: { params: { auxiliar
       structureId: currentAuxiliary?.SubCoordinator.structureId,
       SubCoordinator: undefined,
       technical: currentAuxiliary?.Technical,
-      fullName: currentAuxiliary?.User.fullname
+      fullName: currentAuxiliary?.User.fullname,
+      pointTypeIDs: currentAuxiliary?.SubCoordinator.pointTypesIDs
     };
 
     return NextResponse.json({ code: "OK", message: "Auxiliary retrieved successfully", data });
