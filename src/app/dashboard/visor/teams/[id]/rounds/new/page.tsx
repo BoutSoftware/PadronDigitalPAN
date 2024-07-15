@@ -2,6 +2,7 @@
 import { Select, SelectItem, Input, Button, Selection } from "@nextui-org/react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 import { TIPOS_PUNTO } from "@/configs/catalogs/visorCatalog";
 import { useParams } from "next/navigation";
 import Map from "@/components/visor/maps/Map";
@@ -22,6 +23,7 @@ export default function CreateRoundPage() {
   const { currentVisorUser } = useMemo(() => ({ currentVisorUser: { id: "667cf40fc7f3a7341dd3989b", team: { structureId: "territorial" } } }), []); // TODO: Implement with the right context
   const [form, setForm] = useState<Form>({ name: "", checkPoints: [], createdBy: "", pointTypesKeys: new Set([]) });
   const { id: teamId } = useParams();
+  const router = useRouter();
 
   useEffect(() => {
     if (!currentVisorUser) return;
@@ -44,7 +46,7 @@ export default function CreateRoundPage() {
     if (resBody.code !== "OK")
       return alert("Hubo un problema al crear la Ronda");
 
-    // TODO: Router Push a /rounds
+    router.push(`/dashboard/visor/teams/${teamId}/rounds`);
   }
 
   async function createRound(name: string, createdById: string, checkPoints: { latitude: number, longitude: number }[], pointTypesIDs: string[]) {
@@ -59,9 +61,6 @@ export default function CreateRoundPage() {
   }
 
   function handleDeleteCheckPoint(i: number) {
-    // TODO: Make this work
-    // I think this isn´t working because I am retiring the points of the state, but not the points in the MAP.
-
     const newCheckPoints = [...form.checkPoints].filter((point, index) => index != i);
     setForm({ ...form, checkPoints: newCheckPoints });
   }
