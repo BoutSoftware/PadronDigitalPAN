@@ -106,6 +106,12 @@ export const TIPOS_PUNTO: TiposPunto[] = [
     nombre: "Encuestas",
     icon: "inocoEncuesta",
     estructuraId: "politica"
+  },
+  {
+    id: "rondas",
+    nombre: "Rondas",
+    icon: "iconoRonda",
+    estructuraId: "gobierno"
   }
 ];
 

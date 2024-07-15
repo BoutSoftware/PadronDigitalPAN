@@ -48,52 +48,39 @@ export const fakeStructCoors = [
 
 export const fakeModuleSubCoor = [
   {
-    "name": "Gabriel Antonio López Ramírez",
+    id: "667cfddd2c59d249686e598d",
+    "name": "SubCoordinador 1",
     "estructura": "Gubernamental",
     "tecnico": "José Manuel Fernández Pérez",
     "tipoPunto": ["Logística", "Finanzas"]
   },
   {
+    id: "667cfddd2c59d249686e598d",
     "name": "Marta Lucía Torres González",
     "estructura": "Campaña",
     "tecnico": "Luis Alberto Hernández Jiménez",
     "tipoPunto": ["Comunicación", "Publicidad"]
   },
   {
+    id: "667cfddd2c59d249686e598d",
     "name": "Raúl Ernesto García Morales",
     "estructura": "Día E",
     "tecnico": "Ana Patricia Rodríguez Martínez",
     "tipoPunto": ["Organización", "Voluntariado"]
   },
-  {
-    "name": "Carmen Teresa Martínez Santos",
-    "estructura": "Político",
-    "tecnico": "Francisco Javier Pérez Ruiz",
-    "tipoPunto": ["Estrategia", "Análisis"]
-  },
-  {
-    "name": "Alejandro Luis Gómez Fernández",
-    "estructura": "Gubernamental",
-    "tecnico": "María José González Ramírez",
-    "tipoPunto": ["Legal", "Finanzas"]
-  },
-  {
-    "name": "Isabel Cristina Hernández López",
-    "estructura": "Campaña",
-    "tecnico": "Roberto Carlos Sánchez Pérez",
-    "tipoPunto": ["Logística", "Publicidad"]
-  }
 ];
 
 export const fakeModuleAux = [
   {
-    "name": "Sofía Beatriz Torres Jiménez",
+    id: "667cff822c59d249686e598e",
+    "name": "Noel",
     "estructura": "Gubernamental",
     "subCoor": "Alejandro Luis Gómez Fernández",
     "municipios": ["Ciudad de México", "Naucalpan", "Toluca"],
     "tecnico": "Laura Patricia Hernández García"
   },
   {
+    id: "1",
     "name": "Diego Alejandro Ramírez Martínez",
     "estructura": "Campaña",
     "subCoor": "Isabel Cristina Hernández López",
@@ -101,6 +88,7 @@ export const fakeModuleAux = [
     "tecnico": "Carlos Eduardo Fernández Pérez"
   },
   {
+    id: "2",
     "name": "Lucía Fernanda Gómez Morales",
     "estructura": "Día E",
     "subCoor": "Raúl Ernesto García Morales",
@@ -108,6 +96,7 @@ export const fakeModuleAux = [
     "tecnico": "María José Sánchez Ruiz"
   },
   {
+    id: "3",
     "name": "Andrés Felipe Martínez Torres",
     "estructura": "Político",
     "subCoor": "Carmen Teresa Martínez Santos",
@@ -115,6 +104,7 @@ export const fakeModuleAux = [
     "tecnico": "José Manuel Pérez Ramírez"
   },
   {
+    id: "4",
     "name": "Valeria Sofía González Ramírez",
     "estructura": "Gubernamental",
     "subCoor": "Gabriel Antonio López Ramírez",
