@@ -28,12 +28,12 @@ export interface StatusNecesidades {
 
 export const ESTRUCTURAS = [
   {
-    id: "politica",
-    nombre: "Politica",
-  },
-  {
     id: "territorial",
     nombre: "Territorial",
+  },
+  {
+    id: "politica",
+    nombre: "Politica",
   },
   {
     id: "gobierno",
@@ -96,10 +96,22 @@ export const TIPOS_PUNTO: TiposPunto[] = [
     estructuraId: "territorial"
   },
   {
+    id: "publicidad",
+    nombre: "Publicidad",
+    icon: "",
+    estructuraId: "territorial"
+  },
+  {
     id: "encuestas",
     nombre: "Encuestas",
     icon: "inocoEncuesta",
     estructuraId: "politica"
+  },
+  {
+    id: "rondas",
+    nombre: "Rondas",
+    icon: "iconoRonda",
+    estructuraId: "gobierno"
   }
 ];
 

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import ModalStructCoor from "@/components/visor/people/ModalStructCoor";
 import ModalSubCoor from "@/components/visor/people/ModalSubCoor";
 import ModalAuxCoor from "@/components/visor/people/ModalAuxCoor";
+
 export interface Person {
   name: string;
   fatherLastName: string;
@@ -20,6 +21,7 @@ interface User {
     Person: Person
   };
 }
+
 interface users {
   userSearched?: string
   coordinators: User[];
@@ -46,7 +48,6 @@ export default function Page() {
   }
 
   async function getVisorPeople() {
-
     const resBody = await fetch("/dashboard/api/visor/users")
       .then(res => res.json())
       .catch(err => console.error(err));
@@ -143,7 +144,7 @@ export default function Page() {
                 <h2 className="text-xl">Sub Coordinador</h2>
                 <span className="text-zinc-400">{usersFiltered?.subcoordinators.length}/{users?.subcoordinators.length}</span>
               </div>
-              <ModalSubCoor action="Agregar" />
+              <ModalSubCoor />
             </div>
             {
               usersFiltered?.subcoordinators ? (
@@ -157,7 +158,7 @@ export default function Page() {
                           <span className="font-light text-zinc-400 text-sm">3 Tipos de puntos asignados</span>
                         </div>
                       </div>
-                      <ModalSubCoor action="Modificar" subCoordinatorName={sub.User.Person.name} />
+                      <ModalSubCoor subCoordinatorId={sub.id} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>
@@ -173,7 +174,7 @@ export default function Page() {
                 <h2 className="text-xl">Auxiliar de coordinación</h2>
                 <span className="text-zinc-400">{usersFiltered?.auxiliaries.length}/{users?.auxiliaries.length}</span>
               </div>
-              <ModalAuxCoor action="Agregar" />
+              <ModalAuxCoor />
             </div>
             {
               usersFiltered?.auxiliaries ? (
@@ -187,7 +188,8 @@ export default function Page() {
                           <span className="font-light text-zinc-400 text-sm">Querétaro, Corregidora, El Marqués</span>
                         </div>
                       </div>
-                      <ModalAuxCoor action="Modificar" auxCoordinatorName={aux.User.Person.name} />
+                      <ModalAuxCoor auxiliary={{ id: aux.id, name: aux.name }} />
+
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>
