@@ -18,10 +18,7 @@ interface CardProps {
 export default function TeamCard({ id, team, enlace, puntos, geographicConf }: CardProps) {
   const router = useRouter();
 
-  console.log("team card");
-
   const handleNavigation = (path: string) => {
-    alert("Handle navigation");
     router.push(`teams/${id}/${path}`);
   };
 

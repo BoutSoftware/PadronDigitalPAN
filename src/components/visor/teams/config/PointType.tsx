@@ -19,10 +19,7 @@ interface Props {
 }
 
 export function PointType({ team, teamId, loadTeam }: Props) {
-
   const [pointTypeKeys, setPointTypeKeys] = useState<Selection>(new Set());
-
-  // TODO: End this
 
   useEffect(() => {
     const keys: Selection = new Set(team.TiposPunto.map(pointType => pointType.id));
@@ -81,6 +78,7 @@ export function PointType({ team, teamId, loadTeam }: Props) {
             selectedKeys={pointTypeKeys}
             selectionMode="multiple"
             onSelectionChange={(keys) => handlePointTypeValue(keys)}>
+            {/* TODO: Solo mostrar los tipos de punto que le tocan al equipo, segun su subcoordinador (ver TeamCreationModal para ver como se setean los tipos de punto) */}
             {
               TIPOS_PUNTO
                 .filter(pointType => pointType.estructuraId == team?.Structure.id)
@@ -93,14 +91,12 @@ export function PointType({ team, teamId, loadTeam }: Props) {
       </div>
       <Divider />
       <div className="flex flex-col gap-4">
-        {
-          team?.TiposPunto.map(({ id, nombre }) => (
-            <div key={id} className="flex justify-between items-center">
-              <span>{nombre}</span>
-              <Button onPress={() => handleRemovePoint(id)}>Quitar</Button>
-            </div>
-          ))
-        }
+        {team?.TiposPunto.map(({ id, nombre }) => (
+          <div key={id} className="flex justify-between items-center">
+            <span>{nombre}</span>
+            <Button onPress={() => handleRemovePoint(id)}>Quitar</Button>
+          </div>
+        ))}
       </div>
     </div>
   );

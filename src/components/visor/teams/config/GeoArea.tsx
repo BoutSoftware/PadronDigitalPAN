@@ -3,6 +3,8 @@ import React, { useState, useEffect, Key } from "react";
 import { CONFIGURACIONES_GEOGRAFICAS } from "@/configs/catalogs/visorCatalog";
 import { TeamInterface } from "@/utils/VisorInterfaces";
 import {
+  Autocomplete,
+  AutocompleteItem,
   Button,
   Checkbox,
   CheckboxGroup,
@@ -18,15 +20,9 @@ import {
   SelectItem,
 } from "@nextui-org/react";
 
-interface GeographicValues {
-  values: {
-    id: string
-    name: string
-  }[]
-  selectedValues: {
-    id: string
-    name: string
-  }[]
+interface GeographicValue {
+  id: string
+  name: string
 }
 
 interface Props {
@@ -37,89 +33,62 @@ interface Props {
 
 export function GeoArea({ team, loadTeam, teamId }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [geographicValues, setGeographicValues] = useState<GeographicValues>({ values: [], selectedValues: [] });
-  const [geoLevelKey, setGeoLevelKey] = useState<Selection>(new Set([team.geographicConf.geographicLevel.id]));
-  const [valueSearched, setValueSearched] = useState("");
-  const [geographicValuesIds, setGeographicValuesIds] = useState<string[]>(team.geographicConf.values.map(val => val.id));
-
-  useEffect(() => {
-    getGeographicValues();
-  }, []);
+  const [geographicValues, setGeographicValues] = useState<GeographicValue[]>([]);
+  const [form, setForm] = useState({
+    geoLevelId: team.geographicConf.geographicLevel.id,
+    geoValues: team.geographicConf.values.map((geoValue) => geoValue.id)
+  });
 
   async function handleSubmit() {
-    const geographicLevelId = Array.from(geoLevelKey)[0];
+    const reqBody = {
+      geographicLevel: form.geoLevelId,
+      values: form.geoValues
+    };
 
-    const modifiedData = await updateTeamGeographicConfig(geographicLevelId.toString(), geographicValuesIds);
-    if (!modifiedData) return;
-
-    await loadTeam();
-    setIsModalOpen(false);
-  }
-
-
-  async function handleGeographicLevelChange(key: Selection) {
-    const newGeographicLevelId = Array.from(key)[0];
-    if (!newGeographicLevelId) return;
-
-    const municipios = team?.Auxiliary.municipios;
-    if (!municipios) return;
-
-    const newGeographicValues = await getGeographicLevelValues(newGeographicLevelId.toString(), municipios);
-    if (!newGeographicValues) return;
-
-    if (newGeographicLevelId == team.geographicConf.geographicLevel.id) {
-      setGeographicValuesIds(team.geographicConf.values.map(val => val.id));
-    } else {
-      setGeographicValuesIds([]);
-    }
-
-    setValueSearched("");
-    setGeoLevelKey(key);
-    setGeographicValues({ ...geographicValues, values: newGeographicValues, selectedValues: [] });
-  }
-
-
-  async function getGeographicValues() {
-    const geoLevelId: string = team.geographicConf.geographicLevel.id;
-    const municipios: string[] = team.Auxiliary.municipios;
-    const selectedGeoLevelValues = await getGeographicLevelValues(geoLevelId, municipios);
-    if (selectedGeoLevelValues) {
-      setGeographicValues({
-        values: selectedGeoLevelValues,
-        selectedValues: team.geographicConf.values
-      });
-    }
-  }
-
-
-  async function getGeographicLevelValues(geographicLevelId: string, municipios: string[]): Promise<void | { id: string, name: string }[]> {
-    const params = `geographicLevel=${geographicLevelId}&municipios=${municipios.join(",")}`;
-    const resBody = await fetch(`/dashboard/api/visor/geographicConfiguration/?${params}`)
-      .then(res => res.json())
-      .catch(err => console.error(err));
-
-    if (resBody.code !== "OK") {
-      console.error(resBody.message);
-      return;
-    }
-    return resBody.data;
-  }
-
-
-  async function updateTeamGeographicConfig(geoLevel: string, geoValues: string[]) {
-    const reqBody = { geographicLevel: geoLevel, values: geoValues };
-    const resBody = await fetch("/dashboard/api/visor/teams/667ef0fe356c04cf3b02af11/geoConf", {
+    const resBody = await fetch(`/dashboard/api/visor/teams/${team.id}/geoConf`, {
       method: "PUT",
       body: JSON.stringify(reqBody)
     })
       .then(res => res.json())
       .catch(err => console.error(err));
-    console.log(resBody);
-    if (resBody.code !== "OK") return;
 
-    return resBody.data;
+    if (resBody.code !== "OK")
+      return alert("Error al Actualizar la Configuración Geografica");
+
+    loadTeam();
+    setIsModalOpen(false);
   }
 
+  async function getGeographicValues() {
+    const geoLevelId: string = team.geographicConf.geographicLevel.id;
+    const municipios: string[] = team.Auxiliary.municipios;
+
+    const resBody = await fetch(`/dashboard/api/visor/geographicConfiguration/?geographicLevel=${geoLevelId}&municipios=${municipios.join(",")}`)
+      .then(res => res.json())
+      .catch(err => console.error(err));
+
+    if (resBody.code !== "OK") {
+      console.log(resBody);
+      return alert("Error obteniendo los niveles geograficos");
+    }
+
+    setGeographicValues(resBody.data);
+  }
+
+  function handleGeoValuesChange(key: Key) {
+    if (!key) return;
+    if (form.geoValues.includes(key as string)) return;
+
+    setForm({ ...form, geoValues: [...form.geoValues, key as string] });
+  }
+
+  function handleGeoLevelChange(selection: Selection) {
+    setForm({ geoLevelId: [...selection][0] as string, geoValues: [] });
+  }
+
+  useEffect(() => {
+    getGeographicValues();
+  }, [form.geoLevelId]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -127,7 +96,7 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
         <h2 className="text-2xl">Área geográfica</h2>
         <Button onPress={() => setIsModalOpen(true)}>Modificar área geográfica</Button>
 
-        <Modal isOpen={isModalOpen}>
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <ModalContent>
             <ModalHeader>
               Modificando área geográfica
@@ -135,29 +104,38 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
             <ModalBody>
               <div className="flex flex-col gap-4">
                 <Select
-                  label="Selecciona un nivel geográfico"
-                  selectedKeys={geoLevelKey}
-                  onSelectionChange={handleGeographicLevelChange}
-                  selectionMode="single"
+                  label="Nivel Geográfico"
+                  placeholder="Selecciona el nivel geográfico"
+                  isRequired
+                  selectedKeys={[form.geoLevelId]}
+                  onSelectionChange={handleGeoLevelChange}
                 >
-                  {
-                    CONFIGURACIONES_GEOGRAFICAS.map(conf => <SelectItem key={conf.id}>{conf.nombre}</SelectItem>)
-                  }
+                  {CONFIGURACIONES_GEOGRAFICAS.map((level) => (
+                    <SelectItem key={level.id} value={level.id}>
+                      {level.nombre}
+                    </SelectItem>
+                  ))}
                 </Select>
-                <Input
-                  label="Valor geográfico"
-                  placeholder="Busca un valor geográfico"
-                  value={valueSearched}
-                  onValueChange={setValueSearched}
-                />
-                <CheckboxGroup
-                  label="Valores geográficos"
-                  value={geographicValuesIds}
-                  onValueChange={setGeographicValuesIds}
-                  className="min-h-[150px] max-h-[250px] overflow-auto"
+                <Autocomplete
+                  label="Valores"
+                  placeholder="Seleccione los valores geográficos"
+                  isRequired
+                  onSelectionChange={handleGeoValuesChange}
                 >
-                  {geographicValues.values.filter((val) => val.name.toUpperCase().includes(valueSearched.toUpperCase())).map(({ id, name }) => <Checkbox key={id} value={id}>{name}</Checkbox>)}
-                </CheckboxGroup>
+                  {geographicValues.map((value) => (
+                    <AutocompleteItem key={value.id} value={value.id}>
+                      {value.name}
+                    </AutocompleteItem>
+                  ))}
+                </Autocomplete>
+                <div className={`${form.geoValues.length > 4 ? "overflow-y-scroll h-24" : ""} px-8 flex flex-col gap-2`}>
+                  {form.geoValues.map((geoValueId) => (
+                    <div key={geoValueId} className="flex justify-between items-center py-2 px-4 rounded-md bg-content2">
+                      <span className="text-sm">{geographicValues.find((geoValue) => geoValue.id === geoValueId)?.name}</span>
+                      <Button isIconOnly className="material-symbols-outlined bg-transparent hover:bg-accent hover:text-white" size="sm" onClick={() => setForm({ ...form, geoValues: form.geoValues.filter((geoValue) => geoValueId !== geoValue) })}>close</Button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </ModalBody>
             <ModalFooter>
