@@ -43,8 +43,9 @@ export default function CreateRoundPage() {
 
     const resBody = await createRound(roundName, creator, checkpoints, pointTypesIDs);
 
-    if (resBody.code !== "OK")
+    if (resBody.code !== "OK") {
       return alert("Hubo un problema al crear la Ronda");
+    }
 
     router.push(`/dashboard/visor/teams/${teamId}/rounds`);
   }
