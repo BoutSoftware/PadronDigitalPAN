@@ -1,6 +1,6 @@
 "use client";
-import { Auxiliar, Enlace, GeoArea, Miembros, PointType, Structure } from "@/components/visor/teams/config/";
-import { useParams } from "next/navigation";
+import { Auxiliar, Enlace, GeoArea, Miembros, PointType, Structure, ModalDeleteTeam } from "@/components/visor/teams/config/";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { TeamInterface } from "@/utils/VisorInterfaces";
 
@@ -8,6 +8,8 @@ export default function Page() {
 
   const [team, setTeam] = useState<TeamInterface | null>(null);
   const { id: teamId } = useParams();
+
+  const router = useRouter();
 
   useEffect(() => {
     laodTeam();
@@ -29,6 +31,21 @@ export default function Page() {
       return;
     }
     return resBody.data;
+  }
+
+  async function deleteTeam() {
+    const resBody = await fetch(`/dashboard/api/visor/team/${teamId}`, {
+      method: "DELETE"
+    })
+      .then(res => res.json())
+      .catch(err => console.error(err));
+
+    if (resBody.code !== "OK") {
+      console.error(resBody.message);
+      return;
+    }
+
+    router.push("/dashboard/visor/teams");
   }
 
 
@@ -53,6 +70,7 @@ export default function Page() {
 
         {team && <PointType team={team} loadTeam={laodTeam} teamId={teamId.toString()} />}
 
+        {team && <ModalDeleteTeam teamId={teamId.toString()} deleteTeam={deleteTeam} />}
       </div>
     </div>
   );

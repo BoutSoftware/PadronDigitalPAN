@@ -5,3 +5,4 @@ export * from "./Enlace";
 export * from "./Miembros";
 export * from "./GeoArea";
 export * from "./PointType";
+export * from "./ModalDeleteTeam";
