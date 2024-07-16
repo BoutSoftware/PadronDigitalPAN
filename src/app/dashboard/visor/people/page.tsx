@@ -1,5 +1,4 @@
 "use client";
-import { fakeModuleAdmins, fakeStructCoors, fakeModuleSubCoor, fakeModuleAux, fakeModuleUsers } from "@/utils/Fake";
 import { Divider, Avatar, Input, Button } from "@nextui-org/react";
 import Header from "@/components/Header";
 import React, { useEffect, useState } from "react";
@@ -128,7 +127,8 @@ export default function Page() {
                           <span className="font-light text-zinc-400 text-sm">Estructura a cargo</span>
                         </div>
                       </div>
-                      <ModalStructCoor coordinator={coor} />
+                      {/* TODO: Preguntar de donde saco la estructura */}
+                      <ModalStructCoor coordinator={{ id: coor.id, name: coor.User.Person.name, structureId: "" }} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>
@@ -188,7 +188,7 @@ export default function Page() {
                           <span className="font-light text-zinc-400 text-sm">Querétaro, Corregidora, El Marqués</span>
                         </div>
                       </div>
-                      <ModalAuxCoor auxiliary={{ id: aux.id, name: aux.name }} />
+                      <ModalAuxCoor auxiliary={{ id: aux.id, name: aux.User.Person.name }} />
 
                     </div>
                     {index !== (array.length - 1) && <Divider />}
