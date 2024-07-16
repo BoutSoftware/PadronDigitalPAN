@@ -14,14 +14,23 @@ export default function LayoutTeam({ children }: { children: ReactNode }) {
   const [team, setTeam] = useState<Team>();
   const params = useParams<{ id: string }>();
 
+
+
   useEffect(() => {
 
     // fetch(params.id)
+    // TODO: Fetch team info from the API here
+
+    // TODO: Set the Context's team to the current team info
 
     setTeam({
       id: params.id,
       name: "Nombre del equipo"
     });
+
+    return () => {
+      // TODO: Unset the team from the Context
+    };
 
   }, [params.id]);
 

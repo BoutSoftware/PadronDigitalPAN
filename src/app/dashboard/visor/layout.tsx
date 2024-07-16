@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 export default function LayoutVisor({ children }: { children: ReactNode }) {
 
   return (
+    // TODO: Add Visor Context
     <div className="flex h-screen overflow-hidden">
       <VisorSidebar />
       {children}
