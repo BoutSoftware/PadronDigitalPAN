@@ -14,7 +14,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { auxili
     }
 
     // Verify if coordinator exists
-    const currentAuxiliary = await prisma.visor_Auxiliaries.findFirst({ where: { id: auxiliaryId } });
+    const currentAuxiliary = await prisma.visor_Auxiliaries.findFirst({ where: { id: auxiliaryId, active: true } });
 
     if (!currentAuxiliary) {
       return NextResponse.json({ code: "NOT_FOUND", message: "Auxiliary not found" });
@@ -51,13 +51,17 @@ export async function GET(request: NextRequest, { params }: { params: { auxiliar
 
   try {
     const currentAuxiliary = await prisma.visor_Auxiliaries.findFirst({
-      where: { id: auxiliaryId },
+      where: { id: auxiliaryId, active: true },
       include: {
         SubCoordinator: { select: { structureId: true, pointTypesIDs: true } },
         Technical: { select: { fullname: true, id: true } },
         User: { select: { fullname: true } }
       }
     });
+
+    if (!currentAuxiliary) {
+      return NextResponse.json({ code: "NOT_FOUND", message: "Auxiliary not found" });
+    }
 
     const data = {
       ...currentAuxiliary,

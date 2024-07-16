@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
 
     const auxiliaries = await prisma.visor_Auxiliaries.findMany({
       where: {
+        active: true,
         SubCoordinator: {
           structureId: estructura
         }
@@ -42,6 +43,10 @@ export async function GET(request: NextRequest) {
         }
       }
     });
+
+    if(!auxiliaries.length){
+      return NextResponse.json({ code: "NOT_FOUND", message: "Auxiliaries not found" });
+    }
 
     const data = auxiliaries.map((aux) => {
       const auxPerson = aux.User.User.Person;
