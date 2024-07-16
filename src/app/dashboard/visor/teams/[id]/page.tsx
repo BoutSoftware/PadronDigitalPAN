@@ -8,7 +8,7 @@
 // }
 
 export default function IdTeam() {
-  return (
-    <></>
-  );
+  const router = useRouter();
+  const params = useParams();
+  router.push(`/dashboard/visor/teams/${params.id}/config`);
 }
