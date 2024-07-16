@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "@/components/Header";
-import TeamsOfAStructure, { fakeTeams } from "@/components/visor/teams/TeamsOfAStructure";
+import TeamsOfAStructure from "@/components/visor/teams/TeamsOfAStructure";
 import { ESTRUCTURAS } from "@/configs/catalogs/visorCatalog";
 import { Button, Dropdown, DropdownItem, DropdownTrigger, DropdownMenu, Input } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";

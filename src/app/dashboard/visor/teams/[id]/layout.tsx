@@ -26,11 +26,13 @@ export default function LayoutTeam({ children }: { children: ReactNode }) {
   }, [params.id]);
 
   return (
-    <div className="flex-col h-screen items-stretch overflow-y-auto flex-1">
+    <div className="flex flex-col w-full">
       <div className="p-4">
         <Header title={team?.name} />
       </div>
+
       <TeamTabs />
+
       {children}
     </div>
   );

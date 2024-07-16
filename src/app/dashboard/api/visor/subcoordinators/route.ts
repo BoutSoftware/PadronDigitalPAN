@@ -50,18 +50,14 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const estructura = searchParams.get("estructura");
+    const estructura = (searchParams.get("estructura") as string) || undefined;
 
     const subCooridnadores = await prisma.visor_SubCoordinator.findMany({
       where: {
-        structureId: estructura || undefined
+        structureId: estructura
       },
       include: {
-        User: {
-          select: {
-            fullname: true
-          }
-        }
+        User: true
       }
     });
 
