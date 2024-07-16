@@ -92,8 +92,8 @@ export default function CreateRoundPage() {
   }
 
   return (
-    <div className="flex gap-4 p-4 flex-1 overflow-auto">
-      <form className="flex flex-col gap-4 w-60" onSubmit={(e) => handleCreateRound(e)}>
+    <div className="flex flex-grow gap-4 p-4 overflow-hidden">
+      <form className="flex flex-col gap-4 w-60 overflow-y-auto" onSubmit={(e) => handleCreateRound(e)}>
         <Select
           label="Tipo de punto"
           placeholder="Selecciona un tipo de punto"
