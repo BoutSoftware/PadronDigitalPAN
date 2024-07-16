@@ -55,6 +55,10 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       return NextResponse.json({ code: "NOT_FOUND", message: "Round not found" });
     }
 
+    if (round === "BAD_REQUEST"){
+      return NextResponse.json({ code: "BAD_REQUEST", message: "There is an active round" });
+    }
+
     return NextResponse.json({ code: "OK", message: round.status, data: round });
   } catch (error) {
     console.log(error);
@@ -63,6 +67,14 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 }
 
 async function startRound(id: string) {
+  // Check if the round exists
+  const roundExists = await prisma.visor_Round.findFirst({
+    where: { id, active: true },
+  });
+
+  if (!roundExists) {
+    return null;
+  }
 
   // Check that there are no active rounds
   const activeRounds = await prisma.visor_Round.aggregate({
@@ -78,7 +90,7 @@ async function startRound(id: string) {
   });
 
   if (activeRounds._count.id > 0) {
-    return NextResponse.json({ code: "BAD_REQUEST", message: "There are active rounds" });
+    return "BAD_REQUEST";
   }
 
   const round = await prisma.visor_Round.update({
@@ -89,10 +101,17 @@ async function startRound(id: string) {
   });
 
   return round;
-
 }
 
 async function pauseRound(id: string) {
+  const roundExists = await prisma.visor_Round.findFirst({
+    where: { id, active: true },
+  });
+
+  if (!roundExists) {
+    return null;
+  }
+
   const round = await prisma.visor_Round.update({
     where: { id },
     data: {
@@ -104,6 +123,14 @@ async function pauseRound(id: string) {
 }
 
 async function stopRound(id: string) {
+  const roundExists = await prisma.visor_Round.findFirst({
+    where: { id, active: true },
+  });
+
+  if (!roundExists) {
+    return null;
+  } 
+
   const round = await prisma.visor_Round.update({
     where: { id },
     data: {
