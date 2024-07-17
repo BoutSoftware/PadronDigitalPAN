@@ -6,6 +6,7 @@ import jtw, { sign } from "jsonwebtoken";
 
 type team = {
   id: string;
+  name: string;
   geographicConf: VisGeoConf;
   pointTypesIDs: string[];
 }
@@ -234,6 +235,7 @@ async function getTeamMemberInfo(visorUserId: string, userContext: VisorUserCont
     },
     select: {
       id: true,
+      name: true,
       pointTypesIDs: true,
       geographicConf: true,
       Auxiliary: {
@@ -260,6 +262,7 @@ async function getTeamMemberInfo(visorUserId: string, userContext: VisorUserCont
   // Add info only their team
   userContext.team = {
     id: userInfo.id,
+    name: userInfo.name,
     pointTypesIDs: userInfo.pointTypesIDs,
     geographicConf: userInfo.geographicConf
   };
