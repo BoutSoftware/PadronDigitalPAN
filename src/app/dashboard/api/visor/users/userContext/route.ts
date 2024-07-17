@@ -101,9 +101,10 @@ export async function POST(request: NextRequest) {
     }
 
     // // Create token of user context
-    // const token = sign(userContext, process.env.JWT_SECRET as string, { expiresIn: "7d" });
+    const token = sign(userContext, process.env.JWT_SECRET as string, { expiresIn: "7d" });
+    
 
-    return NextResponse.json({ code: "OK", message: "User context", data: userContext });
+    return NextResponse.json({ code: "OK", message: "User context", data: {...userContext, token} });
   }
   catch (err) {
     console.log(err);
