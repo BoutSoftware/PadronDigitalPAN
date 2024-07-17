@@ -112,8 +112,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   }
 }
 
-// Get paused rounds, active and no started rounds by team
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+// Get paused rounds, active and not started rounds by team
+export async function GETTeamRounds(request: NextRequest, { params }: { params: { id: string } }) {
   type Round = {
     id: string;
     active: boolean;
@@ -139,7 +139,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ code: "TEAM_NOT_FOUND", message: "Team not found" });
     }
 
-    // Get paused rounds, active and no started rounds by team
+    // Get paused rounds, active and not started rounds by team
     const rounds = await prisma.visor_Round.findMany({
       where: {
         teamId: id,

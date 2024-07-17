@@ -22,24 +22,43 @@ export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusCh
     }
   };
 
+  const updateStatus = async (action: "start" | "pause" | "stop") => {
+    try {
+      const response = await fetch(`/dashboard/api/visor/rounds/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action }),
+      });
+      const data = await response.json();
+      if (data.code === "OK") {
+        const newStatus = action === "start" ? "activa" : action === "pause" ? "pausada" : "noiniciada";
+        onStatusChange(id, newStatus);
+      } else {
+        console.error(data.message);
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
   const handlePause = () => {
     if (status === "activa") {
-      onStatusChange(id, "pausada");
+      updateStatus("pause");
     }
   };
 
   const handlePlay = () => {
     if (status === "pausada") {
-      onStatusChange(id, "activa");
+      updateStatus("start");
     }
   };
 
-  const handleDelete = () => {
-    // Add your delete logic here
-  };
-
-  const handleEdit = () => {
-    // Add your edit logic here
+  const handleStop = () => {
+    if (status !== "noiniciada") {
+      updateStatus("stop");
+    }
   };
 
   return (
@@ -52,13 +71,13 @@ export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusCh
       </div>
       <div className="flex flex-row gap-4 justify-end flex-1">
         {status === "activa" && (
-          <Button isIconOnly aria-label="Detener" color="default" variant="light" size="md" onPress={handlePause}>
+          <Button isIconOnly aria-label="Pausar" color="default" variant="light" size="md" onPress={handlePause}>
             <span className="material-symbols-outlined text-white">pause</span>
           </Button>
         )}
         {status === "pausada" && (
           <>
-            <Button isIconOnly aria-label="Detener" color="default" variant="light" size="md">
+            <Button isIconOnly aria-label="Detener" color="default" variant="light" size="md" onPress={handleStop}>
               <span className="material-symbols-outlined">stop_circle</span>
             </Button>
             <Button isIconOnly aria-label="Reproducir" color="default" variant="light" size="md" onPress={handlePlay}>
@@ -68,10 +87,10 @@ export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusCh
         )}
         {status === "noiniciada" && (
           <>
-            <Button isIconOnly aria-label="Eliminar" color="danger" variant="light" size="md" onPress={handleDelete}>
+            <Button isIconOnly aria-label="Eliminar" color="danger" variant="light" size="md" onPress={() => { /* Lógica para eliminar */ }}>
               <span className="material-symbols-outlined">delete</span>
             </Button>
-            <Button isIconOnly aria-label="Editar" color="default" variant="light" size="md" onPress={handleEdit}>
+            <Button isIconOnly aria-label="Editar" color="default" variant="light" size="md" onPress={() => { /* Lógica para editar */ }}>
               <span className="material-symbols-outlined">edit</span>
             </Button>
           </>

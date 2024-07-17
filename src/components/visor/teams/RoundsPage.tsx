@@ -9,24 +9,23 @@ interface Round {
   pointTypesIDs: string[];
 }
 
-export default function RoundsPage() {
+interface RoundsPageProps {
+  teamId: string;
+}
+
+export default function RoundsPage({ teamId }: RoundsPageProps) {
   const [rounds, setRounds] = useState<Round[]>([]);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log("Fetching rounds for teamId:", teamId); // Log para verificar el teamId
     const fetchRounds = async () => {
       try {
-        const response = await fetch("/dashboard/api/visor/teams/668480d222ca715fe6174dc0/rounds");
+        const response = await fetch(`/dashboard/api/visor/teams/${teamId}/rounds`);
         const data = await response.json();
         console.log("API response:", data);
         if (data.code === "OK" && data.data) {
-          // Aplanar los datos recibidos
-          const flattenedRounds = [
-            ...data.data.active,
-            ...data.data.paused,
-            ...data.data.noStarted
-          ];
-          setRounds(flattenedRounds);
+          setRounds(data.data);
         } else {
           console.error(data.message);
         }
@@ -36,7 +35,7 @@ export default function RoundsPage() {
     };
 
     fetchRounds();
-  }, []);
+  }, [teamId]);
 
   useEffect(() => {
     console.log("Rounds state updated:", rounds);
