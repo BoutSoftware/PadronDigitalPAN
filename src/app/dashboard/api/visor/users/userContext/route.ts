@@ -2,6 +2,7 @@ import prisma from "@/configs/database";
 import { NextRequest, NextResponse } from "next/server";
 import { TITULOS, ESTRUCTURAS, CONFIGURACIONES_GEOGRAFICAS } from "@/configs/catalogs/visorCatalog";
 import { VisGeoConf } from "@prisma/client";
+import jtw, { sign } from "jsonwebtoken";
 
 type team = {
   id: string;
@@ -9,7 +10,7 @@ type team = {
   pointTypesIDs: string[];
 }
 
-type UserContext = {
+export interface VisorUserContext {
   id: string;
   title: visUserTitle;
   isAdmin: boolean;
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ code: "NO_TITLE", message: "User without define role in visor" });
     }
 
-    const userContext: UserContext = {
+    const userContext: VisorUserContext = {
       id: visorUser.id,
       title: visorUser.title as visUserTitle,
       isAdmin: visorUser.title === "admin" as visUserTitle,
@@ -99,6 +100,9 @@ export async function POST(request: NextRequest) {
       await getTeamMemberInfo(visorUser.id, userContext);
     }
 
+    // // Create token of user context
+    // const token = sign(userContext, process.env.JWT_SECRET as string, { expiresIn: "7d" });
+
     return NextResponse.json({ code: "OK", message: "User context", data: userContext });
   }
   catch (err) {
@@ -107,7 +111,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function getCoordinatorInfo(visorUserId: string, userContext: UserContext) {
+async function getCoordinatorInfo(visorUserId: string, userContext: VisorUserContext) {
   const structure = await prisma.visor_structureCoordinator.findFirst({
     where: {
       OR: [
@@ -151,7 +155,7 @@ async function getCoordinatorInfo(visorUserId: string, userContext: UserContext)
   userContext.pointTypesIDs = userInfo.pointTypesIDs;
 }
 
-async function getSubCoordinatorInfo(visorUserId: string, userContext: UserContext) {
+async function getSubCoordinatorInfo(visorUserId: string, userContext: VisorUserContext) {
   const structure = await prisma.visor_SubCoordinator.findFirst({
     where: {
       OR: [
@@ -180,7 +184,7 @@ async function getSubCoordinatorInfo(visorUserId: string, userContext: UserConte
   userContext.pointTypesIDs = structure.pointTypesIDs;
 }
 
-async function getAuxiliaryInfo(visorUserId: string, userContext: UserContext) {
+async function getAuxiliaryInfo(visorUserId: string, userContext: VisorUserContext) {
   const auxiliary = await prisma.visor_Auxiliaries.findFirst({
     where: {
       OR: [
@@ -211,7 +215,7 @@ async function getAuxiliaryInfo(visorUserId: string, userContext: UserContext) {
   };
 }
 
-async function getTeamMemberInfo(visorUserId: string, userContext: UserContext) {
+async function getTeamMemberInfo(visorUserId: string, userContext: VisorUserContext) {
   const userInfo = await prisma.visor_Team.findFirst({
     where: {
       OR: [

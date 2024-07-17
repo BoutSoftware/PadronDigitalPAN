@@ -3,13 +3,18 @@ import { ReactNode, useState } from "react";
 import { Button, Divider, Listbox, ListboxItem } from "@nextui-org/react";
 import DropdownChangeModule from "@/components/DropdownChangeModule";
 import { useRouter } from "next/navigation";
+import { VisorProvider } from "@/contexts/VisorContext";
+
+
 
 export default function LayoutVisor({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-screen items-stretch overflow-hidden">
-      <VisorSidebar />
-      {children}
+      <VisorProvider>
+        <VisorSidebar />
+        {children}
+      </VisorProvider>
     </div>
   );
 }
