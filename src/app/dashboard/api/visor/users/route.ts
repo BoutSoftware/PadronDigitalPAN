@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const users = await prisma.visor_User.findMany({
+      where: { active: true },
       select: {
         id: true,
         rol: true,
