@@ -74,21 +74,25 @@ export const STATUS_RONDAS = [
     id: "activa",
     nombre: "ACTIVA",
     color: "verde",
+    mensaje: "Ronda activa"
   },
   {
     id: "pausada",
     nombre: "PAUSADA",
     color: "amarilla",
+    mensaje: "Ronda pausada"
   },
   {
     id: "terminada",
     nombre: "TERMINADA",
     color: "roja",
+    mensaje: "Ronda terminada"
   },
   {
     id: "noiniciada",
     nombre: "NO INICIADA",
     color: "blanco",
+    mensaje: "Ronda no iniciada"
   },
 ];
 
@@ -111,6 +115,12 @@ export const TIPOS_PUNTO: TiposPunto[] = [
     nombre: "Encuestas",
     icon: "inocoEncuesta",
     estructuraId: "politica"
+  },
+  {
+    id: "rondas",
+    nombre: "Rondas",
+    icon: "iconoRonda",
+    estructuraId: "gobierno"
   }
 ];
 
