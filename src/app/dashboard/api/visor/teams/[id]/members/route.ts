@@ -8,7 +8,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     // Verify if team exists
     const teamExists = await prisma.visor_Team.findFirst({
-      where: { id },
+      where: { id, active: true },
       include: {
         Auxiliary: {
           include: {
@@ -33,6 +33,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           }
         },
         Caminantes: {
+          where: {
+            active: true
+          },
           include: {
             User: {
               include: {

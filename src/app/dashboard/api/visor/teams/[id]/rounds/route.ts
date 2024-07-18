@@ -35,7 +35,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     }
 
     // Verify if user exists
-    const userExists = await prisma.visor_User.findFirst({ where: { id: createdById } });
+    const userExists = await prisma.visor_User.findFirst({ where: { id: createdById, active: true } });
     if (!userExists) {
       return NextResponse.json({ code: "USER_NOT_FOUND", message: "User not found" });
     }

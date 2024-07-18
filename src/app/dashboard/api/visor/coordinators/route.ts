@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
 
     const users = await prisma.visor_User.findMany({
       where: {
+        active: true,
         rol: "Coordinator",
         ...(onlyFree ? { title: null } : undefined)
       },
@@ -19,9 +20,11 @@ export async function GET(request: NextRequest) {
       }
     });
 
+    if (!users.length){
+      return NextResponse.json({ code: "NOT_FOUND", message: "No coordinators found" });
+    }
+
     return NextResponse.json({ code: "OK", message: "Coordinators retrieved succesfully", data: users });
-
-
   } catch (error) {
     console.log(error);
     return NextResponse.json({ code: "ERROR", message: "An error ocurred" });

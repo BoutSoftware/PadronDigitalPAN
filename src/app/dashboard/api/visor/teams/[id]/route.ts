@@ -7,9 +7,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     const id = params.id;
     const team = await prisma.visor_Team.findUnique({
-      where: { id },
+      where: { id, active: true },
       include: {
         Caminantes: {
+          where: {
+            active: true
+          },
           select: {
             User: {
               select: {
@@ -47,6 +50,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         },
       },
     });
+
+    if (!team) {
+      return NextResponse.json({ code: "NOT_FOUND", message: "Team not found" });
+    }
 
     const geoLevel = team?.geographicConf.geographicLevel as typeof CONFIGURACIONES_GEOGRAFICAS[number]["id"];
     const geographicConf = {
