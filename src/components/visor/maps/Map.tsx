@@ -6,7 +6,7 @@ import { createContext, useEffect, useRef, useState } from "react";
 const defaultMapCenter = { lat: 20.84651181570421, lng: -99.79102603354762 };
 const defaultMapZoom = 9;
 
-const figures1Paths: latLng[][] = [
+const figures1Paths: latLng[][] = [ // This could be all the sections
   [
     { "lat": 20.629196, "lng": -100.450957 },
     { "lat": 20.588866, "lng": -100.444600 },
@@ -25,7 +25,7 @@ const figures1Paths: latLng[][] = [
 ];
 
 
-const figures2Paths: latLng[][] = [
+const figures2Paths: latLng[][] = [ // This could be all the local districts
   [
     { "lat": 20.652412, "lng": -100.389106 },
     { "lat": 20.635589, "lng": -100.362217 },
@@ -43,7 +43,7 @@ const figures2Paths: latLng[][] = [
   ]
 ];
 
-const figures3Paths: latLng[][] = [
+const figures3Paths: latLng[][] = [ // This could be all the local federal districts
   [
     { "lat": 20.630000, "lng": -100.360000 },
     { "lat": 20.632000, "lng": -100.362000 },
@@ -96,9 +96,10 @@ export default function Map({
   zoom = defaultMapZoom,
   className,
   onClick,
-  showPolygones
+  // showPolygones
 }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
+  const [showPolygones, setShowPolygones] = useState(false);
   const [loader, setLoader] = useState<Loader | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
@@ -120,10 +121,13 @@ export default function Map({
         zoom: zoom,
         mapId: "mainMap",
         clickableIcons: false,
-        mapTypeControl: false,
-        streetViewControl: false
+        mapTypeControl: true,
+        streetViewControl: false,
+        mapTypeControlOptions: {
+          style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+        }
       });
-
+      initControls(myMap);
       initListeners(myMap);
       setLoader(loader);
       setMap(myMap);
@@ -133,7 +137,7 @@ export default function Map({
   }, [center, zoom]);
 
   useEffect(() => {
-    // consider do this with useMemo
+    console.log(showPolygones);
     if (!showPolygones) return;
     if (!map) return;
 
@@ -155,12 +159,28 @@ export default function Map({
 
   }, [showPolygones, map]);
 
+  const initControls = (myMap: google.maps.Map | null) => {
+    const centerControlDiv = document.createElement("div");
+    const controlButton = document.createElement("button");
+
+    controlButton.className = `border-b-2 border-b-white rounded-sm shadow text-black text-lg font-medium p-2 text-center ${showPolygones ? "bg-blue-500" : "bg-white"}`;
+
+    controlButton.textContent = "Mostrar polígonos";
+    controlButton.title = "Click to recenter the map";
+    controlButton.type = "button";
+
+    controlButton.addEventListener("click", () => setShowPolygones(prev => !prev));
+
+    centerControlDiv.append(controlButton);
+    myMap?.controls[google.maps.ControlPosition.TOP_LEFT].push(centerControlDiv);
+  };
+
   const initListeners = (myMap: google.maps.Map | null) => {
     if (onClick) myMap?.addListener("click", (e: google.maps.MapMouseEvent) => onClick(e));
   };
 
   const drawPolygones = (figures1: google.maps.Polygon[], figures2: google.maps.Polygon[], figures3: google.maps.Polygon[]) => {
-
+    console.log("draw polygones");
     if (!map) return;
     const currentZoom = map.getZoom();
     if (!currentZoom) return;

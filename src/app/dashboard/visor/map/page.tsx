@@ -17,6 +17,10 @@ export default function GeneralMapPage() {
     { lat: 23, lng: -103 }
   ]);
 
+  function updatePoints(points: []) { // Se la pasará al componente de Alan
+    setPoints(points);
+  }
+
   return (
     <div className="flex flex-1 gap-8 p-8 h-full">
       <Map showPolygones className="flex flex-1 h-full">
