@@ -41,8 +41,10 @@ const auxiliarPaths = [
   /\/dashboard\/visor\/map/,
 ];
 
-// default team member path"/dashboard/visor/teams/:teamId";
-const defaultTeamMemberPath = "/dashboard/visor/teams/:teamId";
+const defaultTeamMemberPath = (teamId: string) => `/dashboard/visor/teams/${teamId}`;
+const teamMemberPaths = [
+  /\/dashboard\/visor\/teams\/[a-zA-Z0-9]+/,
+];
 
 
 export const useVisor = () => useContext(visorContext);
@@ -55,64 +57,44 @@ export const VisorProvider = ({ children }: { children: React.ReactNode }) => {
   const { currentUser } = useContext(authContext);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("visorUser");
-    if (storedToken) {
-      if (currentVisorUser) {
-        // Routes Protection
-        if (isSubcoordinadorWaterFall(currentVisorUser.title)) {
-          console.log("pase aqui");
-          router.push("/dashboard/visor/people");
+    const storedToken = localStorage.getItem("visorToken");
+    if (storedToken && currentVisorUser) {
+      
+      // Routes Protection
+      if (currentVisorUser.isAdmin) {
+        if (!adminPaths.some((path) => pathname.match(path))){
+          router.push(defaultAdminPath);
         }
-        else {
-          if (isAuxiliar(currentVisorUser.title)) {
-            router.push("/dashboard/visor/teams");
-          }
-          else if (isTeamMember(currentVisorUser.title)) {
-            router.push(`/dashboard/visor/teams/${currentVisorUser.team?.id}`);
-          }
-
-          if (pathname.startsWith("/dashboard/visor/people") && !isSubcoordinadorWaterFall(currentVisorUser.title)) {
-            if (isAuxiliar(currentVisorUser.title)) {
-              router.push("/dashboard/visor/teams");
-            } else {
-              router.push(`/dashboard/visor/teams/${currentVisorUser.team?.id}`);
-            }
-          }
-
-          if (pathname !== `/dashboard/visor/teams/${currentVisorUser.team?.id}` && isTeamMember(currentVisorUser.title)) {
-            router.push(`/dashboard/visor/teams/${currentVisorUser.team?.id}`);
-          }
-        } 
-      } else {
-        if (currentUser && currentUser.id) {
-          getData(currentUser.id);
-        }
+        return;
+      } else if (isAuxiliar(currentVisorUser.title) && !auxiliarPaths.some((path) => pathname.match(path))) {
+        router.push(defaultAuxiliarPath);
+      } else if (isSubcoordinadorWaterFall(currentVisorUser.title) && !coordinatorPaths.some((path) => pathname.match(path))) {
+        router.push(defaultCoordinatorPath);
+      } else if (isTeamMember(currentVisorUser.title) && currentVisorUser.team && !teamMemberPaths.some((path) => pathname.match(path))) {
+        router.push(defaultTeamMemberPath(currentVisorUser.team.id));
       }
-    } else {
-      if (currentUser && currentUser.id) {
-        getData(currentUser.id);
-      }
-      if (pathname.startsWith("/dashboard/visor") && !storedToken) {
-        router.push("/dashboard/base");
-      }
+    } else if (currentUser && currentUser.id) {
+      getData(currentUser.id);
     }
-  }, [pathname, currentVisorUser, currentUser]);
+  }, [pathname, currentVisorUser]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", () => {
-      localStorage.removeItem("visorUser");
+      deleteCookie("visorToken");
+      localStorage.removeItem("visorToken");
     });
 
     return () => {
       window.removeEventListener("beforeunload", () => {
-        localStorage.removeItem("visorUser");
+        deleteCookie("visorToken");
+        localStorage.removeItem("visorToken");
       });
     };
   }, []);
 
   const getData = async (padronID: string) => {
     console.log("getting data for: ", padronID);
-    
+
     const user = await fetch("/dashboard/api/visor/users/userContext", {
       method: "POST",
       headers: {
@@ -125,9 +107,7 @@ export const VisorProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (userBody.code !== "OK") {
       console.log("Error getting user: ", userBody.message);
-      
-      // localStorage.removeItem("visorUser");
-      // cookies().delete("visorUser");
+
       deleteCookie("visorToken");
       localStorage.removeItem("visorToken");
 
