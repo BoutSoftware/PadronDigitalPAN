@@ -4,7 +4,7 @@ import { TITULOS, ESTRUCTURAS, CONFIGURACIONES_GEOGRAFICAS } from "@/configs/cat
 import { VisGeoConf } from "@prisma/client";
 import jtw, { sign } from "jsonwebtoken";
 
-type team = {
+export type team = {
   id: string;
   name: string;
   geographicConf: VisGeoConf;
