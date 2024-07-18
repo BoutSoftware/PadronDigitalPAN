@@ -49,7 +49,7 @@ export const isEnlace = (id: typeof TITULOS[number]["id"]) => {
   return id === "enlace";
 };
 
-export const isCaminate = (id: typeof TITULOS[number]["id"]) => {
+export const isCaminante = (id: typeof TITULOS[number]["id"]) => {
   if ( id === "admin") return true;
   return id === "caminante";
 };
@@ -82,7 +82,7 @@ export const isEnlaceWaterFall = (id: typeof TITULOS[number]["id"]) => {
   return validTitulos.includes(id);
 };
 
-export const isCaminateWaterFall = (id: typeof TITULOS[number]["id"]) => {
+export const isCaminanteWaterFall = (id: typeof TITULOS[number]["id"]) => {
   const index = TITULOS.findIndex(title => title.id === "caminante");
   const validTitulos = TITULOS.slice(0, index + 1).map(title => title.id);
 
@@ -94,7 +94,7 @@ const titlesFunctions = {
   "subcoordinador": isSubcoordinador,
   "auxiliar": isAuxiliar,
   "enlace": isEnlace,
-  "caminante": isCaminate
+  "caminante": isCaminante
 };
 
 export const isValid = ({ id, include, exclude }: {
