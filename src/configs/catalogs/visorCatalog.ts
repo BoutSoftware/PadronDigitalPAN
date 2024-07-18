@@ -201,4 +201,3 @@ export const getTipoPuntos = (ids: string[]) => {
 
 
 
-
