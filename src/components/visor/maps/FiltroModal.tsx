@@ -394,7 +394,7 @@ const FiltroModal = () => {
               Cancelar
             </Button>
             {/* Botón para aplicar los filtros y cerrar el modal */}
-            <Button variant="solid" color="primary" className="bg-sky-700" onClick={() => setShowModal(false)}>
+            <Button variant="solid" color="primary" onClick={() => setShowModal(false)}>
               Aplicar
             </Button>
           </ModalFooter>
