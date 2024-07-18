@@ -7,7 +7,6 @@ interface ModalStructCoorProps {
   coordinator?: {
     id: string
     name: string
-    structureId: string
   }
 }
 
@@ -79,7 +78,7 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
     }));
   };
 
-  const getCurrentCoordinator = async (currentCoordinator: { id: string; name: string; structureId: string; }) => {
+  const getCurrentCoordinator = async (currentCoordinator: { id: string; name: string; }) => {
     const resBody = await (await fetch(`/dashboard/api/visor/structureCoordinators/${currentCoordinator.id}`)).json();
 
     if (resBody.code !== "OK") {
@@ -102,7 +101,7 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
 
     setForm({
       structCoor: currentCoordinator.id,
-      struct: currentCoordinator.structureId,
+      struct: coorInfo.structureId,
       attach: coordinatorData.attach.id,
       tecnical: coordinatorData.technical.id
     });
