@@ -6,28 +6,23 @@ import ModalStructCoor from "@/components/visor/people/ModalStructCoor";
 import ModalSubCoor from "@/components/visor/people/ModalSubCoor";
 import ModalAuxCoor from "@/components/visor/people/ModalAuxCoor";
 
-export interface Person {
-  name: string;
-  fatherLastName: string;
-  motherLastName: string;
-}
-interface User {
+interface VisorUser {
   id: string;
   rol: string;
   active: boolean;
   title: null | string;
-  User: {
-    Person: Person
-  };
+  fullname: string;
+  VisorUser?: VisorUser;
+  User?: VisorUser;
 }
 
 interface users {
   userSearched?: string
-  coordinators: User[];
-  subcoordinators: User[];
-  auxiliaries: User[];
-  users: User[];
-  admins: User[];
+  coordinators: VisorUser[];
+  subcoordinators: VisorUser[];
+  auxiliaries: VisorUser[];
+  users: VisorUser[];
+  admins: VisorUser[];
 }
 
 export default function Page() {
@@ -38,11 +33,11 @@ export default function Page() {
     setUsersFiltered({
       ...usersFiltered,
       userSearched,
-      admins: users?.admins.filter((admin) => admin.User.Person.name.includes(userSearched)) || [],
-      coordinators: users?.coordinators.filter((coor) => coor.User.Person.name.includes(userSearched)) || [],
-      subcoordinators: users?.subcoordinators.filter((sub) => sub.User.Person.name.includes(userSearched)) || [],
-      auxiliaries: users?.auxiliaries.filter((aux) => aux.User.Person.name.includes(userSearched)) || [],
-      users: users?.users.filter((user) => user.User.Person.name.includes(userSearched)) || []
+      admins: users?.admins.filter((admin) => admin.fullname.includes(userSearched)) || [],
+      coordinators: users?.coordinators.filter((coor) => coor.VisorUser?.fullname.includes(userSearched)) || [],
+      subcoordinators: users?.subcoordinators.filter((sub) => sub.User?.fullname.includes(userSearched)) || [],
+      auxiliaries: users?.auxiliaries.filter((aux) => aux.User?.fullname.includes(userSearched)) || [],
+      users: users?.users.filter((user) => user.fullname.includes(userSearched)) || []
     });
   }
 
@@ -59,11 +54,11 @@ export default function Page() {
 
     const { data } = resBody;
     const formattedData: users = {
-      admins: data.Admins,
-      coordinators: data.Coordinators.filter((coor: User) => coor.title === "Coordinador de Estructura"),
-      subcoordinators: data.Coordinators.filter((coor: User) => coor.title === "Subcoordinador"),
-      auxiliaries: data.Coordinators.filter((coor: User) => coor.title === "Auxiliar de Coordinacion"),
-      users: data.Users
+      admins: data.admins,
+      coordinators: data.structureCoordinators,
+      subcoordinators: data.subCoordinators,
+      auxiliaries: data.auxiliaries,
+      users: data.users
     };
 
     setUsers(formattedData);
@@ -96,8 +91,8 @@ export default function Page() {
                 usersFiltered.admins.map((admin, index, array) => (
                   <React.Fragment key={index}>
                     <div className="flex gap-2 items-center my-3">
-                      <Avatar showFallback name={admin.User.Person.name} />
-                      <span className="font-light">{admin.User.Person.name}</span>
+                      <Avatar showFallback name={admin.fullname} />
+                      <span className="font-light">{admin.fullname}</span>
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>
@@ -121,14 +116,13 @@ export default function Page() {
                   <React.Fragment key={index}>
                     <div className="flex gap-2 justify-between items-center my-3">
                       <div className="flex gap-2 items-center">
-                        <Avatar showFallback name={coor.User.Person.name} />
+                        <Avatar showFallback name={coor.VisorUser?.fullname || "Error"} />
                         <div className="flex flex-col">
-                          <span className="font-light">{coor.User.Person.name}</span>
+                          <span className="font-light">{coor.VisorUser?.fullname || "Error"}</span>
                           <span className="font-light text-zinc-400 text-sm">Estructura a cargo</span>
                         </div>
                       </div>
-                      {/* TODO: Preguntar de donde saco la estructura */}
-                      <ModalStructCoor coordinator={{ id: coor.id, name: coor.User.Person.name, structureId: "" }} />
+                      <ModalStructCoor coordinator={{ id: coor.id, name: coor.VisorUser?.fullname || "Error" }} />
                     </div>
                     {index !== (array.length - 1) && <Divider />}
                   </React.Fragment>
@@ -152,9 +146,9 @@ export default function Page() {
                   <React.Fragment key={index}>
                     <div className="flex gap-2 justify-between items-center my-3">
                       <div className="flex gap-2 items-center">
-                        <Avatar showFallback name={sub.User.Person.name} />
+                        <Avatar showFallback name={sub.User?.fullname || "Error"} />
                         <div className="flex flex-col">
-                          <span className="font-light">{sub.User.Person.name}</span>
+                          <span className="font-light">{sub.User?.fullname || "Error"}</span>
                           <span className="font-light text-zinc-400 text-sm">3 Tipos de puntos asignados</span>
                         </div>
                       </div>
@@ -182,13 +176,13 @@ export default function Page() {
                   <React.Fragment key={index}>
                     <div key={index} className="flex gap-2 justify-between items-center my-3">
                       <div className="flex gap-2 items-center">
-                        <Avatar showFallback name={aux.User.Person.name} />
+                        <Avatar showFallback name={aux.User?.fullname || "Error"} />
                         <div className="flex flex-col">
-                          <span className="font-light">{aux.User.Person.name}</span>
+                          <span className="font-light">{aux.User?.fullname || "Error"}</span>
                           <span className="font-light text-zinc-400 text-sm">Querétaro, Corregidora, El Marqués</span>
                         </div>
                       </div>
-                      <ModalAuxCoor auxiliary={{ id: aux.id, name: aux.User.Person.name }} />
+                      <ModalAuxCoor auxiliary={{ id: aux.id, name: aux.User?.fullname || "Error" }} />
 
                     </div>
                     {index !== (array.length - 1) && <Divider />}
@@ -210,8 +204,8 @@ export default function Page() {
               usersFiltered?.users.map((user, index, array) => (
                 <React.Fragment key={index}>
                   <div key={index} className="flex gap-2 items-center my-3">
-                    <Avatar showFallback name={user.User.Person.name} />
-                    <span className="font-light">{user.User.Person.name}</span>
+                    <Avatar showFallback name={user.fullname || "Error"} />
+                    <span className="font-light">{user.fullname || "Error"}</span>
                   </div>
                   {index !== (array.length - 1) && <Divider />}
                 </React.Fragment>
