@@ -1,13 +1,9 @@
 "use client";
-
 import { resBody_getSubcoordinatorid } from "@/app/dashboard/api/visor/subcoordinators/[id]/route";
 import { ESTRUCTURAS, TIPOS_PUNTO } from "@/configs/catalogs/visorCatalog";
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Selection } from "@nextui-org/react";
 import { Visor_User } from "@prisma/client";
 import { useEffect, useState } from "react";
-
-
-
 
 interface ModalSubCoorProps {
   subCoordinatorId?: string;
@@ -87,42 +83,6 @@ export default function ModalSubCoor({ subCoordinatorId }: ModalSubCoorProps) {
     ]);
   };
 
-  const handleSubmit = async () => {
-
-    const formattedFormValues = {
-      userId: formValues.subCoor,
-      technicalId: formValues.technicalId,
-      structureId: [...formValues.struct][0],
-      pointTypesIDs: Array.from(formValues.pointTypes),
-    };
-    
-    const response = await fetch("/dashboard/api/visor/subcoordinators", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formattedFormValues),
-    });
-
-    const body = await response.json();
-
-    if (body.code === "OK") {
-      alert("Subcoordinador agregado correctamente");
-      setFormValues({
-        subCoor: "",
-        struct: new Set([]),
-        technicalId: "",
-        pointTypes: new Set([])
-      });
-      setIsModalOpen(false);
-    } else {
-      alert("Error al agregar el subcoordinador");
-    }
-
-    getData();
-
-  };
-
   useEffect(() => {
     if (isModalOpen) {
       getSubCoors();
@@ -183,6 +143,7 @@ export default function ModalSubCoor({ subCoordinatorId }: ModalSubCoorProps) {
 
   return (
     <>
+      <form>
         <Button
           onPress={() => setIsModalOpen(true)}
           color={!isModifying ? "primary" : "default"}
@@ -195,8 +156,6 @@ export default function ModalSubCoor({ subCoordinatorId }: ModalSubCoorProps) {
               <h3>{isModifying ? "Modificar" : "Agregar"} Subcoordinador</h3>
             </ModalHeader>
             <ModalBody>
-      <form>
-              
               <Autocomplete
                 label="Subcoordinador de estructura"
                 placeholder="Seleccione un subcoordinador de estructura"
@@ -256,8 +215,6 @@ export default function ModalSubCoor({ subCoordinatorId }: ModalSubCoorProps) {
                   ))
                 }
               </Select>
-      </form>
-        
             </ModalBody>
             <ModalFooter className={`flex ${isModifying ? "justify-between" : "justify-end"}`}>
               <Button color="danger" className={`${!isModifying ? "hidden" : ""}`}>Eliminar</Button>
@@ -265,6 +222,7 @@ export default function ModalSubCoor({ subCoordinatorId }: ModalSubCoorProps) {
             </ModalFooter>
           </ModalContent>
         </Modal>
+      </form>
     </>
   );
 }

@@ -89,7 +89,7 @@ export const STATUS_RONDAS = [
     color: "blanco",
     mensaje: "Ronda no iniciada"
   },
-] as const;
+];
 
 
 export const TIPOS_PUNTO: TiposPunto[] = [
@@ -198,7 +198,6 @@ export const STATUS_NECESIDADES: StatusNecesidades[] = [
 export const getTipoPuntos = (ids: string[]) => {
   return TIPOS_PUNTO.filter(tipo => ids.includes(tipo.id));
 };
-
 
 
 
