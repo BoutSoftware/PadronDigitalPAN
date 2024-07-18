@@ -35,7 +35,7 @@ interface TypePoint {
   name: string,
 }
 
-const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
+const TeamCreationModal: React.FC<TeamModalProps> = ({ structureId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("Jerarquia");
   const [selectedGeographicValues, setSelectedGeographicValues] = useState<string[]>([]);
@@ -395,4 +395,4 @@ const TeamModal: React.FC<TeamModalProps> = ({ structureId }) => {
   );
 };
 
-export default TeamModal;
+export default TeamCreationModal;
