@@ -6,18 +6,24 @@ import { createContext, useEffect, useRef, useState } from "react";
 const defaultMapCenter = { lat: 20.84651181570421, lng: -99.79102603354762 };
 const defaultMapZoom = 9;
 
-const figures1Paths = [ // This could be electoral sections
+const figures1Paths = [
+  // This could be electoral sections
+  // And need to be an array of arrays with the following data structure
   { "lat": 37.7749, "lng": -122.4194 },
   { "lat": 37.7849, "lng": -122.4094 },
   { "lat": 37.7749, "lng": -122.3994 }
 ];
-const figures2Paths = [ // This could be local district
+const figures2Paths = [
+  // This could be electoral sections
+  // And need to be an array of arrays with the following data structure
   { "lat": 37.7749, "lng": -122.4294 },
   { "lat": 37.7749, "lng": -122.4194 },
   { "lat": 37.7649, "lng": -122.4194 },
   { "lat": 37.7649, "lng": -122.4294 }
 ];
-const figures3Paths = [ // This could be federal district
+const figures3Paths = [
+  // This could be electoral sections
+  // And need to be an array of arrays with the following data structure
   { "lat": 37.7849, "lng": -122.4194 },
   { "lat": 37.7949, "lng": -122.4094 },
   { "lat": 37.7949, "lng": -122.3994 },
@@ -92,12 +98,13 @@ export default function Map({
   }, [center, zoom]);
 
   useEffect(() => {
+    // consider do this with useMemo
     if (!showPolygones) return;
     if (!map) return;
 
-    const figures1 = new google.maps.Polygon({ paths: figures1Paths, ...polygonOptions });
-    const figures2 = new google.maps.Polygon({ paths: figures2Paths, ...polygonOptions });
-    const figures3 = new google.maps.Polygon({ paths: figures3Paths, ...polygonOptions });
+    const figures1 = new google.maps.Polygon({ paths: figures1Paths, ...polygonOptions }); // This need to be google.maps.Polygon[]
+    const figures2 = new google.maps.Polygon({ paths: figures2Paths, ...polygonOptions }); // This need to be google.maps.Polygon[]
+    const figures3 = new google.maps.Polygon({ paths: figures3Paths, ...polygonOptions }); // This need to be google.maps.Polygon[]
 
     const polygonsListener = map.addListener("zoom_changed", () => {
       drawPolygones(figures1, figures2, figures3);
@@ -106,9 +113,9 @@ export default function Map({
     return () => {
       console.log("Removing listeners...");
       google.maps.event.removeListener(polygonsListener);
-      figures1.setMap(null);
-      figures2.setMap(null);
-      figures3.setMap(null);
+      figures1.setMap(null); // This need to map google.maps.Polygon[] and do figure => figure.setMap(null)
+      figures2.setMap(null); // This need to map google.maps.Polygon[] and do figure => figure.setMap(null)
+      figures3.setMap(null); // This need to map google.maps.Polygon[] and do figure => figure.setMap(null)
     };
 
   }, [showPolygones, map]);
@@ -119,8 +126,6 @@ export default function Map({
 
   const drawPolygones = (figures1: google.maps.Polygon, figures2: google.maps.Polygon, figures3: google.maps.Polygon) => {
     const currentZoom = map!.getZoom();
-    console.log("drawPolygones");
-    console.log(currentZoom);
 
     if (!currentZoom) return;
 
