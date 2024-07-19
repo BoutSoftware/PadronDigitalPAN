@@ -6,9 +6,10 @@ interface RoundsCardProps {
   status: "activa" | "pausada" | "noiniciada";
   pointTypesIDs: string[];
   onStatusChange: (id: string, newStatus: "activa" | "pausada" | "noiniciada") => void;
+  showEditDeleteButtons?: boolean; // Nueva prop opcional
 }
 
-export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusChange }: RoundsCardProps) {
+export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusChange, showEditDeleteButtons = true }: RoundsCardProps) {
   const getClassNames = () => {
     switch (status) {
       case "activa":
@@ -62,7 +63,7 @@ export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusCh
   };
 
   return (
-    <Card key={id} className={`flex flex-row w-full p-4 gap-2 items-center ${getClassNames()}`}>
+    <Card key={id} className={`flex flex-col sm:flex-row w-full p-4 gap-2 items-center ${getClassNames()}`}>
       <div className="flex-1">
         <h1 className="text-2xl">{name}</h1>
       </div>
@@ -85,7 +86,7 @@ export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusCh
             </Button>
           </>
         )}
-        {status === "noiniciada" && (
+        {status === "noiniciada" && showEditDeleteButtons && (
           <>
             <Button isIconOnly aria-label="Eliminar" color="danger" variant="light" size="md" onPress={() => { /* Lógica para eliminar */ }}>
               <span className="material-symbols-outlined">delete</span>
