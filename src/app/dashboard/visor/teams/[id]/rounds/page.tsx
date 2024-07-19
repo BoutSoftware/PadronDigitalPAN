@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button, Divider } from "@nextui-org/react";
 import RoundsCard from "@/components/visor/teams/RoundsCard";
 import { useParams } from "next/navigation";
+import RoundsModal from "@/components/visor/teams/RoundsModal";
 
 interface Round {
   id: string;
