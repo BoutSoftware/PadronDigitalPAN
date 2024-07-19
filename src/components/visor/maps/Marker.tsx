@@ -34,7 +34,6 @@ export default function Marker({ children, position, title, image }: MarkerProps
   const initMarker = async () => {
     if (!map || !loader) return;
 
-    //console.log(`Initializing Marker "${title}"`);
 
     const { AdvancedMarkerElement } = await loader.importLibrary("marker");
 
