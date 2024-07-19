@@ -3,6 +3,7 @@ import { useState } from "react";
 import Map from "@/components/visor/maps/Map";
 import Marker from "@/components/visor/maps/Marker";
 import PopUp from "@/components/visor/maps/PopUp";
+import Header from "@/components/Header";
 
 interface Points {
   structure: string
@@ -47,38 +48,41 @@ export default function GeneralMapPage() {
   }
 
   return (
-    <div className="flex flex-1 gap-8 p-8 h-full">
-      <Map showPolygones className="flex flex-1 h-full">
-        {
-          points.map(({ image, pointsCoordinates, structure, type }) => (
-            pointsCoordinates.map((p, i) => (
-              // When image exist, pass it to marker
-              <Marker key={i} position={p}>
-                <PopUp>
-                  {/* 
+    <div className="flex flex-col flex-1 p-8 gap-4">
+      <Header title="Mapa general" />
+      <div className="flex w-full gap-8 h-full">
+        <Map showPolygones className="flex flex-1 h-full">
+          {
+            points.map(({ image, pointsCoordinates, structure, type }) => (
+              pointsCoordinates.map((p, i) => (
+                // When image exist, pass it to marker
+                <Marker key={i} position={p}>
+                  <PopUp>
+                    {/* 
                     Pop up will be a simple component
                     YES: "How do we do the logic for all points?"
                     NO: "How do we do the logic for dynamic pop ups?" 
                   */}
-                  <h3 className="font-bold">{structure} | &quot;{type}&quot;</h3>
-                  <p>Punto:{i + 1}</p>
-                </PopUp>
-              </Marker>
+                    <h3 className="font-bold">{structure} | &quot;{type}&quot;</h3>
+                    <p>Punto:{i + 1}</p>
+                  </PopUp>
+                </Marker>
+              ))
             ))
-          ))
-        }
-      </Map>
+          }
+        </Map>
 
-      <div className="flex flex-col">
+        <div className="flex flex-col">
 
-        {/* Componente de Alan, me imagino que va a poder setear el state de points de acuerdo a los filtros */}
+          {/* Componente de Alan, me imagino que va a poder setear el state de points de acuerdo a los filtros */}
 
-        <h2 className="text-center">Filtros</h2>
+          <h2 className="text-center">Filtros</h2>
 
-        <div className="flex-1 w-72 bg-zinc-200">
-          Aqui van los filtros de alan
+          <div className="flex-1 w-72 bg-zinc-200">
+            Aqui van los filtros de alan
+          </div>
+
         </div>
-
       </div>
     </div>
   );

@@ -162,8 +162,8 @@ export default function Map({
   const initControls = (myMap: google.maps.Map | null) => {
     const centerControlDiv = document.createElement("div");
     const controlButton = document.createElement("button");
+    controlButton.className = `border-b-2 border-b-white rounded-sm shadow text-zinc-800 text-lg font-medium px-2 py-1 mt-[9px] -ml-10 text-center ${showPolygones ? "bg-blue-500" : "bg-white"}`;
 
-    controlButton.className = `border-b-2 border-b-white rounded-sm shadow text-black text-lg font-medium p-2 text-center ${showPolygones ? "bg-blue-500" : "bg-white"}`;
 
     controlButton.textContent = "Mostrar polígonos";
     controlButton.title = "Click to recenter the map";
