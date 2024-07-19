@@ -9,7 +9,14 @@ interface RoundsCardProps {
   showEditDeleteButtons?: boolean; // Nueva prop opcional
 }
 
-export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusChange, showEditDeleteButtons = true }: RoundsCardProps) {
+export default function RoundsCard({
+  id,
+  name,
+  status,
+  pointTypesIDs,
+  onStatusChange,
+  showEditDeleteButtons = true,
+}: RoundsCardProps) {
   const getClassNames = () => {
     switch (status) {
       case "activa":
@@ -51,7 +58,7 @@ export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusCh
   };
 
   const handlePlay = () => {
-    if (status === "pausada") {
+    if (status === "pausada" || status === "noiniciada") {
       updateStatus("start");
     }
   };
@@ -68,7 +75,10 @@ export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusCh
         <h1 className="text-2xl">{name}</h1>
       </div>
       <div className="flex-1 text-center">
-        <p className="text-sm">{pointTypesIDs.slice(0, 3).join(", ")}{pointTypesIDs.length > 3 && "..."}</p>
+        <p className="text-sm">
+          {pointTypesIDs.slice(0, 3).join(", ")}
+          {pointTypesIDs.length > 3 && "..."}
+        </p>
       </div>
       <div className="flex flex-row gap-4 justify-end flex-1">
         {status === "activa" && (
@@ -85,6 +95,11 @@ export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusCh
               <span className="material-symbols-outlined">play_arrow</span>
             </Button>
           </>
+        )}
+        {status === "noiniciada" && (
+          <Button isIconOnly aria-label="Reproducir" color="default" variant="light" size="md" onPress={handlePlay}>
+            <span className="material-symbols-outlined">play_arrow</span>
+          </Button>
         )}
         {status === "noiniciada" && showEditDeleteButtons && (
           <>

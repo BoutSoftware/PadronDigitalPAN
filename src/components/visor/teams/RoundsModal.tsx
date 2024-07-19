@@ -87,6 +87,24 @@ export default function RoundsModal() {
       <div className={`transition-all duration-500 overflow-hidden ${isExpanded ? "h-[600px] pt-8 overflow-y-auto" : "h-0"}`}>
         {isExpanded && (
           <div className="p-4">
+            {rounds.active.length > 0 && (
+              <div className="flex flex-col gap-4 w-full">
+                <h1 className="text-3xl">Rondas Activas</h1>
+                <div>
+                  {rounds.active.map(activeRound => (
+                    <RoundsCard
+                      key={activeRound.id}
+                      id={activeRound.id}
+                      name={activeRound.name}
+                      status={activeRound.status}
+                      pointTypesIDs={activeRound.pointTypesIDs}
+                      onStatusChange={handleStatusChange}
+                    />
+                  ))}
+                </div>
+                <Divider />
+              </div>
+            )}
             {rounds.paused.length > 0 && (
               <div className="flex flex-col gap-4 w-full">
                 <h1 className="text-3xl">Rondas Pausadas</h1>
@@ -119,7 +137,7 @@ export default function RoundsModal() {
                       status={round.status}
                       pointTypesIDs={round.pointTypesIDs}
                       onStatusChange={handleStatusChange}
-                      showEditDeleteButtons={false}
+                      showEditDeleteButtons={false} // Se pasa la prop para ocultar botones de editar y eliminar
                     />
                   ))}
                 </div>
