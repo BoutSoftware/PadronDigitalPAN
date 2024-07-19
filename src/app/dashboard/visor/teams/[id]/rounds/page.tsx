@@ -85,7 +85,6 @@ export default function RoundsPage() {
 
   return (
     <div className="flex flex-col p-8 gap-8">
-      <RoundsModal/>
       {alertMessage && (
         <div className="alert alert-warning flex justify-between items-center p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg" role="alert">
           <span>{alertMessage}</span>
