@@ -2,20 +2,19 @@
 
 import { cookies } from "next/headers";
 
-export async function getCookie(name: string) {
-  const cookieStore = cookies();
-  return cookieStore.get(name)?.value;
-}
+export const getCookie = async (name: string) => {
+  cookies().get(name)?.value;
+};
 
-export async function setCookie(name: string, value: string) {
-  const cookieStore = cookies();
-  cookieStore.set(name, value, {
+export const setCookie = async (name: string, value: string) => {
+  cookies().set(name, value, {
     maxAge: 60 * 60 * 24 * 30, // 30 days
   });
-}
+};
 
-export async function deleteCookie(name: string) {
-  const cookieStore = cookies();
-  cookieStore.delete(name);
-}
+export const deleteCookie = async (name: string) => {
+  cookies().delete(name);
+};
+
+
 

@@ -108,14 +108,16 @@ export const VisorProvider = ({ children }: { children: React.ReactNode }) => {
     if (userBody.code !== "OK") {
       console.log("Error getting user: ", userBody.message);
 
-      deleteCookie("visorToken");
+      await deleteCookie("visorToken");
+      await deleteCookie("visorTitle");
       localStorage.removeItem("visorToken");
 
       router.push("/dashboard/");
       return;
     }
 
-    setCookie("visorToken", userBody.data.token);
+    await setCookie("visorToken", userBody.data.token);
+    await setCookie("visorTitle", userBody.data.title);
     localStorage.setItem("visorToken", userBody.data.token);
     setCurrentVisorUser(userBody.data as VisorUserContext);
     console.log("Current user: ", userBody.data);
