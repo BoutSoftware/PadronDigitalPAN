@@ -4,13 +4,17 @@ import type { NextRequest } from "next/server";
 import { isAuxiliarWaterFall } from "./configs/userGroups/visorUserGroups";
 import { TITULOS } from "./configs/catalogs/visorCatalog";
 
+// Aqui se van a colocar las rutas protegidas con su respecto filtro
+// Cualquier ruta no colocada en este arreglo no esta protegida y pueden acceder
 const protectedRoutes = [
+  // Por ejemplo, el usuario debe de cumplir con el filtro isAuxiliarWaterFall para poder acceder a la ruta /dashboard/api/visor/subcoordinators
   {path: "/dashboard/api/visor/subcoordinators", filter: isAuxiliarWaterFall}
 
 ];
 
 export function middleware(request: NextRequest, req: NextApiRequest, res: NextApiResponse) {
   const response = NextResponse.next();
+  // TODO: No estoy utilizando el token, ya que se necesita otra libreria para manejarlo. 
   const title = request.cookies.get("visorTitle")?.value as typeof TITULOS[number]["id"];
 
   const protectedPath = protectedRoutes.find(({ path }) => path === request.nextUrl.pathname);
