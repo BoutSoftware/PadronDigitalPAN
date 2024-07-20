@@ -56,15 +56,15 @@ export default function FieldMapLayout() {
     <div className="flex flex-col flex-1 w-full">
       {
 
-        <Map className="flex flex-1 w-full" center={userLocation} zoom={18}>
+        <Map className="flex flex-1 w-full" center={userLocation} zoom={20}>
           {
             userLocation ? (
               <Circle
                 center={userLocation}
-                radius={10}
+                radius={2.5}
                 fillColor="#4592D8"
                 fillOpacity={0.8}
-                strokeWeight={4}
+                strokeWeight={2}
                 strokeColor="#E2E2E2"
               />
             ) : (
