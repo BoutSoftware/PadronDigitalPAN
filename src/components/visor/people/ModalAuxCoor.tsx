@@ -291,8 +291,8 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
 
       if (result.code === "OK") {
         alert("Auxiliar eliminado correctamente");
-        setIsModalOpen(false);
-        // TODO: Definir si se va a recargar lapagina o se actualiza el estado en el componente
+        handleClose();
+        // TODO: Definir si se va a recargar la pagina o se actualiza el estado en el componente
         window.location.reload();
       } else {
         alert("Error al eliminar el auxiliar");
