@@ -69,7 +69,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 async function startRound(roundId: string) {
   const currentRound = await prisma.visor_Round.findUnique({
     where: {
-      id: roundId
+      id: roundId, active: true
     }
   });
 
