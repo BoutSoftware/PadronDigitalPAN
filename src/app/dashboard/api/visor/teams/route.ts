@@ -24,6 +24,7 @@ interface StructureTeams {
 export async function GET() {
   try {
     const teams = await prisma.visor_Team.findMany({
+      where: { active: true },
       select: {
         id: true,
         name: true,

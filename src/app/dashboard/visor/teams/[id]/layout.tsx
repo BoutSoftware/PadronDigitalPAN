@@ -115,12 +115,12 @@ function TeamTabs() {
   return (
     <div className="flex w-full flex-col p-4">
       <Tabs aria-label="Options" classNames={{ panel: "mt-8" }}>
-        <Tab key="Configuración" title="Configuración"></Tab>
-        <Tab key="Tabla" title="Tabla"></Tab>
-        <Tab key="Crear punto" title="Crear punto"></Tab>
-        <Tab key="Visualizar mapa" title="Visualizar mapa"></Tab>
-        <Tab key="Rondas" title="Rondas"><RoundsPage /></Tab>
-        <Tab key="Carga en campo" title="Carga en campo"></Tab>
+        <Tab key="Configuración" title="Configuración" href="config"></Tab>
+        <Tab key="Tabla" title="Tabla" href="table"></Tab>
+        <Tab key="Crear punto" title="Crear punto" href="createPoint"></Tab>
+        <Tab key="Visualizar mapa" title="Visualizar mapa" href="map"></Tab>
+        <Tab key="Rondas" title="Rondas" href="rounds"></Tab>
+        <Tab key="Carga en campo" title="Carga en campo" href="field"></Tab>
       </Tabs>
     </div>
   );

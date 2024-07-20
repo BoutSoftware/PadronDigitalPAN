@@ -49,7 +49,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     // Verify if coordinator exists
     const coordinatorExists = await prisma.visor_structureCoordinator.findFirst({
-      where: { id },
+      where: { id, active: true },
       include: {
         Technical: true,
         Attach: true
