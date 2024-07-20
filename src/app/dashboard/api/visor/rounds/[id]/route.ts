@@ -73,6 +73,10 @@ async function startRound(roundId: string) {
     }
   });
 
+  if (!currentRound) {
+    return null;
+  }
+
   // Check that there are no active rounds
   const activeRounds = await prisma.visor_Round.aggregate({
     _count: {
