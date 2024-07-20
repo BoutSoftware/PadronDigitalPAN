@@ -144,14 +144,17 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
     // TODO: Improve alerts
     alert("Coordinador creado correctamente");
 
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setIsModalOpen(false);
     setForm({
       structCoor: "",
       struct: "",
       tecnical: "",
       attach: ""
     });
-
-    setIsModalOpen(false);
   };
 
   // update structure coordinator
@@ -180,7 +183,7 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
 
     alert("Coordinador modificado correctamente");
 
-    setIsModalOpen(false);
+    handleClose();
   };
 
   // delete structure coordinator
@@ -195,7 +198,7 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
 
     alert("Coordinador eliminado correctamente");
 
-    setIsModalOpen(false);
+    handleClose();
 
     // TODO: Actualizar la pantalla de personas cuando se elimine para que haga de nuevo el fetch de cooordinadores
   };
@@ -221,7 +224,7 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
       >
         {isModifying ? "Modificar" : "Agregar"}
       </Button>
-      <Modal size="lg" isOpen={isModalOpen} isDismissable={true} onClose={() => setIsModalOpen(false)} >
+      <Modal size="lg" isOpen={isModalOpen} isDismissable={true} onClose={handleClose} >
         <ModalContent>
           <form onSubmit={isModifying ?
             (e) => updateStructureCoordinator(e, currentCoordinator.id) :
