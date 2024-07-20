@@ -4,11 +4,16 @@ import type { NextRequest } from "next/server";
 import { isAuxiliarWaterFall } from "./configs/userGroups/visorUserGroups";
 import { TITULOS } from "./configs/catalogs/visorCatalog";
 
+interface IProtectedPath {
+  path: string;
+  filter: (title: typeof TITULOS[number]["id"]) => boolean;
+}
+
 // Aqui se van a colocar las rutas protegidas con su respecto filtro
 // Cualquier ruta no colocada en este arreglo no esta protegida y pueden acceder
-const protectedRoutes = [
+const protectedRoutes: IProtectedPath[] = [
   // Por ejemplo, el usuario debe de cumplir con el filtro isAuxiliarWaterFall para poder acceder a la ruta /dashboard/api/visor/subcoordinators
-  {path: "/dashboard/api/visor/subcoordinators", filter: isAuxiliarWaterFall}
+  // {path: "/dashboard/api/visor/subcoordinators", filter: isAuxiliarWaterFall}
 
 ];
 
