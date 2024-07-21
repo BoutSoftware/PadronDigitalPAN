@@ -15,6 +15,7 @@ interface Props {
   center?: { lat: number, lng: number },
   zoom?: number,
   className?: string
+  isFieldMap?: boolean
   onClick?: (e: google.maps.MapMouseEvent) => void
 }
 
@@ -28,6 +29,7 @@ export default function Map({
   center = defaultMapCenter,
   zoom = defaultMapZoom,
   className,
+  isFieldMap,
   onClick
 }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);

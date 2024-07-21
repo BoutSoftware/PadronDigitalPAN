@@ -1,6 +1,6 @@
 "use client";
 import Circle from "@/components/visor/maps/Circle";
-import { FieldMap } from "@/components/visor/maps/FieldMap";
+import Map from "@/components/visor/maps/Map";
 import { useEffect, useState } from "react";
 
 interface Location {
@@ -56,7 +56,12 @@ export default function FieldMapLayout() {
     <div className="flex flex-col flex-1 w-full">
       {
 
-        <FieldMap className="flex flex-1 w-full" center={userLocation} zoom={20}>
+        <Map
+          className="flex flex-1 w-full"
+          center={userLocation}
+          zoom={20}
+
+        >
           {
             userLocation ? (
               <Circle
@@ -71,7 +76,7 @@ export default function FieldMapLayout() {
               <></>
             )
           }
-        </FieldMap>
+        </Map>
       }
     </div>
   );
