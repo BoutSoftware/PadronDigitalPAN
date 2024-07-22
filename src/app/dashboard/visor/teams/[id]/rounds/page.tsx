@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button, Divider } from "@nextui-org/react";
 import RoundsCard from "@/components/visor/teams/RoundsCard";
 import { useParams } from "next/navigation";
+import RoundsModal from "@/components/visor/teams/RoundsModal";
 
 interface Round {
   id: string;
@@ -95,6 +96,7 @@ export default function RoundsPage() {
 
       {rounds.active.length > 0 && (
         <div className="flex flex-col gap-4 w-full">
+          <RoundsModal/>
           <h1 className="text-3xl">Ronda Activa</h1>
           <div className="w-full">
             {rounds.active.map((activeRound) =>
