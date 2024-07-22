@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button, Divider } from "@nextui-org/react";
 import RoundsCard from "@/components/visor/teams/RoundsCard";
 import { useParams } from "next/navigation";
+import TPuntoModal from "./TPuntoModal";
 
 interface Round {
   id: string;
@@ -26,6 +27,7 @@ export default function RoundsModal() {
     noStarted: [],
     paused: []
   });
+  const [selectedRound, setSelectedRound] = useState<Round | null>(null);
 
   const toggleExpand = () => {
     setIsExpanded(prev => !prev);
@@ -69,8 +71,23 @@ export default function RoundsModal() {
     getRounds();
   };
 
+  const handleRoundClick = (round: Round) => {
+    setSelectedRound(round);
+  };
+
+  const handleBackToRounds = () => {
+    setSelectedRound(null);
+  };
+
+  const handlePauseRounds = () => {
+    if (selectedRound) {
+      console.log(`Pausing round: ${selectedRound.id}`);
+      // Agrega aquí la lógica para pausar la ronda seleccionada
+    }
+  };
+
   return (
-    <div className="relative mx-auto w-full max-w-[740px] transition-all duration-500">
+    <div className="relative mx-auto w-full max-w-[740px] transition-all duration-500 ease-in-out">
       <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -translate-y-1/2">
         <Button
           isIconOnly
@@ -84,64 +101,75 @@ export default function RoundsModal() {
           </span>
         </Button>
       </div>
-      <div className={`transition-all duration-500 overflow-hidden ${isExpanded ? "h-[600px] pt-8 overflow-y-auto" : "h-0"}`}>
+      <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isExpanded ? "max-h-[600px] pt-8 overflow-y-auto" : "h-0"}`}>
         {isExpanded && (
           <div className="p-4">
-            {rounds.active.length > 0 && (
-              <div className="flex flex-col gap-4 w-full">
-                <h1 className="text-3xl">Rondas Activas</h1>
-                <div>
-                  {rounds.active.map(activeRound => (
-                    <RoundsCard
-                      key={activeRound.id}
-                      id={activeRound.id}
-                      name={activeRound.name}
-                      status={activeRound.status}
-                      pointTypesIDs={activeRound.pointTypesIDs}
-                      onStatusChange={handleStatusChange}
-                    />
-                  ))}
-                </div>
-                <Divider />
-              </div>
-            )}
-            {rounds.paused.length > 0 && (
-              <div className="flex flex-col gap-4 w-full">
-                <h1 className="text-3xl">Rondas Pausadas</h1>
-                <div>
-                  {rounds.paused.map(pausedRound => (
-                    <RoundsCard
-                      key={pausedRound.id}
-                      id={pausedRound.id}
-                      name={pausedRound.name}
-                      status={pausedRound.status}
-                      pointTypesIDs={pausedRound.pointTypesIDs}
-                      onStatusChange={handleStatusChange}
-                    />
-                  ))}
-                </div>
-                <Divider />
-              </div>
-            )}
-            {rounds.noStarted.length > 0 && (
-              <div className="flex flex-col gap-4 w-full">
-                <div className="flex flex-row justify-between">
-                  <h1 className="text-3xl">Futuras Rondas</h1>
-                </div>
-                <div className="flex flex-col gap-4">
-                  {rounds.noStarted.map(round => (
-                    <RoundsCard
-                      key={round.id}
-                      id={round.id}
-                      name={round.name}
-                      status={round.status}
-                      pointTypesIDs={round.pointTypesIDs}
-                      onStatusChange={handleStatusChange}
-                      showEditDeleteButtons={false} // Se pasa la prop para ocultar botones de editar y eliminar
-                    />
-                  ))}
-                </div>
-              </div>
+            {selectedRound ? (
+              <TPuntoModal
+                pointTypes={selectedRound.pointTypesIDs}
+                onBackToRounds={handleBackToRounds}
+                selectedRoundId={selectedRound.id}
+                onStatusChange={handleStatusChange}
+              />
+            ) : (
+              <>
+                {rounds.active.length > 0 && (
+                  <div className="flex flex-col gap-4 w-full">
+                    <h1 className="text-3xl">Rondas Activas</h1>
+                    <div>
+                      {rounds.active.map(activeRound => (
+                        <RoundsCard
+                          key={activeRound.id}
+                          id={activeRound.id}
+                          name={activeRound.name}
+                          status={activeRound.status}
+                          pointTypesIDs={activeRound.pointTypesIDs}
+                          onStatusChange={handleStatusChange}
+                          onCardClick={() => handleRoundClick(activeRound)}
+                        />
+                      ))}
+                    </div>
+                    <Divider />
+                  </div>
+                )}
+                {rounds.paused.length > 0 && (
+                  <div className="flex flex-col gap-4 w-full">
+                    <h1 className="text-3xl">Rondas Pausadas</h1>
+                    <div>
+                      {rounds.paused.map(pausedRound => (
+                        <RoundsCard
+                          key={pausedRound.id}
+                          id={pausedRound.id}
+                          name={pausedRound.name}
+                          status={pausedRound.status}
+                          pointTypesIDs={pausedRound.pointTypesIDs}
+                          onStatusChange={handleStatusChange}
+                          onCardClick={() => { }} // No hacemos nada al clicar en rondas pausadas
+                        />
+                      ))}
+                    </div>
+                    <Divider />
+                  </div>
+                )}
+                {rounds.noStarted.length > 0 && (
+                  <div className="flex flex-col gap-4 w-full">
+                    <h1 className="text-3xl">Rondas Futuras</h1>
+                    <div className="flex flex-col gap-4">
+                      {rounds.noStarted.map(noStartedRound => (
+                        <RoundsCard
+                          key={noStartedRound.id}
+                          id={noStartedRound.id}
+                          name={noStartedRound.name}
+                          status={noStartedRound.status}
+                          pointTypesIDs={noStartedRound.pointTypesIDs}
+                          onStatusChange={handleStatusChange}
+                          onCardClick={() => { }} // No hacemos nada al clicar en rondas no iniciadas
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}

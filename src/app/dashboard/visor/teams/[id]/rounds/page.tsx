@@ -96,6 +96,7 @@ export default function RoundsPage() {
 
       {rounds.active.length > 0 && (
         <div className="flex flex-col gap-4 w-full">
+          <RoundsModal/>
           <h1 className="text-3xl">Ronda Activa</h1>
           <div className="w-full">
             {rounds.active.map((activeRound) =>

@@ -6,6 +6,7 @@ interface RoundsCardProps {
   status: "activa" | "pausada" | "noiniciada";
   pointTypesIDs: string[];
   onStatusChange: (id: string, newStatus: "activa" | "pausada" | "noiniciada") => void;
+  onCardClick?: (id: string) => void; // Nueva prop para manejar clics en la card
   showEditDeleteButtons?: boolean; // Nueva prop opcional
 }
 
@@ -15,6 +16,7 @@ export default function RoundsCard({
   status,
   pointTypesIDs,
   onStatusChange,
+  onCardClick, // Nueva prop
   showEditDeleteButtons = true,
 }: RoundsCardProps) {
   const getClassNames = () => {
@@ -69,8 +71,19 @@ export default function RoundsCard({
     }
   };
 
+  const handleClick = () => {
+    if (status === "activa" && onCardClick) {
+      onCardClick(id);
+    }
+  };
+
   return (
-    <Card key={id} className={`flex flex-col sm:flex-row w-full p-4 gap-2 items-center ${getClassNames()}`}>
+    <Card
+      key={id}
+      className={`flex flex-col sm:flex-row w-full p-4 gap-2 items-center ${getClassNames()}`}
+      isPressable={status === "activa"}
+      onPress={handleClick}
+    >
       <div className="flex-1">
         <h1 className="text-2xl">{name}</h1>
       </div>
