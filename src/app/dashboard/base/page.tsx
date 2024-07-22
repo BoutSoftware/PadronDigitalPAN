@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Header from "@/components/Header";
 import { Card, Skeleton, Button } from "@nextui-org/react";
+import { BellSlashSvgrepoCom, CalculatorSvgrepoCom, TriangleSvgrepoCom } from "@/icons";
 
 export default function BasePlatformWelcome() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -14,6 +15,12 @@ export default function BasePlatformWelcome() {
   return (
     <div className="flex flex-grow flex-col p-8">
       <Header title="Bienvenido" />
+      <CalculatorSvgrepoCom fillColor="#ff0000" strokeColor="#ff00f0" size="5em"/>
+      <CalculatorSvgrepoCom fillColor="#00ff00"/>
+      <CalculatorSvgrepoCom fillColor="#0000ff" size="2em"/>
+      <BellSlashSvgrepoCom fillColor="#ff00ff" size="3em"/>
+      <TriangleSvgrepoCom fillColor="#00ffff" size="4em"/>
+
 
       {/* Welcome */}
       <section>
