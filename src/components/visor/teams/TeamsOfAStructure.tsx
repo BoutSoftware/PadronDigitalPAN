@@ -33,24 +33,19 @@ export default function TeamsOfAStructure({ structureId, teams }: TeamsOfAStruct
       </div>
       <Divider />
       <div className="grid grid-cols-2 xl:grid-cols-4 lg:grid-cols-2 justify-items-center gap-6 min-w-full">
-        {
-          teams && (
-            teams.map((team, index) => (
-              <TeamCard
-                key={index}
-                enlace={team.linkName}
-                geographicConf={team.geographicConf}
-                puntos={team.pointTypesIDs?.join(", ")}
-                id={team.id}
-                team={team.name} />
-            ))
-          )}
-        {
-          !teams && (<h4 className="text-foreground-400">No hay equipos para esta estructura</h4>)
-        }
-        {
-          teams?.length == 0 && (<h4 className="text-foreground-400">Ninguna opción coincide con el elemento de busqueda</h4>)
-        }
+        {teams && (
+          teams.map((team, index) => (
+            <TeamCard
+              key={index}
+              enlace={team.linkName}
+              geographicConf={team.geographicConf}
+              puntos={team.pointTypesIDs?.join(", ")}
+              id={team.id}
+              team={team.name} />
+          ))
+        )}
+        {!teams && (<h4 className="text-foreground-400">No hay equipos para esta estructura</h4>)}
+        {teams?.length == 0 && (<h4 className="text-foreground-400">Ninguna opción coincide con el elemento de busqueda</h4>)}
       </div>
     </div>
   );
