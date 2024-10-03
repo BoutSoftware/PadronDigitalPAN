@@ -6,7 +6,6 @@ import { NextRequest, NextResponse } from "next/server";
 // Update subcoordinator
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   interface reqBody {
-    category: string;
     userId: string;
     technicalId: string;
     pointTypesIDs: string[];
@@ -15,41 +14,66 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
   try {
     const reqBody = await request.json() as reqBody;
-    const { category, userId, technicalId, pointTypesIDs, structureId } = reqBody;
+    const { userId, technicalId, pointTypesIDs, structureId } = reqBody;
     const id = params.id;
 
-    if (hasIncompleteFields({ category, userId, technicalId, pointTypesIDs, structureId })) {
+    if (hasIncompleteFields({ userId, technicalId, pointTypesIDs, structureId })) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
     }
 
     // Verify if subcoordinator exists
-    const subcoordinatorExists = await prisma.visor_SubCoordinator.findFirst({ where: { id } });
+    const subcoordinatorExists = await prisma.visor_SubCoordinator.findFirst({
+      where: { id, active: true },
+      include: {
+        Technical: true,
+        User: true
+      }
+    });
 
     if (!subcoordinatorExists) {
       return NextResponse.json({ code: "NOT_FOUND", message: "Subcoordinator not found" });
     }
 
-    // Check if technical id is different to previous one
-    if (technicalId === subcoordinatorExists.technicalId) {
-      await prisma.visor_SubCoordinator.update({
-        where: { id },
-        data: {
-          Technical: {
-            update: {
-              title: null
-            },
+    // Check if technical id is different to previous one and user id to subcoordinator and update user titles
+    await prisma.visor_SubCoordinator.update({
+      where: { id },
+      data: {
+        Technical: {
+          update: {
+            title: technicalId === subcoordinatorExists.technicalId ?
+              subcoordinatorExists.Technical.title : null
+          }
+        },
+        User: {
+          update: {
+            title: userId === subcoordinatorExists.userId ?
+              subcoordinatorExists.User.title : null
           }
         }
-      });
-    }
+      }
+    });
 
     const subcoordinator = await prisma.visor_SubCoordinator.update({
       where: { id },
       data: {
-        userId,
-        technicalId,
         pointTypesIDs,
-        structureId
+        structureId,
+        User: {
+          connect: {
+            id: userId
+          },
+          update: {
+            title: "subcoordinador"
+          }
+        },
+        Technical: {
+          connect: {
+            id: technicalId
+          },
+          update: {
+            title: "tecSubcoordinador"
+          }
+        }
       }
     });
 
@@ -72,7 +96,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const id = params.id;
 
     const subcoordinator = await prisma.visor_SubCoordinator.findFirst({
-      where: { id },
+      where: { id, active: true },
       select: {
         id: true,
         pointTypesIDs: true,
@@ -129,7 +153,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     // Get base url
     const baseUrl = request.nextUrl.origin;
     const id = params.id;
-    
+
     const currentSubcoordinator = await prisma.visor_SubCoordinator.findUnique({
       where: { id, active: true },
       include: {

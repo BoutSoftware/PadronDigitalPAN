@@ -101,7 +101,8 @@ export default function Login() {
         </div>
 
         {/* TODO: Add image */}
-        <div id="image" className="w-3/6 bg-content3"></div>
+        {/* <div id="image" className="w-3/6 bg-content3"></div> */}
+        <Skeleton className="w-3/6 rounded-lg" />
       </div>
 
       <footer>
@@ -113,7 +114,7 @@ export default function Login() {
           className="w-screen h-20"
         />
 
-        <div className="flex flex-row justify-between bg-secondary p-8 -mt-1">
+        <div className="flex flex-row justify-between bg-primary p-8 -mt-1">
           <div className="flex flex-col gap-2">
             <Skeleton className="h-3 w-36 rounded-lg" />
             <Skeleton className="h-3 w-32 rounded-lg" />

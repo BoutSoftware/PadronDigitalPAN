@@ -10,10 +10,15 @@ export async function GET(request: NextRequest) {
 
     const technicals = await prisma.visor_User.findMany({
       where: {
+        active: true,
         rol: "Technical",
         ...(onlyFree ? { title: null } : undefined)
       },
     });
+
+    if (!technicals.length) {
+      return NextResponse.json({ code: "NOT_FOUND", message: "No technicals found" });
+    }
 
     return NextResponse.json({ code: "OK", message: "Technicals retrieved succesfully", data: technicals });
 

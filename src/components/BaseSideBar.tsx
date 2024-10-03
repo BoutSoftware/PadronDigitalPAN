@@ -79,7 +79,7 @@ function SideBarBottomContent() {
             as="button"
             avatarProps={{
               src:
-                currentUser?.profilePicture || "/default-profile-picture.jpg", // Replace with default image path
+                currentUser?.profilePicture
             }}
             className="w-full py-2 px-4 bg-secondary justify-start gap-2"
             description={currentUser?.username}

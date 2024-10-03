@@ -19,7 +19,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     }
 
     // Verify if team exists
-    const teamExists = await prisma.visor_Team.findFirst({ where: { id } });
+    const teamExists = await prisma.visor_Team.findFirst({ where: { id, active: true } });
     if (!teamExists) {
       return NextResponse.json({ code: "NOT_FOUND", message: "Team not found" });
     }
