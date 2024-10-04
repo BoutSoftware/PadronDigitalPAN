@@ -105,7 +105,7 @@ export default function Page() {
           <div className="flex flex-col">
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
-                <h2 className="text-xl">Coordinador de estructura</h2>
+                <h2 className="text-xl">Coordinadores</h2>
                 <span className="text-zinc-400">{usersFiltered?.coordinators.length}/{users?.coordinators.length}</span>
               </div>
               <ModalStructCoor />
@@ -135,7 +135,7 @@ export default function Page() {
           <div className="flex flex-col">
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
-                <h2 className="text-xl">Sub Coordinador</h2>
+                <h2 className="text-xl">Responsables</h2>
                 <span className="text-zinc-400">{usersFiltered?.subcoordinators.length}/{users?.subcoordinators.length}</span>
               </div>
               <ModalSubCoor />
@@ -165,7 +165,7 @@ export default function Page() {
           <div className="flex flex-col">
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
-                <h2 className="text-xl">Auxiliar de coordinación</h2>
+                <h2 className="text-xl">Auxiliares</h2>
                 <span className="text-zinc-400">{usersFiltered?.auxiliaries.length}/{users?.auxiliaries.length}</span>
               </div>
               <ModalAuxCoor />
@@ -196,7 +196,7 @@ export default function Page() {
         </div>
         <div className="flex-1 flex flex-col">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl mb-2">Usuarios del módulo</h2>
+            <h2 className="text-xl mb-2">Usuarios Base</h2>
             <span className="text-zinc-400">{usersFiltered?.users.length}/{users?.users.length}</span>
           </div>
           {
