@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import Header from "@/components/Header";
 import { Card, Skeleton, Button } from "@nextui-org/react";
+import FiltroModal from "@/components/visor/maps/FiltroModal";
+import Filters from "@/components/visor/Filters";
 
 export default function BasePlatformWelcome() {
   const [isLoaded, setIsLoaded] = useState(false);
