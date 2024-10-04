@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Header from "@/components/Header";
 import { Card, Skeleton, Button } from "@nextui-org/react";
 import FiltroModal from "@/components/visor/maps/FiltroModal";
+import Filters from "@/components/visor/Filters";
 
 export default function BasePlatformWelcome() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -39,7 +40,6 @@ export default function BasePlatformWelcome() {
 
       {/* Next Events */}
       <section className="mt-12">
-        <FiltroModal/>
         <h2 className="">Proximos Eventos</h2>
         <div className="flex flex-row gap-8 mt-8">
           <Card className="w-[200px] space-y-5 p-4" radius="lg">
