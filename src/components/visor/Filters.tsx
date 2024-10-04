@@ -1,4 +1,4 @@
-import { Accordion, AccordionItem, Button, Checkbox, Select, SelectItem } from "@nextui-org/react";
+import { Accordion, AccordionItem, Button, Checkbox, Divider, Select, SelectItem } from "@nextui-org/react";
 import { ChangeEvent, useEffect, useState } from "react";
 
 export default function Filters() {
@@ -38,23 +38,32 @@ export default function Filters() {
   });
 
   const handleSubmit = () => {
-    
+    console.log(filters);
+  };
+
+  const handleClear = () => {
+    const newFilters = filters;
   };
 
   return (
-    <div className="max-w-sm">
-      <h2 className="text-2xl font-bold">Filtros</h2>
-      <span>Viendo: 100/1200</span>
-      <Accordion>
-        <AccordionItem key="activacion1" aria-label="Activacion 1" title="Activacion 1">
-          <ActivationTypeXFilters filters={filters.activacion1} setFilters={(activationTypeFilters) => setFilters({ ...filters, activacion1: activationTypeFilters })} />
-        </AccordionItem>
-        <AccordionItem key="activacion2" aria-label="Activacion 2" title="Activacion 2">
-          <ActivationTypeXFilters filters={filters.activacion2} setFilters={(activationTypeFilters) => setFilters({ ...filters, activacion2: activationTypeFilters })} />
-        </AccordionItem>
-      </Accordion>
-      <div className="flex justify-end">
-        <Button variant="solid" color="primary">Aplicar</Button>
+    <div className="max-w-sm overflow-hidden flex flex-col h-full justify-start">
+      <h2 className="text-2xl font-bold text-center">Filtros</h2>
+      <span className="text-sm opacity-75 text-center">Viendo: 100/1200</span>
+
+      <div className="overflow-auto px-1 py-4">
+        <Accordion className="shadow-lg rounded-lg">
+          <AccordionItem key="activacion1" aria-label="Activacion 1" title="Activacion 1">
+            <ActivationTypeXFilters filters={filters.activacion1} setFilters={(activationTypeFilters) => setFilters({ ...filters, activacion1: activationTypeFilters })} />
+          </AccordionItem>
+          <AccordionItem key="activacion2" aria-label="Activacion 2" title="Activacion 2">
+            <ActivationTypeXFilters filters={filters.activacion2} setFilters={(activationTypeFilters) => setFilters({ ...filters, activacion2: activationTypeFilters })} />
+          </AccordionItem>
+        </Accordion>
+      </div>
+
+      <div className="flex items-end justify-end pt-4 gap-4 mt-auto">
+        <Button variant="bordered" color="default">Limpiar</Button>
+        <Button variant="solid" color="primary" onClick={handleSubmit}>Aplicar</Button>
       </div>
     </div>
   );
