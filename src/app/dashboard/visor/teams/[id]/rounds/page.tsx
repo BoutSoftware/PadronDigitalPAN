@@ -5,6 +5,7 @@ import { Button, Divider } from "@nextui-org/react";
 import RoundsCard from "@/components/visor/teams/RoundsCard";
 import { useParams } from "next/navigation";
 import RoundsModal from "@/components/visor/teams/RoundsModal";
+import Link from "next/link";
 
 interface Round {
   id: string;
@@ -136,7 +137,7 @@ export default function RoundsPage() {
         <div className="flex flex-col gap-4 w-full">
           <div className="flex flex-row justify-between">
             <h1 className="text-3xl">Futuras Rondas</h1>
-            <Button color="primary">Añadir nueva ronda</Button>
+            <Button color="primary" href={`/dashboard/visor/teams/${teamId}/rounds/new`} as={Link}>Añadir nueva ronda</Button>
           </div>
           <div className="flex flex-col gap-4">
             {rounds.noStarted.map((round) => (
