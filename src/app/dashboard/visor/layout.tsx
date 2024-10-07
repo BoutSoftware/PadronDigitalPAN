@@ -3,13 +3,20 @@ import { ReactNode, useState } from "react";
 import { Button, Divider, Listbox, ListboxItem } from "@nextui-org/react";
 import DropdownChangeModule from "@/components/DropdownChangeModule";
 import { useRouter } from "next/navigation";
+import { useVisor, VisorProvider } from "@/contexts/VisorContext";
+import { isCaminante } from "@/configs/userGroups/visorUserGroups";
+import { TITULOS } from "@/configs/catalogs/visorCatalog";
+
+
 
 export default function LayoutVisor({ children }: { children: ReactNode }) {
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <VisorSidebar />
-      {children}
+    <div className="flex h-screen items-stretch overflow-hidden">
+      <VisorProvider>
+        <VisorSidebar />
+        {children}
+      </VisorProvider>
     </div>
   );
 }
@@ -18,8 +25,8 @@ function VisorSidebar() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
 
-  // TODO: implement logic of when current user has a role of caminante.
-  const isCaminante = false;
+  const { currentVisorUser } = useVisor();
+  const isCam = currentVisorUser?.title && isCaminante(currentVisorUser.title as typeof TITULOS[number]["id"]);
 
   return (
     <Listbox
@@ -35,7 +42,8 @@ function VisorSidebar() {
       color="secondary"
       aria-label="Visor Navigation"
       onAction={(key) => { router.push(String(key)); }}
-      className={`hidden lg:flex items-center px-2 py-4 max-w-60 bg-primary text-primary-foreground transition-all ${isCaminante && "!hidden"} ${!isOpen && "w-4 p-0 hide-children"}`}
+      // className={`hidden lg:flex items-center px-2 py-4 max-w-60 bg-primary text-primary-foreground transition-all ${isCam && "!hidden"} ${!isOpen && "w-4 p-0 hide-children"}`}
+      className={`hidden lg:flex items-center px-2 py-4 max-w-60 bg-primary text-primary-foreground transition-all ${!isOpen && "w-4 p-0 hide-children"}`}
     >
       <ListboxItem
         startContent={<span className="material-symbols-outlined">groups</span>}

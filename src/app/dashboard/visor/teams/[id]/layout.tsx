@@ -4,6 +4,10 @@ import { Tabs, Tab } from "@nextui-org/react";
 import { useParams } from "next/navigation";
 import Header from "@/components/Header";
 import RoundsPage from "@/components/visor/teams/RoundsPage";
+import { useVisor } from "@/contexts/VisorContext";
+import { VisGeoConf } from "@prisma/client";
+import { isCaminante } from "@/configs/userGroups/visorUserGroups";
+import { TITULOS } from "@/configs/catalogs/visorCatalog";
 
 interface Team {
   id: string,
@@ -13,17 +17,49 @@ interface Team {
 export default function LayoutTeam({ children }: { children: ReactNode }) {
   const [team, setTeam] = useState<Team>();
   const params = useParams<{ id: string }>();
+  const { currentVisorUser } = useVisor();
+
+  //get team
+  const getTeam = async () => {
+    const resBody = await (await fetch(`/dashboard/api/visor/teams/${params.id}`, { method: "GET" })).json();
+    if (resBody.code !== "OK"){
+      console.error("Error getting team");
+      return;
+    }
+    setTeam(resBody.data);
+    if (currentVisorUser){
+      const data = resBody.data;
+      const geographicConf: VisGeoConf = {
+        geographicLevel: data.geographicConf.geographicLevel.id,
+        values: data.geographicConf.values.map((value: { id: string }) => value.id)
+      };
+    
+      const pointTypesIDs = data.TiposPunto.map((pointType: { id: string }) => pointType.id);
+    
+      currentVisorUser.team = {
+        id: data.id,
+        name: data.name,
+        geographicConf: geographicConf,
+        pointTypesIDs: pointTypesIDs
+      };
+    }
+  };
+
+
 
   useEffect(() => {
+    getTeam();
 
-    // fetch(params.id)
+    console.log(currentVisorUser);
+    //TODO: Unset team to the context (doubt)
+    // return () => {
+    //   // Unset the team from the Context
+    //   if (currentVisorUser){
+    //     currentVisorUser.team = undefined;
+    //   }
+    // };
 
-    setTeam({
-      id: params.id,
-      name: "Nombre del equipo"
-    });
-
-  }, [params.id]);
+  }, [params.id, currentVisorUser]);
 
   return (
     <div className="flex flex-col w-full">
@@ -40,16 +76,19 @@ export default function LayoutTeam({ children }: { children: ReactNode }) {
 
 function TeamTabs() {
   // Estado para gestionar si el usuario es miembro
-  const [isCaminante, setIsCaminante] = useState(false);
+  const [isCam, setIsCaminante] = useState(false);
   // Estado para gestionar si estamos en modo móvil
   const [isMobile, setIsMobile] = useState(false);
+  const { currentVisorUser } = useVisor();
 
   // Simulación para establecer si el usuario es miembro (ejemplo, en un caso real esto vendría de props, contexto o una llamada API)
   useEffect(() => {
     // Aquí puedes implementar la lógica para determinar si el usuario es miembro.
     // Por ahora, lo establecemos estáticamente a `false`.
-    setIsCaminante(false);
-  }, []);
+    setIsCaminante(
+      isCaminante(currentVisorUser?.title as typeof TITULOS[number]["id"])
+    );
+  }, [currentVisorUser]);
 
   // Lógica para detectar si estamos en modo móvil
   useEffect(() => {
@@ -69,7 +108,7 @@ function TeamTabs() {
   }, []);
 
   // Si el usuario es miembro o estamos en modo móvil, no mostrar las tabs
-  if (isCaminante || isMobile) {
+  if (isCam || isMobile) {
     return null;
   }
 
