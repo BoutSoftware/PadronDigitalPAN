@@ -69,9 +69,13 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 async function startRound(roundId: string) {
   const currentRound = await prisma.visor_Round.findUnique({
     where: {
-      id: roundId
+      id: roundId, active: true
     }
   });
+
+  if (!currentRound) {
+    return null;
+  }
 
   // Check that there are no active rounds
   const activeRounds = await prisma.visor_Round.aggregate({
