@@ -6,9 +6,17 @@ interface RoundsCardProps {
   status: "activa" | "pausada" | "noiniciada";
   pointTypesIDs: string[];
   onStatusChange: (id: string, newStatus: "activa" | "pausada" | "noiniciada") => void;
+  showEditDeleteButtons?: boolean; // Nueva prop opcional
 }
 
-export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusChange }: RoundsCardProps) {
+export default function RoundsCard({
+  id,
+  name,
+  status,
+  pointTypesIDs,
+  onStatusChange,
+  showEditDeleteButtons = true,
+}: RoundsCardProps) {
   const getClassNames = () => {
     switch (status) {
       case "activa":
@@ -50,7 +58,7 @@ export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusCh
   };
 
   const handlePlay = () => {
-    if (status === "pausada") {
+    if (status === "pausada" || status === "noiniciada") {
       updateStatus("start");
     }
   };
@@ -62,12 +70,15 @@ export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusCh
   };
 
   return (
-    <Card key={id} className={`flex flex-row w-full p-4 gap-2 items-center ${getClassNames()}`}>
+    <Card key={id} className={`flex flex-col sm:flex-row w-full p-4 gap-2 items-center ${getClassNames()}`}>
       <div className="flex-1">
         <h1 className="text-2xl">{name}</h1>
       </div>
       <div className="flex-1 text-center">
-        <p className="text-sm">{pointTypesIDs.slice(0, 3).join(", ")}{pointTypesIDs.length > 3 && "..."}</p>
+        <p className="text-sm">
+          {pointTypesIDs.slice(0, 3).join(", ")}
+          {pointTypesIDs.length > 3 && "..."}
+        </p>
       </div>
       <div className="flex flex-row gap-4 justify-end flex-1">
         {status === "activa" && (
@@ -86,6 +97,11 @@ export default function RoundsCard({ id, name, status, pointTypesIDs, onStatusCh
           </>
         )}
         {status === "noiniciada" && (
+          <Button isIconOnly aria-label="Reproducir" color="default" variant="light" size="md" onPress={handlePlay}>
+            <span className="material-symbols-outlined">play_arrow</span>
+          </Button>
+        )}
+        {status === "noiniciada" && showEditDeleteButtons && (
           <>
             <Button isIconOnly aria-label="Eliminar" color="danger" variant="light" size="md" onPress={() => { /* Lógica para eliminar */ }}>
               <span className="material-symbols-outlined">delete</span>
