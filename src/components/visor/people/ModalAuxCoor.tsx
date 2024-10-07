@@ -98,7 +98,6 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
   const isModifying = useMemo(() => !!currentAuxiliary, [currentAuxiliary]);
   const currentSubCoordinator = useMemo(() => formOptions.subCoordinators.find((subCoor) => formValues.subCoordinatorId === subCoor.id), [formOptions, formValues]);
 
-
   useEffect(() => {
     if (isModalOpen) {
       getStructures();
@@ -273,7 +272,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
 
       if (resBody.code === "OK") {
         alert(`Auxiliar ${isModifying ? "modificado" : "agregado"} correctamente`);
-        handleClose();
+        handleClose();     
       } else {
         alert(`Error al ${isModifying ? "modificar" : "agregar"} el auxiliar: ${resBody.message}`);
       }
@@ -285,20 +284,22 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
 
   const handleDeleteAuxiliary = async () => {
     try {
-      const res = await fetch(`/dashboard/api/visor/auxiliaries/${formValues.userId}`, {
+      const res = await fetch(`/dashboard/api/visor/auxiliaries/${currentAuxiliary?.id}`, {
         method: "DELETE",
       });
       const result = await res.json();
 
       if (result.code === "OK") {
         alert("Auxiliar eliminado correctamente");
-        setIsModalOpen(false);
+        handleClose();
+        // TODO: Definir si se va a recargar la pagina o se actualiza el estado en el componente
+        window.location.reload();
       } else {
         alert("Error al eliminar el auxiliar");
       }
     } catch (error) {
       console.error("Error deleting auxiliary coordinator:", error);
-      alert("Error al eliminar el auxiliar. Revisa la consola para más detalles.");
+      alert("Error al eliminar el auxiliar");
     }
   };
 

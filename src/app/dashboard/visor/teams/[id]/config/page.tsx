@@ -1,13 +1,15 @@
 "use client";
 import { Auxiliar, Enlace, GeoArea, Miembros, PointType, Structure } from "@/components/visor/teams/config/";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { TeamInterface } from "@/utils/VisorInterfaces";
+import { Button } from "@nextui-org/react";
 
 export default function Page() {
 
   const [team, setTeam] = useState<TeamInterface | null>(null);
   const { id: teamId } = useParams();
+  const router = useRouter();
 
   useEffect(() => {
     laodTeam();
@@ -31,6 +33,19 @@ export default function Page() {
     return resBody.data;
   }
 
+  const deleteTeam = async () => {
+    const resBody = await fetch(`/dashboard/api/visor/teams/${teamId}`, {
+      method: "DELETE"
+    }).then((res) => res.json());
+
+    if (resBody.code !== "OK") {
+      return alert("Error al eliminar el equipo");
+    }
+
+    alert("Equipo eliminado correctamente");
+    router.push("/dashboard/visor/teams");
+  };
+
 
   return (
     <div className="p-4 px-8 flex gap-8">
@@ -53,6 +68,19 @@ export default function Page() {
 
         {team && <PointType team={team} loadTeam={laodTeam} teamId={teamId.toString()} />}
 
+        <Button
+          onPress={
+            () => {
+              if (confirm("¿Estás seguro de que deseas eliminar este equipo?")) {
+                deleteTeam();
+              }
+            }
+          }
+          color="danger"
+          className="self-end"
+        >
+          Eliminar equipo
+        </Button>
       </div>
     </div>
   );

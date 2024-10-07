@@ -130,6 +130,24 @@ export default function ModalSubCoor({ subCoordinatorId }: ModalSubCoorProps) {
     }
   };
 
+  const deleteSubcoordinator = async () => {
+    const resBody = await fetch(`/dashboard/api/visor/subcoordinators/${subCoordinatorId}`, {
+      method: "DELETE"
+    }).then((res) => res.json());
+
+    if (resBody.code !== "OK") {
+      return alert("Error al eliminar el subcoordinador");
+    }
+
+    alert("Subcoordinador eliminado correctamente");
+
+    handleClose();
+    window.location.reload();
+
+    // TODO: Actualizar la pantalla de personas cuando se elimine para que haga de nuevo el fetch de subcooordinadores
+  };
+
+
   const handleClose = () => {
     setIsModalOpen(false);
 
@@ -217,7 +235,19 @@ export default function ModalSubCoor({ subCoordinatorId }: ModalSubCoorProps) {
               </Select>
             </ModalBody>
             <ModalFooter className={`flex ${isModifying ? "justify-between" : "justify-end"}`}>
-              <Button color="danger" className={`${!isModifying ? "hidden" : ""}`}>Eliminar</Button>
+              <Button 
+                color="danger" 
+                className={`${!isModifying ? "hidden" : ""}`}
+                onPress={
+                  () => {
+                    if (confirm("¿Estás seguro de que deseas eliminar este subcoordinador?")) {
+                      deleteSubcoordinator();
+                    }
+                  }
+                }
+              >
+                Eliminar
+              </Button>
               <Button color="primary" type="submit" onClick={handleSubmit}>{isModifying ? "Modificar" : "Agregar"}</Button>
             </ModalFooter>
           </ModalContent>
