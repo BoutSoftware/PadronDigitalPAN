@@ -16,13 +16,13 @@ export const fakeStructCoors = [
     name: "Juan Carlos Pérez Gómez",
     id: "1",
     structureId: "gubernamental",
-    estructura: "Gubernamental",
+    activacion: "Gubernamental",
     tecnico: "María Elena López Martínez",
     adjunto: "Carlos Eduardo Sánchez Ruiz"
   },
   {
     name: "Ana Isabel Rodríguez Torres",
-    estructura: "Campaña",
+    activacion: "Campaña",
     id: "2",
     structureId: "campaña",
     tecnico: "Luis Alberto Fernández Jiménez",
@@ -32,7 +32,7 @@ export const fakeStructCoors = [
     name: "Pedro Javier García Hernández",
     id: "2",
     structureId: "diae",
-    estructura: "Día E",
+    activacion: "Día E",
     tecnico: "Lucía María Martín Sánchez",
     adjunto: "José Antonio Torres Pérez"
   },
@@ -40,7 +40,7 @@ export const fakeStructCoors = [
     name: "Laura Beatriz González Ramírez",
     id: "4",
     structureId: "politico",
-    estructura: "Político",
+    activacion: "Político",
     tecnico: "David Alejandro Romero Díaz",
     adjunto: "Elena Patricia Ruiz Fernández"
   }
@@ -50,21 +50,21 @@ export const fakeModuleSubCoor = [
   {
     id: "667cfddd2c59d249686e598d",
     "name": "SubCoordinador 1",
-    "estructura": "Gubernamental",
+    "activacion": "Gubernamental",
     "tecnico": "José Manuel Fernández Pérez",
     "tipoPunto": ["Logística", "Finanzas"]
   },
   {
     id: "667cfddd2c59d249686e598d",
     "name": "Marta Lucía Torres González",
-    "estructura": "Campaña",
+    "activacion": "Campaña",
     "tecnico": "Luis Alberto Hernández Jiménez",
     "tipoPunto": ["Comunicación", "Publicidad"]
   },
   {
     id: "667cfddd2c59d249686e598d",
     "name": "Raúl Ernesto García Morales",
-    "estructura": "Día E",
+    "activacion": "Día E",
     "tecnico": "Ana Patricia Rodríguez Martínez",
     "tipoPunto": ["Organización", "Voluntariado"]
   },
@@ -74,7 +74,7 @@ export const fakeModuleAux = [
   {
     id: "667cff822c59d249686e598e",
     "name": "Noel",
-    "estructura": "Gubernamental",
+    "activacion": "Gubernamental",
     "subCoor": "Alejandro Luis Gómez Fernández",
     "municipios": ["Ciudad de México", "Naucalpan", "Toluca"],
     "tecnico": "Laura Patricia Hernández García"
@@ -82,7 +82,7 @@ export const fakeModuleAux = [
   {
     id: "1",
     "name": "Diego Alejandro Ramírez Martínez",
-    "estructura": "Campaña",
+    "activacion": "Campaña",
     "subCoor": "Isabel Cristina Hernández López",
     "municipios": ["Guadalajara", "Zapopan", "Tlaquepaque"],
     "tecnico": "Carlos Eduardo Fernández Pérez"
@@ -90,7 +90,7 @@ export const fakeModuleAux = [
   {
     id: "2",
     "name": "Lucía Fernanda Gómez Morales",
-    "estructura": "Día E",
+    "activacion": "Día E",
     "subCoor": "Raúl Ernesto García Morales",
     "municipios": ["Monterrey", "San Pedro", "Apodaca"],
     "tecnico": "María José Sánchez Ruiz"
@@ -98,7 +98,7 @@ export const fakeModuleAux = [
   {
     id: "3",
     "name": "Andrés Felipe Martínez Torres",
-    "estructura": "Político",
+    "activacion": "Político",
     "subCoor": "Carmen Teresa Martínez Santos",
     "municipios": ["Puebla", "Cholula", "Atlixco"],
     "tecnico": "José Manuel Pérez Ramírez"
@@ -106,7 +106,7 @@ export const fakeModuleAux = [
   {
     id: "4",
     "name": "Valeria Sofía González Ramírez",
-    "estructura": "Gubernamental",
+    "activacion": "Gubernamental",
     "subCoor": "Gabriel Antonio López Ramírez",
     "municipios": ["Querétaro", "San Juan del Río", "Tequisquiapan"],
     "tecnico": "Luis Alberto Hernández Jiménez"

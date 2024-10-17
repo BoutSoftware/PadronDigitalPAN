@@ -100,7 +100,7 @@ export default function CreateRoundPage() {
           selectionMode="multiple"
           selectedKeys={form.pointTypesKeys}
           onSelectionChange={(pointTypesKeys) => setForm({ ...form, pointTypesKeys })}
-          items={TIPOS_PUNTO.filter((pt) => pt.estructuraId === currentVisorUser.team.structureId)}
+          items={TIPOS_PUNTO.filter((pt) => pt.activacionId === currentVisorUser.team.structureId)}
         >
           {(pointType) => <SelectItem key={pointType.id}>{pointType.nombre}</SelectItem>}
         </Select>

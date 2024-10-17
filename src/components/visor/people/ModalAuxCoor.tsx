@@ -1,6 +1,6 @@
 import { useEffect, useState, FormEvent, useMemo } from "react";
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react";
-import { ESTRUCTURAS } from "@/configs/catalogs/visorCatalog";
+import { ACTIVATIONS } from "@/configs/catalogs/visorCatalog";
 
 interface ModalAuxCoorProps {
   auxiliary?: {
@@ -78,7 +78,7 @@ interface FormOptions {
   technicals: Technical[];
 }
 
-export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCoorProps) {
+export default function ModalAux({ auxiliary: currentAuxiliary }: ModalAuxCoorProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formOptions, setFormOptions] = useState<FormOptions>({
     coordinators: [],
@@ -97,25 +97,6 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
 
   const isModifying = useMemo(() => !!currentAuxiliary, [currentAuxiliary]);
   const currentSubCoordinator = useMemo(() => formOptions.subCoordinators.find((subCoor) => formValues.subCoordinatorId === subCoor.id), [formOptions, formValues]);
-
-  useEffect(() => {
-    if (isModalOpen) {
-      getStructures();
-      getCoordinators();
-      getMunicipios();
-      getTechnicals();
-
-      if (isModifying) {
-        getAuxiliaryDetails();
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isModalOpen, isModifying]);
-
-  useEffect(() => {
-    getSubCoordinators();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formValues.structureId]);
 
   const getCoordinators = async () => {
     try {
@@ -136,7 +117,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
 
   const getSubCoordinators = async () => {
     try {
-      const resBody = await fetch(`/dashboard/api/visor/subcoordinators?estructura=${formValues.structureId}`).then((res) => res.json());
+      const resBody = await fetch(`/dashboard/api/visor/subcoordinators?activacion=${formValues.structureId}`).then((res) => res.json());
 
       if (resBody.code === "OK") {
         setFormOptions((prevOptions) => ({
@@ -181,7 +162,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
   const getStructures = () => {
     setFormOptions((prevOptions) => ({
       ...prevOptions,
-      structures: ESTRUCTURAS.map((structure) => ({
+      structures: ACTIVATIONS.map((structure) => ({
         id: structure.id,
         name: structure.nombre,
       })),
@@ -272,7 +253,7 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
 
       if (resBody.code === "OK") {
         alert(`Auxiliar ${isModifying ? "modificado" : "agregado"} correctamente`);
-        handleClose();     
+        handleClose();
       } else {
         alert(`Error al ${isModifying ? "modificar" : "agregar"} el auxiliar: ${resBody.message}`);
       }
@@ -303,6 +284,27 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
     }
   };
 
+  useEffect(() => {
+    if (isModalOpen) {
+      getStructures();
+      getCoordinators();
+      getMunicipios();
+      getTechnicals();
+
+      if (isModifying) {
+        getAuxiliaryDetails();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isModalOpen, isModifying]);
+
+  useEffect(() => {
+    if (formValues.structureId)
+      getSubCoordinators();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formValues.structureId]);
+
+
   return (
     <>
       <Button onPress={() => setIsModalOpen(true)} color={isModifying ? "default" : "primary"} variant={isModifying ? "light" : "solid"}>
@@ -329,8 +331,8 @@ export default function ModalAuxCoor({ auxiliary: currentAuxiliary }: ModalAuxCo
                 ))}
               </Autocomplete>
               <Select
-                label="Estructura"
-                placeholder="Selecciona una estructura"
+                label="Activacion"
+                placeholder="Selecciona una activacion"
                 selectedKeys={formValues.structureId ? [formValues.structureId] : []}
                 onSelectionChange={(selection) => {
                   if (selection === "all") return;

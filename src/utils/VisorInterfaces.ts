@@ -27,7 +27,7 @@ export interface TeamInterface {
         id: string
         nombre: string
         icon: string
-        estructuraId: string
+        activacionId: string
     }[]
     geographicConf: {
         geographicLevel: {

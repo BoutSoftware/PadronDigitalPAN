@@ -1,60 +1,25 @@
 
 "use client";
+import { modulesList } from "@/configs/roles";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
-const moduleList = [
+const modulesListWithBase = [
   {
-    key: "base",
-    icon: "",
-    name: "Base del Padrón",
-    href: "/dashboard/base"
+    id: "base",
+    name: "Base",
+    icon: "home",
   },
-  {
-    key: "visor",
-    icon: "map",
-    name: "Visor de Mapa",
-    href: "/dashboard/visor"
-  },
-  {
-    key: "whatsapp",
-    icon: "chat",
-    name: "WhatsApp",
-    href: "/dashboard/whatsapp"
-  },
-  {
-    key: "atencionCiudadana",
-    icon: "report",
-    name: "Atencion Ciudadana",
-    href: "/dashboard/atention"
-  },
-  {
-    key: "eventosYActividades",
-    icon: "i_events",
-    name: "Eventos y actividades",
-    href: "/dashboard/events"
-  },
-  {
-    key: "organigrama",
-    icon: "sort_by_alpha",
-    name: "WhatsApp",
-    href: "/dashboard/whatsapp"
-  },
-  {
-    key: "callCenter",
-    icon: "contact_phone",
-    name: "Call center",
-    href: "/dashboard/callCenter"
-  }
+  ...modulesList,
 ];
 
 export default function DropdownChangeModule({ currentModuleKey }: { currentModuleKey: string }) {
   const router = useRouter();
 
   const currentModule = useMemo(() => {
-    return moduleList.find((module) => {
-      return module.key === currentModuleKey;
+    return modulesList.find((module) => {
+      return module.id === currentModuleKey;
     })!;
   }, [currentModuleKey]);
 
@@ -69,19 +34,21 @@ export default function DropdownChangeModule({ currentModuleKey }: { currentModu
           startContent={
             <span className="material-symbols-outlined">{currentModule.icon}</span>
           }
-          endContent={<span className="material-symbols-outlined">unfold_more</span>}
-          fullWidth>
+          endContent={
+            <span className="material-symbols-outlined">unfold_more</span>
+          }
+          fullWidth
+        >
           {currentModule.name}
         </Button>
       </DropdownTrigger>
       <DropdownMenu
         aria-label="Módulos Padrón Digital"
-        onAction={(key) => router.push(moduleList.find((module) => {
-          return module.key === key;
-        })!.href)}>
-        {
-          moduleList.map((module) => (<DropdownItem key={module.key}>{module.name}</DropdownItem>))
-        }
+        onAction={(key) => router.push(`/dashboard/${key}`)}
+      >
+        {modulesListWithBase.map((module) => (
+          <DropdownItem key={module.id}>{module.name}</DropdownItem>
+        ))}
       </DropdownMenu>
     </Dropdown>
   );

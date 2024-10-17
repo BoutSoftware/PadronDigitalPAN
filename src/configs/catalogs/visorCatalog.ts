@@ -3,7 +3,7 @@ export interface TiposPunto {
   id: string,
   nombre: string,
   icon: string,
-  estructuraId: typeof ESTRUCTURAS[number]["id"],
+  activacionId: typeof ACTIVATIONS[number]["id"],
 }
 
 export interface CategoriasNecesidades {
@@ -26,41 +26,52 @@ export interface StatusNecesidades {
   color: "danger" | "warning" | "success"
 }
 
-export const ESTRUCTURAS = [
+export const ACTIVATIONS = [
   {
     id: "territorial",
     nombre: "Territorial",
   },
   {
-    id: "politica",
-    nombre: "Politica",
+    id: "barridos",
+    nombre: "Barridos",
   },
   {
-    id: "gobierno",
-    nombre: "Gobierno",
+    id: "censos",
+    nombre: "Censos",
   },
+  {
+    id: "reportes",
+    nombre: "Reportes",
+  }
 ] as const;
+
+export type ActivationId = typeof ACTIVATIONS[number]["id"];
 
 export const CONFIGURACIONES_GEOGRAFICAS = [
   {
     id: "municipios",
-    nombre: "Municipios"
+    nombre: "Municipios",
+    dependsOn: null
   },
   {
     id: "delegaciones",
-    nombre: "Delegaciones"
+    nombre: "Delegaciones",
+    dependsOn: "municipios"
   },
   {
     id: "distritosLocales",
-    nombre: "Distritos Locales"
+    nombre: "Distritos Locales",
+    dependsOn: "municipios"
   },
   {
     id: "secciones",
-    nombre: "Secciones"
+    nombre: "Secciones",
+    dependsOn: "distritosLocales"
   },
   {
     id: "colonias",
-    nombre: "Colonia/Localidad"
+    nombre: "Colonia/Localidad",
+    dependsOn: "municipios"
   },
 ] as const;
 
@@ -68,25 +79,25 @@ export const STATUS_RONDAS = [
   {
     id: "activa",
     nombre: "ACTIVA",
-    color: "verde",
+    color: "success",
     mensaje: "Ronda activa"
   },
   {
     id: "pausada",
     nombre: "PAUSADA",
-    color: "amarilla",
+    color: "warning",
     mensaje: "Ronda pausada"
   },
   {
     id: "terminada",
     nombre: "TERMINADA",
-    color: "roja",
+    color: "danger",
     mensaje: "Ronda terminada"
   },
   {
     id: "noiniciada",
     nombre: "NO INICIADA",
-    color: "blanco",
+    color: "default",
     mensaje: "Ronda no iniciada"
   },
 ];
@@ -97,25 +108,25 @@ export const TIPOS_PUNTO: TiposPunto[] = [
     id: "necesidades",
     nombre: "Necesidades",
     icon: "iconoNecesidad",
-    estructuraId: "territorial"
+    activacionId: "territorial"
   },
   {
     id: "publicidad",
     nombre: "Publicidad",
     icon: "",
-    estructuraId: "territorial"
+    activacionId: "territorial"
   },
   {
     id: "encuestas",
     nombre: "Encuestas",
     icon: "inocoEncuesta",
-    estructuraId: "politica"
+    activacionId: "censos"
   },
   {
     id: "rondas",
     nombre: "Rondas",
     icon: "iconoRonda",
-    estructuraId: "gobierno"
+    activacionId: "barridos"
   }
 ];
 
@@ -194,7 +205,7 @@ export const STATUS_NECESIDADES: StatusNecesidades[] = [
   }
 ];
 
-// Aqui se manda una lista de ids (lo que se va a almacenar en subcooridnadores, equipos, rondas, etc..) y te regresa los tipos de punto
+// Aqui se manda una lista de ids (lo que se va a almacenar en subcooridnadores, Proyectos, rondas, etc..) y te regresa los tipos de punto
 export const getTipoPuntos = (ids: string[]) => {
   return TIPOS_PUNTO.filter(tipo => ids.includes(tipo.id));
 };

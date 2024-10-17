@@ -78,7 +78,7 @@ export function PointType({ team, teamId, loadTeam }: Props) {
             selectedKeys={pointTypeKeys}
             selectionMode="multiple"
             onSelectionChange={(keys) => handlePointTypeValue(keys)}>
-            {TIPOS_PUNTO.filter((pointType) => pointType.estructuraId === team.Structure.id && team.Auxiliary.pointTypes.includes(pointType.id)).map((pointType) => (
+            {TIPOS_PUNTO.filter((pointType) => pointType.activacionId === team.Structure.id && team.Auxiliary.pointTypes.includes(pointType.id)).map((pointType) => (
               <DropdownItem key={pointType.id} value={pointType.id}>
                 {pointType.nombre}
               </DropdownItem>

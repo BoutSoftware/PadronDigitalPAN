@@ -174,7 +174,7 @@ model Visor_User {
   userId    String    @unique @db.ObjectId
   fullname  String    @default("full_name")
   title     String?
-  rol       VisRoles?
+  rol       String?
 
   User            User                         @relation(fields: [userId], references: [id])
   Coordinators    Visor_Structure[]            @relation("CoordinatorRelation")
@@ -408,8 +408,7 @@ enum StatusPendingAddress {
 
 enum VisRoles {
   Admin
-  Coordinator
-  Technical
+  Staff
   User
 }
 

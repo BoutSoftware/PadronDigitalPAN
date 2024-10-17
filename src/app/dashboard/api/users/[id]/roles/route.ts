@@ -1,7 +1,6 @@
 import prisma from "@/configs/database";
-import { ModuleName, VisorRole, WhatsRole, modulesList } from "@/configs/roles";
+import { ModuleId, TerritorialRole, WhatsRole, modulesList } from "@/configs/roles";
 import { hasIncompleteFields } from "@/utils";
-import { $Enums } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
@@ -25,13 +24,13 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     // check if the module exists in ModuleList
     const allowedModules = modulesList.map(m => m.id);
-    if (!allowedModules.includes(module as ModuleName)) {
+    if (!allowedModules.includes(module as ModuleId)) {
       return NextResponse.json({ code: "INVALID_MODULE", message: "Invalid module" });
     }
 
     // check if the role exists in the module
     const allowedRoles = modulesList.find(m => m.id === module)?.roles;
-    if (!allowedRoles?.includes(role as VisorRole | WhatsRole)) {
+    if (!allowedRoles?.includes(role as TerritorialRole | WhatsRole)) {
       return NextResponse.json({ code: "INVALID_ROLE", message: "Invalid role" });
     }
 
@@ -43,7 +42,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         active: boolean;
         userId: string;
         title: string | null;
-        rol: $Enums.VisRoles | null;
+        rol: string | null;
       }
 
       updatedUser: {
@@ -55,7 +54,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       updatedUser: []
     };
 
-    if (module === "visor" as ModuleName) {
+    if (module === "visor" as ModuleId) {
       // Get current visor User (if exists)
       const visorUser = await prisma.visor_User.findFirst({ where: { userId: id } });
 
@@ -64,7 +63,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         data.visorUser = await prisma.visor_User.update({
           where: { id: visorUser.id },
           data: {
-            rol: role as VisorRole,
+            rol: role as TerritorialRole,
             active: role !== null,
             title: role === "Admin" ? "Administrador" : null
           }
@@ -74,7 +73,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         data.visorUser = await prisma.visor_User.create({
           data: {
             userId: id,
-            rol: role as VisorRole,
+            rol: role as TerritorialRole,
             title: role === "Admin" ? "Administrador" : null
           }
         });

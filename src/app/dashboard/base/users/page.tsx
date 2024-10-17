@@ -33,7 +33,7 @@ const columns = [
 const renderCell = (columnKey: React.Key, user: User) => {
   if (columnKey == "name") return (
     <User
-      className="gap-3"
+      className="gap-3 flex justify-start"
       name={
         <div className="flex items-center gap-2">
           {user.Person.name}
@@ -97,24 +97,26 @@ export default function AllUsersPage() {
         <ModalAddUser />
       </div>
 
-      {usersFiltered && <Table aria-label="Usuarios">
-        <TableHeader columns={columns}>
-          {columns.map(column => (
-            <TableColumn key={column.id} align="center">
-              {column.name}
-            </TableColumn>
-          ))}
-        </TableHeader>
-        <TableBody items={usersFiltered} emptyContent="Ningún resultado coincide">
-          {(item) => (
-            <TableRow key={item.id}>
-              {
-                (columnKey) => <TableCell>{renderCell(columnKey, item)}</TableCell>
-              }
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>}
+      {usersFiltered &&
+        <Table aria-label="Usuarios">
+          <TableHeader columns={columns}>
+            {columns.map(column => (
+              <TableColumn key={column.id} align="center">
+                {column.name}
+              </TableColumn>
+            ))}
+          </TableHeader>
+          <TableBody items={usersFiltered} emptyContent="Ningún resultado coincide">
+            {(item) => (
+              <TableRow key={item.id}>
+                {
+                  (columnKey) => <TableCell>{renderCell(columnKey, item)}</TableCell>
+                }
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      }
     </div>
   );
 }

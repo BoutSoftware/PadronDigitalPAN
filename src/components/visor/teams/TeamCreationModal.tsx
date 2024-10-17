@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useMemo } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Tabs, Tab, Select, SelectItem, Autocomplete } from "@nextui-org/react";
-import { TIPOS_PUNTO, CONFIGURACIONES_GEOGRAFICAS, ESTRUCTURAS } from "../../../configs/catalogs/visorCatalog";
+import { TIPOS_PUNTO, CONFIGURACIONES_GEOGRAFICAS, ACTIVATIONS } from "../../../configs/catalogs/visorCatalog";
 import { hasIncompleteFields } from "@/utils";
 
 interface Auxiliary {
@@ -85,7 +85,7 @@ const TeamCreationModal: React.FC<TeamModalProps> = ({ structureId }) => {
     teamMembers: [],
   });
 
-  const structureName = ESTRUCTURAS.find((str) => str.id === structureId)?.nombre;
+  const structureName = ACTIVATIONS.find((str) => str.id === structureId)?.nombre;
   const currentAssistant = useMemo(() => coordinationAssistants.find((asnt) => asnt.key === selectedAssistant), [coordinationAssistants, selectedAssistant]);
   const tabs = ["Jerarquia", "Tipo de punto", "Participantes"];
 
@@ -112,7 +112,7 @@ const TeamCreationModal: React.FC<TeamModalProps> = ({ structureId }) => {
   };
 
   const fetchCoordinationAssistants = async () => {
-    const resBody = await fetch(`/dashboard/api/visor/auxiliaries?estructura=${structureId}`)
+    const resBody = await fetch(`/dashboard/api/visor/auxiliaries?activacion=${structureId}`)
       .then((res) => res.json())
       .catch((error) => console.error("Error no esperado", error));
 
@@ -190,7 +190,7 @@ const TeamCreationModal: React.FC<TeamModalProps> = ({ structureId }) => {
     }
   };
 
-  const handleGeographicValueSelectionChange = (key: React.Key) => {
+  const handleGeographicValueSelectionChange = (key: React.Key | null) => {
     if (!key) return;
 
     if (!selectedGeographicValues.includes(key as string)) {
@@ -204,14 +204,14 @@ const TeamCreationModal: React.FC<TeamModalProps> = ({ structureId }) => {
   };
 
 
-  const handleTeamMemberSelectionChange = (key: React.Key) => {
+  const handleTeamMemberSelectionChange = (key: React.Key | null) => {
     const selectedMember = filteredMembers.find(member => member.key === key);
     if (selectedMember && !selectedTeamMembers.includes(selectedMember)) {
       setSelectedTeamMembers([...selectedTeamMembers, selectedMember]);
     }
   };
 
-  const handleLinkSelectionChange = (key: React.Key) => {
+  const handleLinkSelectionChange = (key: React.Key | null) => {
     setSelectedLink(key as string);
   };
 
@@ -299,12 +299,12 @@ const TeamCreationModal: React.FC<TeamModalProps> = ({ structureId }) => {
           <span className="material-symbols-outlined">add</span>
         }
       >
-        Agregar equipo
+        Agregar Proyecto
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal} placement="top-center" size="xl">
         <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">Agregando Equipo</ModalHeader>
-          <p className="text-sm text-gray-500 px-6">Estructura: {structureName}</p>
+          <ModalHeader className="flex flex-col gap-1">Agregando Proyecto</ModalHeader>
+          <p className="text-sm text-gray-500 px-6">Activacion: {structureName}</p>
           <Tabs selectedKey={activeTab} onSelectionChange={handleTabChange} className="px-5 mt-4">
             <Tab key="Jerarquia" title="Jerarquia">
               <ModalBody>
@@ -322,8 +322,8 @@ const TeamCreationModal: React.FC<TeamModalProps> = ({ structureId }) => {
                   ))}
                 </Autocomplete>
                 <Input
-                  label="Nombre del equipo"
-                  placeholder="Escribe el nombre del equipo"
+                  label="Nombre del Proyecto"
+                  placeholder="Escribe el nombre del Proyecto"
                   isRequired
                   value={teamName}
                   onValueChange={setTeamName}
@@ -340,7 +340,7 @@ const TeamCreationModal: React.FC<TeamModalProps> = ({ structureId }) => {
                   onSelectionChange={(keys) => handlePointTypeSelectionChange(keys as Set<React.Key>)}
                   selectedKeys={selectedPointTypes}
                 >
-                  {TIPOS_PUNTO.filter((tp) => tp.estructuraId === structureId && currentAssistant?.pointTypes.includes(tp.id)).map((pointType) => (
+                  {TIPOS_PUNTO.filter((tp) => tp.activacionId === structureId && currentAssistant?.pointTypes.includes(tp.id)).map((pointType) => (
                     <SelectItem key={pointType.id} value={pointType.id}>
                       {pointType.nombre}
                     </SelectItem>
@@ -422,7 +422,7 @@ const TeamCreationModal: React.FC<TeamModalProps> = ({ structureId }) => {
           </Tabs>
           <ModalFooter className="mt-2">
             <Button color="primary" onPress={handleNext}>
-              {activeTab === "Participantes" ? "Agregar equipo" : "Siguiente"}
+              {activeTab === "Participantes" ? "Agregar Proyecto" : "Siguiente"}
             </Button>
           </ModalFooter>
         </ModalContent>

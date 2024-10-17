@@ -7,9 +7,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const estructura = searchParams.get("estructura") as string;
+    const activacion = searchParams.get("activacion") as string;
 
-    if (!estructura) {
+    if (!activacion) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
     }
 
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       where: {
         active: true,
         SubCoordinator: {
-          structureId: estructura
+          structureId: activacion
         }
       },
       include: {

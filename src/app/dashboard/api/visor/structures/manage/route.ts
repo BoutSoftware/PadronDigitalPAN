@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
             id: coordinatorId as string,
           },
           update: {
-            title: "Coordinador de estructura"
+            title: "Coordinador de activacion"
           }
         },
         Technical: {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
             id: technicalId as string,
           },
           update: {
-            title: "Técnico de estructura"
+            title: "Técnico de activacion"
           }
         },
         Auditor: {
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
             id: auditorId as string,
           },
           update: {
-            title: "Auditor de estructura"
+            title: "Auditor de activacion"
           }
         }
       }
@@ -132,7 +132,7 @@ export async function PATCH(request: NextRequest) {
             id: coordinatorId as string,
           },
           update: {
-            title: "Coordinador de estructura"
+            title: "Coordinador de activacion"
           }
         },
         ...(technicalId && {
@@ -141,7 +141,7 @@ export async function PATCH(request: NextRequest) {
               id: technicalId as string,
             },
             update: {
-              title: "Técnico de estructura"
+              title: "Técnico de activacion"
             }
           }
         }),
@@ -151,7 +151,7 @@ export async function PATCH(request: NextRequest) {
               id: auditorId as string,
             },
             update: {
-              title: "Auditor de estructura"
+              title: "Auditor de activacion"
             }
           }
         })

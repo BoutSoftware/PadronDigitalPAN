@@ -20,7 +20,7 @@ export default function LayoutTeam({ children }: { children: ReactNode }) {
 
     setTeam({
       id: params.id,
-      name: "Nombre del equipo"
+      name: "Nombre del Proyecto"
     });
 
   }, [params.id]);

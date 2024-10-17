@@ -1,4 +1,4 @@
-import { CONFIGURACIONES_GEOGRAFICAS, ESTRUCTURAS, TIPOS_PUNTO, getTipoPuntos } from "@/configs/catalogs/visorCatalog";
+import { CONFIGURACIONES_GEOGRAFICAS, ACTIVATIONS, TIPOS_PUNTO, getTipoPuntos } from "@/configs/catalogs/visorCatalog";
 import prisma from "@/configs/database";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         municipios: team?.Auxiliary.municipiosIDs,
         pointTypes: team?.Auxiliary.SubCoordinator.pointTypesIDs
       },
-      Structure: team?.Auxiliary.SubCoordinator.structureId ? ESTRUCTURAS.find((s) => s.id === team?.Auxiliary.SubCoordinator.structureId) : null,
+      Structure: team?.Auxiliary.SubCoordinator.structureId ? ACTIVATIONS.find((s) => s.id === team?.Auxiliary.SubCoordinator.structureId) : null,
       ...(team?.pointTypesIDs && { TiposPunto: getTipoPuntos(team?.pointTypesIDs) }),
       geographicConf,
       pointTypesIDs: undefined,
@@ -184,7 +184,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       },
     });
 
-    // TODO: Aduitoria para checar quien elimino el equipo??
+    // TODO: Aduitoria para checar quien elimino el Proyecto??
 
 
     return NextResponse.json({ code: "OK", message: "Team deleted succesfully", data: deletedTeam });

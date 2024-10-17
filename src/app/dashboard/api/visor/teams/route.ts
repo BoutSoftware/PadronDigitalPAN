@@ -1,4 +1,4 @@
-import { CONFIGURACIONES_GEOGRAFICAS, ESTRUCTURAS } from "@/configs/catalogs/visorCatalog";
+import { CONFIGURACIONES_GEOGRAFICAS, ACTIVATIONS } from "@/configs/catalogs/visorCatalog";
 import prisma from "@/configs/database";
 import { hasIncompleteFields } from "@/utils";
 import { Visor_Team } from "@prisma/client";
@@ -47,7 +47,7 @@ export async function GET() {
 
     for (const team of teams) {
       const structureId = team.Auxiliary.SubCoordinator.structureId;
-      const teamStructure = ESTRUCTURAS.find(e => e.id === structureId);
+      const teamStructure = ACTIVATIONS.find(e => e.id === structureId);
 
       // Get the Team's Geographic configuration
       const geoLevel = team.geographicConf.geographicLevel as typeof CONFIGURACIONES_GEOGRAFICAS[number]["id"];

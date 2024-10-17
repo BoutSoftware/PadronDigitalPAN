@@ -8,13 +8,13 @@ export default function LayoutVisor({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <VisorSidebar />
+      <TerritorialSidebar />
       {children}
     </div>
   );
 }
 
-function VisorSidebar() {
+function TerritorialSidebar() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
 
@@ -42,7 +42,7 @@ function VisorSidebar() {
         className="flex items-center gap-2 py-3 px-4"
         key="/dashboard/visor/teams"
       >
-        Equipos
+        Proyectos
       </ListboxItem>
       <ListboxItem
         startContent={<span className="material-symbols-outlined">map</span>}

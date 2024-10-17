@@ -1,8 +1,8 @@
 "use client";
 
 import Header from "@/components/Header";
-import TeamsOfAStructure from "@/components/visor/teams/TeamsOfAStructure";
-import { ESTRUCTURAS } from "@/configs/catalogs/visorCatalog";
+import ProjectsOfActivation from "@/components/visor/teams/TeamsOfAStructure";
+import { ACTIVATIONS } from "@/configs/catalogs/visorCatalog";
 import { Button, Dropdown, DropdownItem, DropdownTrigger, DropdownMenu, Input } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -19,8 +19,8 @@ interface Team {
   geographicConf: GeoConfig
 }
 
-// Interfaz para almacenar los equipos por estructura, utilizando IDs dinámicos
-interface TeamsByStructure {
+// Interfaz para almacenar los Proyectos por activacion, utilizando IDs dinámicos
+interface ProjectsByActivation {
   [key: string]: Team[]
 }
 
@@ -31,92 +31,95 @@ interface Structure {
 }
 
 export default function Teams() {
-  // Estado para almacenar los equipos por estructura
-  const [teams, setTeams] = useState<TeamsByStructure | undefined>(undefined);
-  // Estado para almacenar los equipos filtrados por estructura
-  const [filteredTeams, setFilteredTeams] = useState<TeamsByStructure | undefined>(undefined);
-  // Estado para el término de búsqueda del equipo
-  const [teamSearched, setTeamSearched] = useState("");
-  // Estado para las claves de las estructuras seleccionadas
-  const [selectedStructuresKeys, setSelectedStructuresKeys] = useState<string[]>([]);
+  // Estado para almacenar los Proyectos por activacion
+  const [projects, setProjects] = useState<ProjectsByActivation | undefined>(undefined);
+  // Estado para almacenar los Proyectos filtrados por activacion
+  const [filteredProjects, setFilteredProjects] = useState<ProjectsByActivation | undefined>(undefined);
+  // Estado para el término de búsqueda del Proyecto
+  const [projectSearched, setProjectSearched] = useState("");
+  // Estado para las claves de las activaciones seleccionadas
+  const [selectedActivationKeys, setSelectedActivationKeys] = useState<string[]>([]);
 
-  // Mapeo de los nombres de las estructuras seleccionadas a partir de sus claves
+  // Mapeo de los nombres de las activaciones seleccionadas a partir de sus claves
   const selectedStructures = useMemo(() => (
-    selectedStructuresKeys.map(key => ESTRUCTURAS.find(str => str.id === key)?.nombre || "").join(", ")
-  ), [selectedStructuresKeys]);
+    selectedActivationKeys.map(key => ACTIVATIONS.find(str => str.id === key)?.nombre || "").join(", ")
+  ), [selectedActivationKeys]);
 
-  // Función para obtener los equipos desde el servidor y configurarlos en el estado
-  async function handleGetTeamsAndSetThem() {
+  // Función para obtener los Proyectos desde el servidor y configurarlos en el estado
+  async function fetchProjects() {
     const resBody = await fetch("/dashboard/api/visor/teams")
       .then(res => res.json())
       .catch(err => console.log(err));
-    if (resBody.data) {
-      const teamsByStructure = {
-        ...teams,
-        territorial: resBody.data.map((structure: Structure) => { if (structure.structureType == "Territorial") return structure.teams; })[0],
-        gubernamental: resBody.data.map((structure: Structure) => { if (structure.structureType == "Gubernamental") return structure.teams; })[0],
-        campaign: resBody.data.map((structure: Structure) => { if (structure.structureType == "Campaña") return structure.teams; })[0],
-        diaD: resBody.data.map((structure: Structure) => { if (structure.structureType == "Dia D") return structure.teams; })[0],
-      };
 
-
-      setTeams(teamsByStructure);
-      setFilteredTeams(teamsByStructure);
-    }
-    if (resBody.code === "ERROR") {
-      alert(resBody.message);
-    }
-  }
-
-  // useEffect para obtener los equipos al cargar el componente
-  useEffect(() => {
-    handleGetTeamsAndSetThem();
-  }, []);
-
-  // useEffect para filtrar los equipos según el término de búsqueda
-  useEffect(() => {
-    if (!teams) return;
-
-    if (teamSearched === "") {
-      setFilteredTeams(teams);
+    if (resBody.code !== "OK") {
+      alert("Error al obtener Proyectos");
       return;
     }
 
-    const newFilteredTeams: TeamsByStructure = {};
-    for (const key in teams) {
-      newFilteredTeams[key] = teams[key].filter(team => team.name.toLowerCase().includes(teamSearched.toLowerCase()));
+    const projectsByActivation: ProjectsByActivation = {};
+
+    ACTIVATIONS.forEach((activation) => {
+      projectsByActivation[activation.id] = resBody.data
+        .filter((structure: Structure) => structure.structureId === activation.id)
+        .map((structure: Structure) => structure.teams)[0];
+    });
+
+
+    setProjects(projectsByActivation);
+    setFilteredProjects(projectsByActivation);
+
+  }
+
+  // useEffect para obtener los Proyectos al cargar el componente
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  // useEffect para filtrar los Proyectos según el término de búsqueda
+  useEffect(() => {
+    if (!projects) return;
+
+    if (projectSearched === "") {
+      setFilteredProjects(projects);
+      return;
     }
 
-    setFilteredTeams(newFilteredTeams);
-  }, [teamSearched, teams]);
+    const newFilteredTeams: ProjectsByActivation = {};
+    for (const key in projects) {
+      if (!projects[key]) continue;
+      newFilteredTeams[key] = projects[key].filter(team => team.name.toLowerCase().includes(projectSearched.toLowerCase()));
+    }
+
+    setFilteredProjects(newFilteredTeams);
+  }, [projectSearched, projects]);
 
   return (
     <div className="p-8 flex flex-col gap-4 overflow-auto flex-1">
-      <Header title="Equipos" />
+      <Header title="Proyectos" />
 
       <div className="flex gap-4 items-end my-4">
         <Input
-          label="Busca un equipo"
+          label="Busca un proyecto"
           labelPlacement="outside"
-          placeholder="Ingresa el nombre del equipo"
+          placeholder="Ingresa el nombre del proyecto"
           className="flex-1"
-          value={teamSearched}
-          onValueChange={setTeamSearched}
+          value={projectSearched}
+          onValueChange={setProjectSearched}
         />
         <div className="flex gap items-center gap-4">
           <p>Filtrar por:</p>
           <Dropdown>
             <DropdownTrigger>
-              <Button>{Array.from(selectedStructuresKeys).length > 0 ? selectedStructures : "Estructura"}</Button>
+              <Button>{Array.from(selectedActivationKeys).length > 0 ? selectedStructures : "Activacion"}</Button>
             </DropdownTrigger>
             <DropdownMenu
-              aria-label="Estructuras a filtrar"
+              aria-label="Activaciones a filtrar"
               selectionMode="multiple"
-              selectedKeys={selectedStructuresKeys}
-              onSelectionChange={(value) => setSelectedStructuresKeys([...(value as Set<string>)])}
+              selectedKeys={selectedActivationKeys}
+              onSelectionChange={(value) => setSelectedActivationKeys([...(value as Set<string>)])}
               closeOnSelect={false}
             >
-              {ESTRUCTURAS.map((str) => {
+              {ACTIVATIONS.map((str) => {
                 return <DropdownItem key={str.id}>{str.nombre}</DropdownItem>;
               })}
             </DropdownMenu>
@@ -124,25 +127,23 @@ export default function Teams() {
         </div>
       </div>
 
-      {
-        filteredTeams ? (
-          <div className="flex-1 flex flex-col gap-8">
-            {/* Mapeo y renderizado de las estructuras seleccionadas */}
-            {ESTRUCTURAS.map((str) => {
-              if (selectedStructuresKeys.length === 0 || selectedStructuresKeys.includes(str.id)) {
-                return (
-                  <TeamsOfAStructure key={str.id} structureId={str.id} teams={filteredTeams[str.id]} />
-                );
-              }
-              return null;
-            })}
-          </div>
-        ) : (
-          <div className="flex flex-1 justify-center items-center">
-            <h4 className="text-3xl">Obteniendo equipos...</h4>
-          </div>
-        )
-      }
+      {filteredProjects ? (
+        <div className="flex-1 flex flex-col gap-8">
+          {/* Mapeo y renderizado de las activaciones seleccionadas */}
+          {ACTIVATIONS.map((activation) => {
+            if (selectedActivationKeys.length === 0 || selectedActivationKeys.includes(activation.id)) {
+              return (
+                <ProjectsOfActivation key={activation.id} structureId={activation.id} projects={filteredProjects[activation.id]} />
+              );
+            }
+            return null;
+          })}
+        </div>
+      ) : (
+        <div className="flex flex-1 justify-center items-center">
+          <h4 className="text-3xl">Obteniendo Proyectos...</h4>
+        </div>
+      )}
     </div>
   );
 }

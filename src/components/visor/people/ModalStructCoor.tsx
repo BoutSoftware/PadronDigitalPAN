@@ -1,7 +1,7 @@
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select } from "@nextui-org/react";
 import { FormEvent, useEffect, useState } from "react";
 import { Visor_User, Visor_structureCoordinator } from "@prisma/client";
-import { ESTRUCTURAS } from "@/configs/catalogs/visorCatalog";
+import { ACTIVATIONS } from "@/configs/catalogs/visorCatalog";
 
 interface ModalStructCoorProps {
   coordinator?: {
@@ -16,7 +16,7 @@ interface FormOptions {
   technicals: { id: string, name: string }[],
 }
 
-export default function ModalStructCoor({ coordinator: currentCoordinator }: ModalStructCoorProps) {
+export default function ModalCoor({ coordinator: currentCoordinator }: ModalStructCoorProps) {
   const isModifying = !!currentCoordinator;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formOptions, setFormOptions] = useState<FormOptions>({
@@ -71,7 +71,7 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
   const getStructures = () => {
     setFormOptions((prevOptions) => ({
       ...prevOptions,
-      structures: ESTRUCTURAS.map((structure) => ({
+      structures: ACTIVATIONS.map((structure) => ({
         id: structure.id,
         name: structure.nombre
       }))
@@ -232,12 +232,12 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
           }>
 
             <ModalHeader>
-              <h3>{isModifying ? "Modificar" : "Agregar"} Coordinador de estructura</h3>
+              <h3>{isModifying ? "Modificar" : "Agregar"} Coordinador de activacion</h3>
             </ModalHeader>
             <ModalBody>
               <Autocomplete
-                label="Coordinador de estructura"
-                placeholder="Seleccione un coordinador de estructura"
+                label="Coordinador de activacion"
+                placeholder="Seleccione un coordinador de activacion"
                 selectedKey={form.structCoor}
                 onSelectionChange={(key) => {
                   setForm({ ...form, structCoor: key as string });
@@ -250,8 +250,8 @@ export default function ModalStructCoor({ coordinator: currentCoordinator }: Mod
                 ))}
               </Autocomplete>
               <Select
-                label="Estructura"
-                placeholder="Selecciona una estructura"
+                label="Activacion"
+                placeholder="Selecciona una activacion"
                 selectedKeys={form.struct ? [form.struct] : []}
                 onSelectionChange={(selection) => {
                   if (selection === "all") return;

@@ -29,6 +29,7 @@ export default function Roles({ userRoles, userId }: { userRoles: UserRoles, use
 
     if (resBody.code !== "OK") {
       alert("Error al modificar los roles");
+      console.error({ reqBody: { module: moduleId, role }, resBody });
       // Revert the changes in case of error
       setCurrentUserRoles(userRoles);
       return;

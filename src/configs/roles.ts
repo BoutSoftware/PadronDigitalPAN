@@ -1,25 +1,27 @@
-export type VisorRole = "Admin" | "User" | "Coordinator" | "Technical" | null;
+export type TerritorialRole = "Admin" | "Staff" | "User" | null;
 export type WhatsRole = "Admin" | "User" | "Sender" | null;
 
-export type ModuleName = "visor" | "whats";
+export type ModuleId = "visor" | "whats";
 
 // What the server will send
 export type UserRoles = {
-  // [key in ModuleName]: VisorRole | WhatsRole;
-  visor: VisorRole;
-  whats: WhatsRole;
+  [key in ModuleId]: TerritorialRole | WhatsRole | null;
+  // territorial: TerritorialRole;
+  // whats: WhatsRole;
 }
 
 // List of modules and roles
-export const modulesList: { id: ModuleName, name: string, roles: (UserRoles[ModuleName])[] }[] = [
+export const modulesList: {id: ModuleId, name: string, icon: string, roles: (TerritorialRole | WhatsRole)[]}[] = [
   {
     id: "visor",
-    name: "Visor",
-    roles: ["Admin", "User", "Coordinator", "Technical", null] as VisorRole[]
+    name: "Territorial",
+    icon: "map",
+    roles: ["Admin", "Staff", "User", null] as TerritorialRole[]
   },
   {
     id: "whats",
     name: "Whatsapp",
+    icon: "chat",
     roles: ["Admin", "User", "Sender", null] as WhatsRole[]
   },
-];
+] as const;

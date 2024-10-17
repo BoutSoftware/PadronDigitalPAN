@@ -13,7 +13,7 @@ export function Miembros({ team }: Props) {
     <div className="flex flex-col gap-4">
       <h2 className="text-2xl text-foreground-600 ">
         Miembros
-        <span className="text-base text-foreground-400"> {team?.Caminantes.length} miembros en el equipo</span>
+        <span className="text-base text-foreground-400"> {team?.Caminantes.length} miembros en el Proyecto</span>
       </h2>
       <Divider />
       <div className="flex flex-col gap-4">

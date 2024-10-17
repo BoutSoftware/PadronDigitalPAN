@@ -2,11 +2,11 @@
 import TeamCreationModal from "./TeamCreationModal";
 import TeamCard from "./TeamCard";
 import { Divider } from "@nextui-org/react";
-import { ESTRUCTURAS } from "@/configs/catalogs/visorCatalog";
+import { ACTIVATIONS } from "@/configs/catalogs/visorCatalog";
 
-interface TeamsOfAStructureProps {
+interface ProjectsOfActivationProps {
   structureId: string
-  teams?: Team[]
+  projects?: Project[]
 }
 
 interface GeoConfig {
@@ -14,7 +14,7 @@ interface GeoConfig {
   values: string[]
 }
 
-interface Team {
+interface Project {
   id: string
   name: string
   linkName: string
@@ -22,13 +22,13 @@ interface Team {
   geographicConf: GeoConfig
 }
 
-export default function TeamsOfAStructure({ structureId, teams }: TeamsOfAStructureProps) {
-  const structureName = ESTRUCTURAS.find((str) => str.id === structureId)?.nombre;
+export default function ProjectsOfActivation({ structureId, projects: teams }: ProjectsOfActivationProps) {
+  const activationName = ACTIVATIONS.find((str) => str.id === structureId)?.nombre;
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl">Estructura {structureName}</h2>
+        <h2 className="text-2xl">Activacion: {activationName}</h2>
         <TeamCreationModal structureId={structureId} />
       </div>
       <Divider />
@@ -44,7 +44,7 @@ export default function TeamsOfAStructure({ structureId, teams }: TeamsOfAStruct
               team={team.name} />
           ))
         )}
-        {!teams && (<h4 className="text-foreground-400">No hay equipos para esta estructura</h4>)}
+        {!teams && (<h4 className="text-foreground-400">No hay Proyectos para esta activacion</h4>)}
         {teams?.length == 0 && (<h4 className="text-foreground-400">Ninguna opción coincide con el elemento de busqueda</h4>)}
       </div>
     </div>

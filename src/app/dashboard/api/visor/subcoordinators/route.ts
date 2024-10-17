@@ -65,12 +65,12 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
 
-    const estructura = (searchParams.get("estructura") as string) || undefined;
+    const activacion = (searchParams.get("activacion") as string) || undefined;
 
     const subCooridnadores = await prisma.visor_SubCoordinator.findMany({
       where: {
         active: true,
-        structureId: estructura
+        structureId: activacion
       },
       include: {
         User: true

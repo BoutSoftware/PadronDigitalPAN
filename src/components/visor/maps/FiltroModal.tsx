@@ -72,7 +72,7 @@ const FiltroModal = () => {
           </ModalHeader>
           <ModalBody>
             <Accordion>
-              <AccordionItem key="estructura" aria-label="Nombre de la Estructura" title="Nombre de la Estructura">
+              <AccordionItem key="activacion" aria-label="Nombre de la Activacion" title="Nombre de la Activacion">
                 <Accordion>
                   {/* Primer conjunto de filtros */}
                   <AccordionItem
@@ -222,7 +222,7 @@ const FiltroModal = () => {
                 </Accordion>
               </AccordionItem>
 
-              <AccordionItem key="estructura2" aria-label="Nombre de la Estructura 2" title="Nombre de la Estructura 2">
+              <AccordionItem key="activacion2" aria-label="Nombre de la Activacion 2" title="Nombre de la Activacion 2">
                 <Accordion>
                   {/* Primer conjunto de filtros */}
                   <AccordionItem

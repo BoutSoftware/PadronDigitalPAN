@@ -86,7 +86,7 @@ export default function IndividualUserPage({ params }: { params: { id: string } 
                       startContent={<span className="material-symbols-outlined">account_tree</span>}
                       className="bg-content1 drop-shadow-md"
                     >
-                      Llevar a la estructura
+                      Llevar a la activacion
                     </Button>
                   </div>
                 </div>

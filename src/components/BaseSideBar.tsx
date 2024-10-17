@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { authContext } from "@/contexts/AuthContext";
 import { ThemeSwitch } from "@/contexts/ThemeProvider";
 import { Listbox, ListboxItem, ListboxSection, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, Divider, Button, } from "@nextui-org/react";
+import { modulesList } from "@/configs/roles";
+import Link from "next/link";
 
 export default function BaseSideBar() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
-  const { isSuperAdmin } = useContext(authContext);
+  const { isSuperAdmin, currentUser } = useContext(authContext);
 
   return (
     <Listbox
@@ -40,7 +42,16 @@ export default function BaseSideBar() {
 
       {/* Normal User Routes */}
       <ListboxSection title={"Modulos"} classNames={{ heading: "text-primary-foreground opacity-70" }}>
-        <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">map</span>}>
+        {modulesList.map((module) => (
+          <ListboxItem
+            key={`/dashboard/${module.id}`}
+            className={`flex items-center gap-2 py-3 px-4 ${currentUser?.userRoles[module.id] ? "" : "hidden"}`}
+            startContent={<span className="material-symbols-outlined">{module.icon}</span>}
+          >
+            {module.name}
+          </ListboxItem>
+        ))}
+        {/* <ListboxItem key={"/dashboard/visor"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">map</span>}>
           Visor
         </ListboxItem>
         <ListboxItem key={"/dashboard/whats"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">chat</span>}>
@@ -57,14 +68,18 @@ export default function BaseSideBar() {
         </ListboxItem>
         <ListboxItem key={"/dashboard/callcenter"} className="flex items-center gap-2 py-3 px-4" startContent={<span className="material-symbols-outlined">contact_phone</span>}>
           Call Center
-        </ListboxItem>
+        </ListboxItem> */}
       </ListboxSection>
     </Listbox>
   );
 }
 
 function SideBarTopContent() {
-  return <h2 className="text-2xl font-medium text-center my-2">Sidebar</h2>;
+  return (
+    <Link href="/dashboard">
+      <h2 className="text-2xl font-medium text-center my-2">Sidebar</h2>
+    </Link>
+  );
 }
 
 function SideBarBottomContent() {

@@ -39,10 +39,10 @@ export default function Page() {
     }).then((res) => res.json());
 
     if (resBody.code !== "OK") {
-      return alert("Error al eliminar el equipo");
+      return alert("Error al eliminar el Proyecto");
     }
 
-    alert("Equipo eliminado correctamente");
+    alert("Proyecto eliminado correctamente");
     router.push("/dashboard/visor/teams");
   };
 
@@ -71,7 +71,7 @@ export default function Page() {
         <Button
           onPress={
             () => {
-              if (confirm("¿Estás seguro de que deseas eliminar este equipo?")) {
+              if (confirm("¿Estás seguro de que deseas eliminar este Proyecto?")) {
                 deleteTeam();
               }
             }
@@ -79,7 +79,7 @@ export default function Page() {
           color="danger"
           className="self-end"
         >
-          Eliminar equipo
+          Eliminar Proyecto
         </Button>
       </div>
     </div>

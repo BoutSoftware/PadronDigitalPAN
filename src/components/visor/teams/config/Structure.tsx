@@ -28,7 +28,7 @@ interface Team {
     id: string
     nombre: string
     icon: string
-    estructuraId: string
+    activacionId: string
   }[]
   geographicConf: {
     geographicLevel: {
@@ -49,7 +49,7 @@ interface Props {
 export function Structure({ team }: Props) {
   return (
     <>
-      <h2 className="text-2xl text-foreground-600 ">Estructura perteneciente</h2>
+      <h2 className="text-2xl text-foreground-600 ">Activacion perteneciente</h2>
       <Divider />
       <span className="text-foreground-400">{team.Structure.nombre}</span>
     </>

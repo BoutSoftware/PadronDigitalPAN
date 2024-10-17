@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
         },
         VisorUser: {
           update: {
-            title: "Coordinador de Estructura"
+            title: "Coordinador de Activacion"
           }
         },
         Technical: {
