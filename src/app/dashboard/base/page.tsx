@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import { Card, Skeleton, Button } from "@nextui-org/react";
 import FiltroModal from "@/components/visor/maps/FiltroModal";
 import Filters from "@/components/visor/Filters";
+import RoundsModal from "@/components/visor/teams/RoundsModal";
 
 export default function BasePlatformWelcome() {
   const [isLoaded, setIsLoaded] = useState(false);
