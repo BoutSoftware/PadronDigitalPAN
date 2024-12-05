@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
-import { Button, Divider, Image } from "@nextui-org/react";
+import { Button, Divider, Image, Switch } from "@nextui-org/react";
 import Roles from "@/components/Roles";
 import { User, Person } from "@prisma/client";
 import { UserRoles } from "@/configs/roles";
@@ -82,12 +82,14 @@ export default function IndividualUserPage({ params }: { params: { id: string } 
                   <p><strong>Estado:</strong> {user.active ? "Activo" : "Inactivo"}</p>
                   <p><strong>Usuario:</strong> {user.username}</p>
                   <div className="mt-8">
-                    <Button
+                    {/* <Button
                       startContent={<span className="material-symbols-outlined">account_tree</span>}
                       className="bg-content1 drop-shadow-md"
                     >
                       Llevar a la activacion
-                    </Button>
+                    </Button> */}
+
+                    <SuperAdminSwitch isSuperAdmin={user.isSuperAdmin} setIsSuperAdmin={(value) => setUser({ ...user, isSuperAdmin: value })} userId={id} />
                   </div>
                 </div>
               </div>
@@ -106,5 +108,35 @@ export default function IndividualUserPage({ params }: { params: { id: string } 
       }
     </div>
 
+  );
+}
+
+function SuperAdminSwitch({ isSuperAdmin, setIsSuperAdmin, userId }: { isSuperAdmin: boolean, setIsSuperAdmin: (value: boolean) => void, userId: string }) {
+  const [superAdmin, setSuperAdmin] = useState(isSuperAdmin);
+
+  const toggleSuperAdmin = async () => {
+    const resBody = await fetch(`/dashboard/api/users/${userId}/superadmin`, {
+      method: "PATCH",
+      body: JSON.stringify({ isSuperAdmin: !superAdmin }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => res.json());
+
+    if (resBody.code !== "OK") {
+      alert("Error al cambiar el estado del superadmin");
+      return;
+    }
+
+    setSuperAdmin(!superAdmin);
+    setIsSuperAdmin(!superAdmin);
+  };
+
+  return (
+    <div className="flex items-center gap-4">
+      <Switch isSelected={superAdmin} onClick={toggleSuperAdmin} color="warning" >
+        {superAdmin ? "Quitar" : "Hacer"} Superadmin
+      </Switch>
+    </div >
   );
 }
