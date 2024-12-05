@@ -36,6 +36,9 @@ export async function POST(request: NextRequest) {
       username: username,
       password: hashedPassword,
       roles: Object.keys(roles).map((key) => ({ module: key, role: roles[key as keyof UserRoles] })),
+    },
+    select: {
+      id: true
     }
   });
 

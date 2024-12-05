@@ -77,7 +77,7 @@ export default function BaseSideBar() {
 function SideBarTopContent() {
   return (
     <Link href="/dashboard">
-      <h2 className="text-2xl font-medium text-center my-2">Sidebar</h2>
+      <h2 className="text-2xl font-medium text-center my-2">Metrix</h2>
     </Link>
   );
 }
