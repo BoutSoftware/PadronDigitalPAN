@@ -106,6 +106,7 @@ export default function ModalCoor({ coordinator: currentCoordinator }: ModalStru
     }
 
     if (resBody.code !== "OK") {
+      console.log(resBody);
       return alert("Error al crear el coordinador");
     }
 

@@ -46,8 +46,8 @@ export default function Login() {
     <div className="h-screen overflow-hidden flex flex-col justify-between items-center">
       <header className="flex justify-between items-center p-8 w-full">
         <div className="flex flex-row gap-4 items-center">
-          <div id="image" className="w-16 h-16 bg-content3"></div>
-          <h1 className="text-3xl font-normal text-foreground">Caminantes</h1>
+          <Image src="/logoPan.png" width={40} height={40} alt="Logo" />
+          <h1 className="text-3xl font-normal text-foreground">Metrix</h1>
         </div>
 
         {/* Development Credits */}
@@ -101,8 +101,15 @@ export default function Login() {
         </div>
 
         {/* TODO: Add image */}
-        {/* <div id="image" className="w-3/6 bg-content3"></div> */}
-        <Skeleton className="w-3/6 rounded-lg" />
+        <div id="image" className="w-3/6 bg-content3">
+          <Image
+            src="/Online-Tools.jpg"
+            alt="Ilustración de inicio de sesión"
+            width={500}
+            height={500}
+            className="object-cover h-full w-full"
+          />
+        </div>
       </div>
 
       <footer>

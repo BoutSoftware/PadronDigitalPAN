@@ -6,14 +6,10 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    const { structureId, coordinatorId, technicalId, attachId } = await request.json();
+    const { structureId, coordinatorId } = await request.json();
 
-    if (hasIncompleteFields({ structureId, coordinatorId, technicalId, attachId })) {
+    if (hasIncompleteFields({ structureId, coordinatorId })) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
-    }
-
-    if (technicalId === attachId) {
-      return NextResponse.json({ code: "BAD_FIELDS", message: "technicalId and auditorId cannot be the same" });
     }
 
     const createResult = await prisma.visor_structureCoordinator.create({

@@ -12,15 +12,31 @@ export async function GET(request: NextRequest) {
     const users = await prisma.visor_User.findMany({
       where: {
         active: true,
-        rol: "Coordinator",
-        ...(onlyFree ? { title: null } : undefined)
+        rol: "Staff",
+        ...(onlyFree ? {
+          c: {
+            none: {
+              active: true
+            }
+          },
+          SubCoordinators: {
+            none: {
+              active: true
+            }
+          },
+          Auxiliaries: {
+            none: {
+              active: true
+            }
+          }
+        } : undefined)
       },
       include: {
         Coordinators: true
       }
     });
 
-    if (!users.length){
+    if (!users.length) {
       return NextResponse.json({ code: "NOT_FOUND", message: "No coordinators found" });
     }
 
