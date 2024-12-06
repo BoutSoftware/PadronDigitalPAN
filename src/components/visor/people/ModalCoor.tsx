@@ -11,58 +11,42 @@ interface ModalStructCoorProps {
 }
 
 interface FormOptions {
-  coordinators: { id: string, name: string }[],
+  staffs: { id: string, name: string }[],
   structures: { id: string, name: string }[],
-  technicals: { id: string, name: string }[],
 }
 
 export default function ModalCoor({ coordinator: currentCoordinator }: ModalStructCoorProps) {
   const isModifying = !!currentCoordinator;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formOptions, setFormOptions] = useState<FormOptions>({
-    coordinators: [],
+    staffs: [],
     structures: [],
-    technicals: []
   });
   const [form, setForm] = useState({
     structCoor: "",
     struct: "",
-    tecnical: "",
-    attach: ""
   });
 
   // get coordinators
-  const getCoordinators = async () => {
+  const getStaffs = async () => {
     const resBody = await (await fetch("/dashboard/api/visor/coordinators?onlyFree=true")).json();
 
     if (resBody.code !== "OK") {
-      console.error("Error getting coordinators");
+      if (resBody.code === "NOT_FOUND") {
+        console.warn("No coordinators found");
+      } else {
+        console.error("Error getting coordinators");
+      }
+
+      console.log(resBody);
       return;
     }
 
     setFormOptions((prevOptions) => ({
       ...prevOptions,
-      coordinators: resBody.data.map((coordinator: Visor_User) => ({
+      staffs: resBody.data.map((coordinator: Visor_User) => ({
         id: coordinator.id,
         name: coordinator.fullname
-      }))
-    }));
-  };
-
-  // get technicals
-  const getTechnicals = async () => {
-    const resBody = await (await fetch("/dashboard/api/visor/technicals?onlyFree=true")).json();
-
-    if (resBody.code !== "OK") {
-      console.error("Error getting technicals");
-      return;
-    }
-
-    setFormOptions((prevOptions) => ({
-      ...prevOptions,
-      technicals: resBody.data.map((technical: Visor_User) => ({
-        id: technical.id,
-        name: technical.fullname
       }))
     }));
   };
@@ -86,32 +70,18 @@ export default function ModalCoor({ coordinator: currentCoordinator }: ModalStru
       return;
     }
 
-    const coorInfo: Visor_structureCoordinator & { Attach: Visor_User, Technical: Visor_User } = resBody.data;
-
-    const coordinatorData = {
-      technical: {
-        id: coorInfo.Technical.id,
-        name: coorInfo.Technical.fullname
-      },
-      attach: {
-        id: coorInfo.Attach.id,
-        name: coorInfo.Attach.fullname
-      }
-    };
+    const coorInfo: Visor_structureCoordinator = resBody.data;
 
     setForm({
       structCoor: currentCoordinator.id,
       struct: coorInfo.structureId,
-      attach: coordinatorData.attach.id,
-      tecnical: coordinatorData.technical.id
     });
 
     // Manually add current coor and tech to options
     setFormOptions((value) => {
       return {
         ...value,
-        coordinators: [...value.coordinators, { id: currentCoordinator.id, name: currentCoordinator.name }],
-        technicals: [...value.technicals, { id: coordinatorData.technical.id, name: coordinatorData.technical.name }, { id: coordinatorData.attach.id, name: coordinatorData.attach.name }],
+        staffs: [...value.staffs, { id: currentCoordinator.id, name: currentCoordinator.name }],
       };
     });
   };
@@ -123,8 +93,6 @@ export default function ModalCoor({ coordinator: currentCoordinator }: ModalStru
     const reqBody = {
       coordinatorId: form.structCoor,
       structureId: form.struct,
-      technicalId: form.tecnical,
-      attachId: form.attach
     };
 
     const resBody = await fetch("/dashboard/api/visor/structureCoordinators", {
@@ -152,8 +120,6 @@ export default function ModalCoor({ coordinator: currentCoordinator }: ModalStru
     setForm({
       structCoor: "",
       struct: "",
-      tecnical: "",
-      attach: ""
     });
   };
 
@@ -163,8 +129,6 @@ export default function ModalCoor({ coordinator: currentCoordinator }: ModalStru
 
     const reqBody = {
       structureId: form.struct,
-      technicalId: form.tecnical,
-      attachId: form.attach
     };
 
     const resBody = await fetch(`/dashboard/api/visor/structureCoordinators/${currentCoordinatorId}`, {
@@ -178,6 +142,7 @@ export default function ModalCoor({ coordinator: currentCoordinator }: ModalStru
     }
 
     if (resBody.code !== "OK") {
+      console.log(resBody);
       return alert("Error al modificar el coordinador");
     }
 
@@ -207,8 +172,7 @@ export default function ModalCoor({ coordinator: currentCoordinator }: ModalStru
     // asegurar que cada vez que se abra el modal las opciones esten actualizadas
     if (isModalOpen) {
       getStructures();
-      getCoordinators();
-      getTechnicals();
+      getStaffs();
       if (isModifying && currentCoordinator) {
         getCurrentCoordinator(currentCoordinator);
       }
@@ -245,7 +209,7 @@ export default function ModalCoor({ coordinator: currentCoordinator }: ModalStru
                 isDisabled={isModifying}
                 isRequired
               >
-                {formOptions.coordinators.map((admin) => (
+                {formOptions.staffs.map((admin) => (
                   <AutocompleteItem key={admin.id}>{admin.name}</AutocompleteItem>
                 ))}
               </Autocomplete>
@@ -263,45 +227,17 @@ export default function ModalCoor({ coordinator: currentCoordinator }: ModalStru
                   <AutocompleteItem key={structure.id}>{structure.name}</AutocompleteItem>
                 ))}
               </Select>
-              <Autocomplete
-                label="Técnico"
-                placeholder="Selecciona un técnico"
-                selectedKey={form.tecnical}
-                onSelectionChange={(key) => {
-                  setForm({ ...form, tecnical: key as string });
-                }}
-                isRequired
-              >
-                {formOptions.technicals.map((technical) => (
-                  <AutocompleteItem key={technical.id}>{technical.name}</AutocompleteItem>
-                ))}
-              </Autocomplete>
-              <Autocomplete
-                label="Adjunto"
-                placeholder="Selecciona un adjunto"
-                selectedKey={form.attach}
-                onSelectionChange={(key) => {
-                  setForm({ ...form, attach: key as string });
-                }}
-                isRequired
-              >
-                {formOptions.technicals.map((technical) => (
-                  <AutocompleteItem key={technical.id}>{technical.name}</AutocompleteItem>
-                ))}
-              </Autocomplete>
             </ModalBody>
             <ModalFooter className={`flex ${isModifying ? "justify-between" : "justify-end"}`}>
               <Button color="danger" className={`${!isModifying ? "hidden" : ""}`}
-                onPress={
-
-                  () => {
-                    if (confirm("¿Estás seguro que deseas eliminar este coordinador?")) {
-                      deleteStructureCoordinator();
-                    }
+                onPress={() => {
+                  if (confirm("¿Estás seguro que deseas eliminar este coordinador?")) {
+                    deleteStructureCoordinator();
                   }
-                }>
-
-                Eliminar</Button>
+                }}
+              >
+                Eliminar
+              </Button>
               <Button color="primary" type="submit">{isModifying ? "Modificar" : "Agregar"}</Button>
             </ModalFooter>
           </form>

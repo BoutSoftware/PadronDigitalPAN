@@ -1,12 +1,14 @@
 "use client";
 
+import Header from "@/components/Header";
 import { Button, Input } from "@nextui-org/react";
 import React from "react";
 
 export default function DirectoryPage() {
   return (
     <main className="p-4">
-      <h1 className="text-2xl font-bold">Directorio</h1>
+      {/* <h1 className="text-2xl font-bold">Directorio</h1> */}
+      <Header title="Directorio" />
 
       <section className="w-full max-w-sm">
         <h2 className="text-xl font-semibold">Crear Persona</h2>

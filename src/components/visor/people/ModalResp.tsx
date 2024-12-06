@@ -32,8 +32,13 @@ export default function ModalResp({ subCoordinatorId }: ModalSubCoorProps) {
     const resBody = await fetch("/dashboard/api/visor/coordinators?onlyFree=true").then(res => res.json());
 
     if (resBody.code !== "OK") {
-      console.log(resBody);
-      alert("Error al obtener Coordinadores");
+      if (resBody.code === "NOT_FOUND") {
+        console.warn("No coordinators found");
+      } else {
+        console.error("Error getting coordinators");
+        alert("Error al obtener Coordinadores");
+      }
+
       return;
     }
 
@@ -43,8 +48,17 @@ export default function ModalResp({ subCoordinatorId }: ModalSubCoorProps) {
   const getTechnicals = async () => {
     const resBody = await fetch("/dashboard/api/visor/technicals?onlyFree=true").then(res => res.json());
 
-    if (resBody.code !== "OK")
-      return alert("Error al obtener Tecnicos");
+    if (resBody.code !== "OK") {
+      if (resBody.code === "NOT_FOUND") {
+        console.warn("No technicals found");
+      } else {
+        alert("Error al obtener Tecnicos");
+        console.error("Error getting technicals");
+        console.log(resBody);
+      }
+
+      return;
+    }
 
     setTechnicals(resBody.data);
   };

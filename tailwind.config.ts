@@ -17,10 +17,10 @@ const config: Config = {
   plugins: [
     plugin(({ addUtilities }) => {
       addUtilities({
-        '.hide-children > *': {
-          display: 'none',
+        ".hide-children > *": {
+          display: "none",
         },
-      })
+      });
     }),
 
     nextui({

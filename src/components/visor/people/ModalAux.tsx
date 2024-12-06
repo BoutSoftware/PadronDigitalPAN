@@ -1,6 +1,7 @@
 import { useEffect, useState, FormEvent, useMemo } from "react";
 import { Autocomplete, AutocompleteItem, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem } from "@nextui-org/react";
 import { ACTIVATIONS } from "@/configs/catalogs/visorCatalog";
+import { u } from "framer-motion/client";
 
 interface ModalAuxCoorProps {
   auxiliary?: {
@@ -147,16 +148,24 @@ export default function ModalAux({ auxiliary: currentAuxiliary }: ModalAuxCoorPr
   };
 
   const getTechnicals = async () => {
-    try {
-      const res = await fetch("/dashboard/api/visor/technicals?onlyFree=true");
-      const result = await res.json();
-      setFormOptions((prevOptions) => ({
-        ...prevOptions,
-        technicals: result.data,
-      }));
-    } catch (e) {
-      console.log("Error: ", e);
+    const res = await fetch("/dashboard/api/visor/technicals?onlyFree=true");
+    const resBody = await res.json();
+
+    if (resBody.code !== "OK") {
+      if (resBody.code === "NOT_FOUND") {
+        console.warn("No technicals found", resBody);
+      } else {
+        alert("Error al obtener Tecnicos");
+        console.error("Error getting technicals", resBody);
+      }
+
+      return;
     }
+
+    setFormOptions((prevOptions) => ({
+      ...prevOptions,
+      technicals: resBody.data,
+    }));
   };
 
   const getStructures = () => {
@@ -304,7 +313,6 @@ export default function ModalAux({ auxiliary: currentAuxiliary }: ModalAuxCoorPr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues.structureId]);
 
-
   return (
     <>
       <Button onPress={() => setIsModalOpen(true)} color={isModifying ? "default" : "primary"} variant={isModifying ? "light" : "solid"}>
@@ -375,7 +383,7 @@ export default function ModalAux({ auxiliary: currentAuxiliary }: ModalAuxCoorPr
                 onSelectionChange={(key) => setFormValues({ ...formValues, technicalId: key as string })}
                 isRequired
               >
-                {formOptions.technicals.map((user) => (
+                {formOptions.technicals?.map((user) => (
                   <AutocompleteItem key={user.id}>{user.fullname}</AutocompleteItem>
                 ))}
               </Autocomplete>

@@ -110,7 +110,7 @@ export default function ModalAddUser() {
     alert("Contraseña copiada en el portapapeles");
   };
 
-  const handlePersonSelection = (value: Key) => {
+  const handlePersonSelection = (value: Key | null) => {
     const person = people.find((item) => item.id === value);
     if (!person) {
       return;

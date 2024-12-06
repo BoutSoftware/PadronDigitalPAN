@@ -1,5 +1,5 @@
-// "use client";
-// import { useParams, useRouter } from "next/navigation";
+"use client";
+import { useParams, useRouter } from "next/navigation";
 
 // export default function IdTeam() {
 //   const router = useRouter();

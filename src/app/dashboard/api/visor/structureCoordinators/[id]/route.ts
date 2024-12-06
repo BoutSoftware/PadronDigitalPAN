@@ -10,8 +10,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const coordinator = await prisma.visor_structureCoordinator.findFirst({
       where: { id, active: true },
       include: {
-        Technical: true,
-        Attach: true,
         VisorUser: true
       }
     });
@@ -36,70 +34,27 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
   try {
     const reqBody = await request.json() as reqBody;
-    const { structureId, technicalId, attachId } = reqBody;
+    const { structureId } = reqBody;
     const id = params.id;
 
-    if (hasIncompleteFields({ structureId, technicalId, attachId })) {
+    if (hasIncompleteFields({ structureId })) {
       return NextResponse.json({ code: "INCOMPLETE_FIELDS", message: "Some fields are missing" });
-    }
-
-    if (technicalId === attachId) {
-      return NextResponse.json({ code: "BAD_FIELDS", message: "technicalId and auditorId cannot be the same" });
     }
 
     // Verify if coordinator exists
     const coordinatorExists = await prisma.visor_structureCoordinator.findFirst({
       where: { id, active: true },
-      include: {
-        Technical: true,
-        Attach: true
-      }
     });
 
     if (!coordinatorExists) {
       return NextResponse.json({ code: "NOT_FOUND", message: "Coordinator not found" });
     }
 
-    // Update title of free users (when a user is change in structure)
-    await prisma.visor_structureCoordinator.update({
-      where: { id },
-      data: {
-        Technical: {
-          update: {
-            title: technicalId === coordinatorExists.technicalId ?
-              coordinatorExists.Technical.title : null
-          }
-        },
-        Attach: {
-          update: {
-            title: attachId === coordinatorExists.attachId ?
-              coordinatorExists.Attach.title : null
-          }
-        }
-      }
-    });
-
     // Update coordination info of structure and titles of the users
     const updateResult = await prisma.visor_structureCoordinator.update({
       where: { id },
       data: {
         structureId,
-        Technical: {
-          connect: {
-            id: technicalId,
-          },
-          update: {
-            title: "Tecnico de Coordinador"
-          }
-        },
-        Attach: {
-          connect: {
-            id: attachId,
-          },
-          update: {
-            title: "Adjunto de Coordinador"
-          }
-        },
       }
     });
 
@@ -125,7 +80,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
 
     // if try to "deleted" again
-    if (!coordinatorExists.active){
+    if (!coordinatorExists.active) {
       return NextResponse.json({ code: "BAD_REQUEST", message: "Coordinator already deleted" });
     }
 
@@ -134,16 +89,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       where: { id },
       data: {
         active: false,
-        Attach: {
-          update: {
-            title: null
-          }
-        },
-        Technical: {
-          update: {
-            title: null
-          }
-        },
         VisorUser: {
           update: {
             title: null

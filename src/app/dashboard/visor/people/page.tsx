@@ -2,9 +2,11 @@
 import { Divider, Avatar, Input, Button } from "@nextui-org/react";
 import Header from "@/components/Header";
 import React, { useEffect, useState } from "react";
-import ModalCoor from "@/components/visor/people/ModalStructCoor";
-import ModalResp from "@/components/visor/people/ModalSubCoor";
-import ModalAux from "@/components/visor/people/ModalAuxCoor";
+import ModalCoor from "@/components/visor/people/ModalCoor";
+import ModalResp from "@/components/visor/people/ModalResp";
+import ModalAux from "@/components/visor/people/ModalAux";
+import { Visor_structureCoordinator } from "@prisma/client";
+import { ACTIVATIONS } from "@/configs/catalogs/visorCatalog";
 
 interface TerritorialUser {
   id: string;
@@ -16,10 +18,14 @@ interface TerritorialUser {
   User?: TerritorialUser;
 }
 
+interface CoordinatorInfo extends Visor_structureCoordinator {
+  VisorUser: TerritorialUser;
+}
+
 interface UserList {
   userSearched?: string
-  coordinators: TerritorialUser[];
-  subcoordinators: TerritorialUser[];
+  coordinators: CoordinatorInfo[];
+  responsibles: TerritorialUser[];
   auxiliaries: TerritorialUser[];
   users: TerritorialUser[];
   admins: TerritorialUser[];
@@ -37,7 +43,7 @@ export default function Page() {
       userSearched: searchedUser,
       admins: userList?.admins.filter((admin) => admin.fullname.toLowerCase().includes(searchedUser)) || [],
       coordinators: userList?.coordinators.filter((coor) => coor.VisorUser?.fullname.toLowerCase().includes(searchedUser)) || [],
-      subcoordinators: userList?.subcoordinators.filter((sub) => sub.User?.fullname.toLowerCase().includes(searchedUser)) || [],
+      responsibles: userList?.responsibles.filter((sub) => sub.User?.fullname.toLowerCase().includes(searchedUser)) || [],
       auxiliaries: userList?.auxiliaries.filter((aux) => aux.User?.fullname.toLowerCase().includes(searchedUser)) || [],
       users: userList?.users.filter((user) => user.fullname.toLowerCase().includes(searchedUser)) || []
     });
@@ -58,7 +64,7 @@ export default function Page() {
     const formattedData: UserList = {
       admins: data.admins,
       coordinators: data.structureCoordinators,
-      subcoordinators: data.subCoordinators,
+      responsibles: data.subCoordinators,
       auxiliaries: data.auxiliaries,
       users: data.users
     };
@@ -83,27 +89,29 @@ export default function Page() {
       />
       <div className="flex gap-20 px-4 w-full">
         <div className="flex flex-col gap-4 flex-1">
+
+          {/* Admins */}
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
               <h2 className="text-xl">Administradores de módulo</h2>
               <span className="text-zinc-400">{filteredUsers?.admins.length}/{userList?.admins.length}</span>
             </div>
-            {
-              filteredUsers?.admins ? (
-                filteredUsers.admins.map((admin, index, array) => (
-                  <React.Fragment key={index}>
-                    <div className="flex gap-2 items-center my-3">
-                      <Avatar showFallback name={admin.fullname} />
-                      <span className="font-light">{admin.fullname}</span>
-                    </div>
-                    {index !== (array.length - 1) && <Divider />}
-                  </React.Fragment>
-                ))
-              ) : (
-                <p className="my-8 text-zinc-400">Ningún elemento coincide con la búsqueda realizada</p>
-              )
-            }
+            {filteredUsers?.admins ? (
+              filteredUsers.admins.map((admin, index, array) => (
+                <React.Fragment key={index}>
+                  <div className="flex gap-2 items-center my-3">
+                    <Avatar showFallback name={admin.fullname} />
+                    <span className="font-light">{admin.fullname}</span>
+                  </div>
+                  {index !== (array.length - 1) && <Divider />}
+                </React.Fragment>
+              ))
+            ) : (
+              <p className="my-8 text-zinc-400">Ningún elemento coincide con la búsqueda realizada</p>
+            )}
           </div>
+
+          {/* Coordinators */}
           <div className="flex flex-col">
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
@@ -112,39 +120,42 @@ export default function Page() {
               </div>
               <ModalCoor />
             </div>
-            {
-              filteredUsers?.coordinators ? (
-                filteredUsers.coordinators.map((coor, index, array) => (
-                  <React.Fragment key={index}>
-                    <div className="flex gap-2 justify-between items-center my-3">
-                      <div className="flex gap-2 items-center">
-                        <Avatar showFallback name={coor.VisorUser?.fullname || "Error"} />
-                        <div className="flex flex-col">
-                          <span className="font-light">{coor.VisorUser?.fullname || "Error"}</span>
-                          <span className="font-light text-zinc-400 text-sm">Activacion a cargo</span>
-                        </div>
+
+            {filteredUsers?.coordinators ? (
+              filteredUsers.coordinators.map((coor, index, array) => (
+                <React.Fragment key={index}>
+                  <div className="flex gap-2 justify-between items-center my-3">
+                    <div className="flex gap-2 items-center">
+                      <Avatar showFallback name={coor.VisorUser?.fullname || "Error"} />
+                      <div className="flex flex-col">
+                        <span className="font-light">{coor.VisorUser?.fullname || "Error"}</span>
+                        <span className="font-light text-zinc-400 text-sm">
+                          Activacion: {ACTIVATIONS.find((act) => act.id === coor.structureId)?.nombre || "Error"}
+                        </span>
                       </div>
-                      <ModalCoor coordinator={{ id: coor.id, name: coor.VisorUser?.fullname || "Error" }} />
                     </div>
-                    {index !== (array.length - 1) && <Divider />}
-                  </React.Fragment>
-                ))
-              ) : (
-                <p className="my-8 text-zinc-400">Ningún elemento coincide con la búsqueda realizada</p>
-              )
-            }
+                    <ModalCoor coordinator={{ id: coor.id, name: coor.VisorUser?.fullname || "Error" }} />
+                  </div>
+                  {index !== (array.length - 1) && <Divider />}
+                </React.Fragment>
+              ))
+            ) : (
+              <p className="my-8 text-zinc-400">Ningún elemento coincide con la búsqueda realizada</p>
+            )}
           </div>
+
+          {/* Responsibles */}
           <div className="flex flex-col">
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
                 <h2 className="text-xl">Responsables</h2>
-                <span className="text-zinc-400">{filteredUsers?.subcoordinators.length}/{userList?.subcoordinators.length}</span>
+                <span className="text-zinc-400">{filteredUsers?.responsibles.length}/{userList?.responsibles.length}</span>
               </div>
               <ModalResp />
             </div>
             {
-              filteredUsers?.subcoordinators ? (
-                filteredUsers.subcoordinators.map((sub, index, array) => (
+              filteredUsers?.responsibles ? (
+                filteredUsers.responsibles.map((sub, index, array) => (
                   <React.Fragment key={index}>
                     <div className="flex gap-2 justify-between items-center my-3">
                       <div className="flex gap-2 items-center">
@@ -164,6 +175,8 @@ export default function Page() {
               )
             }
           </div>
+
+          {/* Auxiliaries */}
           <div className="flex flex-col">
             <div className="flex justify-between">
               <div className="flex items-center gap-2">
@@ -196,6 +209,8 @@ export default function Page() {
             }
           </div>
         </div>
+
+        {/* Users */}
         <div className="flex-1 flex flex-col">
           <div className="flex items-center gap-2">
             <h2 className="text-xl mb-2">Usuarios Base</h2>

@@ -168,11 +168,11 @@ type RoleFront {
 
 // VISOR MODELS
 model Visor_User {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt DateTime  @default(now())
-  active    Boolean   @default(true)
-  userId    String    @unique @db.ObjectId
-  fullname  String    @default("full_name")
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  active    Boolean  @default(true)
+  userId    String   @unique @db.ObjectId
+  fullname  String   @default("full_name")
   title     String?
   rol       String?
 
@@ -189,8 +189,6 @@ model Visor_User {
   Caminantes      Visor_Caminantes[]
   RoundCreators   Visor_Round[]
   NeedCreators    Visor_Need[]
-  a               Visor_structureCoordinator[] @relation("TechnicalRelation")
-  b               Visor_structureCoordinator[] @relation("AttachRelation")
   c               Visor_structureCoordinator[] @relation("VisorUserRelation")
 }
 
@@ -217,11 +215,7 @@ model Visor_structureCoordinator {
   active      Boolean @default(true)
   structureId String
   visorUserId String  @db.ObjectId
-  technicalId String  @db.ObjectId
-  attachId    String  @db.ObjectId
 
-  Technical Visor_User @relation("TechnicalRelation", fields: [technicalId], references: [id])
-  Attach    Visor_User @relation("AttachRelation", fields: [attachId], references: [id])
   VisorUser Visor_User @relation("VisorUserRelation", fields: [visorUserId], references: [id])
 }
 

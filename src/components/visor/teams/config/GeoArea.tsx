@@ -75,7 +75,7 @@ export function GeoArea({ team, loadTeam, teamId }: Props) {
     setGeographicValues(resBody.data);
   }
 
-  function handleGeoValuesChange(key: Key) {
+  function handleGeoValuesChange(key: Key | null) {
     if (!key) return;
     if (form.geoValues.includes(key as string)) return;
 

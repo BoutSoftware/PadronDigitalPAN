@@ -24,16 +24,6 @@ export async function POST(request: NextRequest) {
             id: coordinatorId as string
           },
         },
-        Technical: {
-          connect: {
-            id: technicalId as string,
-          },
-        },
-        Attach: {
-          connect: {
-            id: attachId as string,
-          },
-        }
       }
     });
 
@@ -42,19 +32,9 @@ export async function POST(request: NextRequest) {
         id: createResult.id
       },
       data: {
-        Attach: {
-          update: {
-            title: "Adjunto de Coordinador"
-          }
-        },
         VisorUser: {
           update: {
             title: "Coordinador de Activacion"
-          }
-        },
-        Technical: {
-          update: {
-            title: "Tecnico de Coordinador"
           }
         },
       }
